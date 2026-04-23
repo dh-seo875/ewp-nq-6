@@ -1,0 +1,10 @@
+*.o
+*.crf
+*.user
+*.uvoptx
+*.htm
+*.map
+*.txt
+*.d
+*.uvprojx
+*.lst

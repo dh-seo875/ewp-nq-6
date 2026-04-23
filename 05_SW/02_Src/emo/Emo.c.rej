@@ -1,0 +1,105 @@
+diff a/05_SW/02_Src/emo/Emo.c b/05_SW/02_Src/emo/Emo.c	(rejected hunks)
+@@ -253,88 +253,88 @@
+     {
+         i = 1800;
+         Emo_Status.MotorStartError = Emo_Status.MotorStartError | EMO_ERROR_CSAOFFSET;
+     }
+     if (i < 1500)
+     {
+         i = 1500;
+         Emo_Status.MotorStartError = Emo_Status.MotorStartError | EMO_ERROR_CSAOFFSET;
+     }
+ 
+     Emo_Svm.CsaOffset = i;
+     /* Initialize parameters for FOC */
+-    Emo_Foc.PhaseRes = 14468; // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
++    //Emo_Foc.PhaseRes = 14468; // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
+ 	
+-    Emo_Foc.PhaseInd = 5128; // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
++    //Emo_Foc.PhaseInd = 5128; // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
+ 	
+-    Emo_Foc.Kdcdivident1 = 19771316; // KU * 1.7320508 * Emo_Svm.MaxAmp / KUZ * 32768 / 2.0;
+-    Emo_Foc.Kdcfactor2 = 13902; // KUZ * 32768.0 * 32768.0 / (KU * 1.7320508 * Emo_Svm.MaxAmp * 64);
+-    Emo_Foc.Kdcfactoriqc = 9614; // 32768.0 * KUZ / (1.7320508 * KU * 32.0);
+-    Emo_Foc.PolePair = 3; // Emo_Focpar_Cfg.PolePair = 3
++    //Emo_Foc.Kdcdivident1 = 19771316; // KU * 1.7320508 * Emo_Svm.MaxAmp / KUZ * 32768 / 2.0;
++    //Emo_Foc.Kdcfactor2 = 13902; // KUZ * 32768.0 * 32768.0 / (KU * 1.7320508 * Emo_Svm.MaxAmp * 64);
++    //Emo_Foc.Kdcfactoriqc = 9614; // 32768.0 * KUZ / (1.7320508 * KU * 32.0);
++    //Emo_Foc.PolePair = 3; // Emo_Focpar_Cfg.PolePair = 3
+ 
+     Emo_Foc.StartCurrent = 1179; // Emo_Focpar_Cfg.StartCurrent / KI * 32768.0;	
+ 
+-    Emo_Foc.TimeSpeedzero = 27;	// Emo_Focpar_Cfg.TimeSpeedzero * SCU_FSYS / ((GPT12E_T2) * 4.0);
+-    Emo_Foc.StartEndSpeed = 300; // Emo_Focpar_Cfg.StartSpeedEnd;	
++    //Emo_Foc.TimeSpeedzero = 27;	// Emo_Focpar_Cfg.TimeSpeedzero * SCU_FSYS / ((GPT12E_T2) * 4.0);
++    //Emo_Foc.StartEndSpeed = 300; // Emo_Focpar_Cfg.StartSpeedEnd;	
+ 
+-    Emo_Foc.StartSpeedSlewRate = 360008; // ((GPT12E_T2) * 4.0) / SCU_FSYS * Emo_Focpar_Cfg.StartSpeedSlewRate * 65536.0;
++    //Emo_Foc.StartSpeedSlewRate = 360008; // ((GPT12E_T2) * 4.0) / SCU_FSYS * Emo_Focpar_Cfg.StartSpeedSlewRate * 65536.0;
+ 	
+-    Emo_Foc.SpeedtoFrequency = 7158; // (32768.0 * (1.0 / CCU6_T12_FREQ) * 32768.0 / 30.0) * FOC_POLE_PAIRS;
++    //Emo_Foc.SpeedtoFrequency = 7158; // (32768.0 * (1.0 / CCU6_T12_FREQ) * 32768.0 / 30.0) * FOC_POLE_PAIRS;
+ 	
+     Emo_Foc.RealFluxLp.CoefA = 327; //32768.0 * KU / (KPSIE * CCU6_T12_FREQ);
+     Emo_Foc.ImagFluxLp.CoefA = 327;	//32768.0 * KU / (KPSIE * CCU6_T12_FREQ);
+ //    Emo_Foc.LpCoefb1 = 109; // 32768.0 / (Emo_Focpar_Cfg.TimeConstantEstFluxFilter * CCU6_T12_FREQ); //Time const = 0.10s
+ //    Emo_Foc.LpCoefb2 = 218;   32768.0 / (0.01 * CCU6_T12_FREQ); Time const = 0.010s
+     Emo_Foc.RealFluxLp.CoefB = 109; // Emo_Foc.LpCoefb1;
+     Emo_Foc.ImagFluxLp.CoefB = 109; // Emo_Foc.LpCoefb1;
+     Emo_Ctrl.SpeedPi.Kp = 1200; // Emo_Focpar_Cfg.SpeedPi_Kp;
+     Emo_Ctrl.SpeedPi.Ki = 800; // Emo_Focpar_Cfg.SpeedPi_Ki;
+     Emo_Ctrl.SpeedPi.PiMin = -1967; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
+     Emo_Ctrl.SpeedPi.PiMax = 1966; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
+ 
+     
+     Emo_Ctrl.MaxRefCurrent = 5898; // 32767.0 * Emo_Focpar_Cfg.MaxRefCurr / KI;
+     Emo_Ctrl.MinRefCurrent = -5899; // 32767.0 * Emo_Focpar_Cfg.MinRefCurr / KI;	
+     
+     Emo_Ctrl.MaxRefStartCurrent = 1966; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
+     Emo_Ctrl.MinRefStartCurrent = -1967; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
+ 	
+-    Emo_Ctrl.Speedlevelmaxstart = 1000; // Emo_Focpar_Cfg.SpeedLevelPos;
+-    Emo_Ctrl.Speedlevelminstart = -1000; // Emo_Focpar_Cfg.SpeedLevelNeg;
+-    Emo_Ctrl.SpeedLevelSwitchOn = 100; // Emo_Focpar_Cfg.SpeedLevelSwitchOn;
++    //Emo_Ctrl.Speedlevelmaxstart = 1000; // Emo_Focpar_Cfg.SpeedLevelPos;
++    //Emo_Ctrl.Speedlevelminstart = -1000; // Emo_Focpar_Cfg.SpeedLevelNeg;
++    //Emo_Ctrl.SpeedLevelSwitchOn = 100; // Emo_Focpar_Cfg.SpeedLevelSwitchOn;
+ 
+ 
+     // x = 0.2f;  Emo_Focpar_Cfg.AdjustmCurrentControl;
+     
+     Emo_Ctrl.RealCurrPi.Kp = 400; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
+     Emo_Ctrl.RealCurrPi.Ki = 723; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
+ 	
+     /* id = PI regulator limits */
+     Emo_Ctrl.RealCurrPi.IMin = -28272;
+     Emo_Ctrl.RealCurrPi.IMax = 28272;
+     Emo_Ctrl.RealCurrPi.PiMin = -28272;
+     Emo_Ctrl.RealCurrPi.PiMax = 28272;
+     Emo_Ctrl.ImagCurrPi.Kp =  Emo_Ctrl.RealCurrPi.Kp;
+     Emo_Ctrl.ImagCurrPi.Ki =  Emo_Ctrl.RealCurrPi.Ki;
+     /* iq = PI regulator limits, iq needs higher range than id */
+     Emo_Ctrl.ImagCurrPi.IMin = -16580;
+     Emo_Ctrl.ImagCurrPi.IMax = 16580;
+     Emo_Ctrl.ImagCurrPi.PiMin = -16580;
+     Emo_Ctrl.ImagCurrPi.PiMax = 16580;
+ 	
+     Emo_Ctrl.SpeedLp.CoefA = 218; // (1.0 / CCU6_T12_FREQ) / (Emo_Focpar_Cfg.TimeConstantSpeedFilter) * 32768.0;
+     Emo_Ctrl.SpeedLp.CoefB = 218; // (1.0 / CCU6_T12_FREQ) / (Emo_Focpar_Cfg.TimeConstantSpeedFilter) * 32768.0;
+ 
+-    Emo_Ctrl.RotCurrImagLpdisplay.CoefA=10;
+-    Emo_Ctrl.RotCurrImagLpdisplay.CoefB=10;
++    //Emo_Ctrl.RotCurrImagLpdisplay.CoefA=10;
++    //Emo_Ctrl.RotCurrImagLpdisplay.CoefB=10;
+     Emo_Ctrl.FluxbtrLp.CoefA = 1000;
+     Emo_Ctrl.FluxbtrLp.CoefB = 1000;
+     Emo_Ctrl.SpeedLpdisplay.CoefA = 1000;
+     Emo_Ctrl.SpeedLpdisplay.CoefB = 1000;
+ //    Emo_Ctrl.Pllkp = 100;
+ 	
+ //    Emo_Ctrl.Factorspeed = 14062;     60.0 * Emo_Focpar_Cfg.PWM_Frequency / 64.0;
+ 	
+     /* Speed PLL adjustment based on max. mech. speed             **
+     ** 60.0 => conversion frequency into rpm (seconds to minutes) **
+     ** 4.0 => 1/4 electrical rotation => 90�                      */
+     // 60.0 * Emo_Focpar_Cfg.PWM_Frequency / (Emo_Focpar_Cfg.MaxSpeed * Emo_Focpar_Cfg.PolePair * 4.0);

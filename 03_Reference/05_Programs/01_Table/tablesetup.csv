@@ -1,0 +1,25 @@
+NAME,DATA TYPE,X LENGTH,Y LENGTH,TABLE NUMBER,,
+Online Checksum,TT_U8,4,1,0xF1F0,,ASCII
+Fault Info,TT_U8,128,1,0xF180,,BCD
+SW Version,TT_U8,16,1,0xF181,,ASCII
+HW Version,TT_U8,3,1,0xF189,,ASCII
+Deploy Date,TT_U8,10,1,0xF198,,ASCII
+BT Version,TT_U8,3,1,0xF199,,ASCII
+Erase EEPROM,TT_U8,3,1,0xF1F1,,ASCII
+Read Calibration data,TT_U8,24,1,0xF1F2,,BSD
+Write Calibration data,TT_U8,24,1,0xF1F3,,BSD
+DATA_10,TT_U8,1,1,0x0104,,"Nm ,TrqRef             scale=0.1       ,offset= -3276.8"
+DATA_11,TT_U8,1,1,0x0105,,"RPM,ActMotSpdTx        scale=0.5       ,offset= -16383.75"
+DATA_12,TT_U8,1,1,0x0106,,"Nm ,MotPwrTx           scale=8         ,offset= -200000"
+DATA_13,TT_U8,1,1,0x0107,,"A  ,IdrRef             scale=0.1       ,offset= -3276.8"
+DATA_14,TT_U8,1,1,0x0108,,"A  ,IqrRef             scale=0.1       ,offset= -3276.8"
+DATA_15,TT_U8,1,1,0x0109,,"A  ,Idr                scale=0.1       ,offset= -3276.8"
+DATA_16,TT_U8,1,1,0x010A,,"A  ,Iqr                scale=0.1       ,offset= -3276.8"
+DATA_17,TT_U8,1,1,0x010B,,"W  ,InvInPwrTx         scale=8         ,offset= -200000"
+DATA_18,TT_U8,1,1,0x010C,,"V  ,VdcLPF             scale=0.05     ,offset= 0"
+DATA_19,TT_U8,1,1,0x010D,,"V  ,IgVtgLPF           scale=0.01     ,offset= 0"
+DATA_20,TT_U8,1,1,0x010E,,"V  ,추후 확인          scale=         ,offset="
+DATA_21,TT_U8,1,1,0x010F,,"℃ ,IgbtTempUpLPF      scale=1         ,offset= -40"
+DATA_22,TT_U8,1,1,0x0110,,"℃ ,IgbtTempVpLPF      scale=1         ,offset= -40"
+DATA_23,TT_U8,1,1,0x0111,,"℃ ,IgbtTempWpLPF      scale=1         ,offset= -40"
+DATA_24,TT_U8,1,1,0x0112,,"℃ ,MotTempMaxTx       scale=1         ,offset= -40"

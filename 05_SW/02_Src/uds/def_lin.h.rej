@@ -1,0 +1,18 @@
+diff a/05_SW/02_Src/uds/def_lin.h b/05_SW/02_Src/uds/def_lin.h	(rejected hunks)
+@@ -108,9 +108,15 @@
+ };	
+ 		
+ 		
++typedef struct	_counter { 
++	uint8_t	tempo;
++	uint8_t	X2MS;
++	uint8_t	c_500ms;
+ 
++}counter_;
+ 
+-typedef struct  {	
++
++typedef struct _T_UDS {	
+ 	uint16_t	ndata;			
+ 	uint8_t		packet_data[MAX_UDS_DATA_BUF+12u];			// packet_data[2] ���� 32bit aline �����ڸ��ű�������.
+ 	uint16_t	packet_data_len,p_packet_data;

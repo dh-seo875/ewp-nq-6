@@ -1,0 +1,502 @@
+/*
+************************************************************************************************************************
+*                                                Myunghwa IND. CO., LTD
+*
+*                                           (c) Copyright 2018; Myunghwa IND.
+*                                                  ALL RIGHTS RESERVED.
+*
+* Filename        : Sensor.c
+* Project         : JKa_EREV
+* Created         : YYYY/MM/DD
+* Description     : sensor
+* 
+* 
+************************************************************************************************************************
+* Revison History:
+* YYYY/MM/DD             Version              Description                      Author
+* 2018/02/08             v1.0                 Draft first version
+*
+************************************************************************************************************************
+*/
+
+
+/*
+************************************************************************************************************************
+*                                                   Include header files
+************************************************************************************************************************
+*/
+#include "Sensor.h"
+#include "RteStd.h"
+#include "Diag.h"
+#include "Manage.h"
+#include "Variant_cfg.h"
+
+/*
+************************************************************************************************************************
+*                                                 Local Defines and macros
+************************************************************************************************************************
+*/
+
+
+/*
+************************************************************************************************************************
+*                                                     Local typedefs
+************************************************************************************************************************
+*/
+
+/* via Rte */
+static sint16_t    sensor_idcFiltered		  = 0;	
+static uint8_t     sensor_hwOpenPhaseCheck    = 0;
+
+
+/* Only used Sensor.c */
+
+
+
+/*
+************************************************************************************************************************
+*                                                   Exported variables
+************************************************************************************************************************
+*/
+
+
+/*
+************************************************************************************************************************
+*                                                     Local variables
+************************************************************************************************************************
+*/
+
+
+/*
+************************************************************************************************************************
+*                                                 Local function prototypes
+************************************************************************************************************************
+*/
+static void CheckShortCircuit(void);
+static void CheckGateDrvError (void);
+static void MeasVdc (void);
+static void MeasIdc (void);
+static void MeasIq (void);
+//static void MeasId (void);
+static void MeasSpeed (void);
+static void MeasTemperature(void);
+static void MeasFluxAbsValue(void);
+static void CheckLinError (void);
+static void CheckIgn (void);
+static void CheckOpenPhase (void);
+//static void CheckErrorCodeIndex (void);
+//static void CheckPowerLimit (void);
+static void ConvertDutyToRpm (void);
+static void ConvertRpmToDuty (void);
+
+
+
+
+/*
+************************************************************************************************************************
+*                                                    Exported functions
+************************************************************************************************************************
+*/
+void SensorSWComponentPack1(void)
+{
+	ConvertDutyToRpm();
+    MeasVdc();
+    MeasIdc();
+    MeasIq();
+    MeasSpeed();
+	ConvertRpmToDuty();
+}
+
+void SensorSWComponentPack2(void)
+{
+    CheckShortCircuit();
+    CheckGateDrvError();
+    CheckLinError();
+    CheckIgn();
+    CheckOpenPhase();
+    MeasTemperature();
+  	MeasFluxAbsValue();
+}
+
+
+static void ConvertDutyToRpm(void)
+{
+	uint16_t rpm = 0U;
+	uint8_t sensor_LinRequireDuty = 0U;
+
+	(void)ReadLinRequireDuty(&sensor_LinRequireDuty);
+
+	if (sensor_LinRequireDuty < LOWER_DUTY)
+	{
+	    rpm = 0U;
+	}
+	else if (sensor_LinRequireDuty >= UPPER_DUTY)
+	{
+	    rpm = MAX_RPM;
+	}
+	else
+	{
+	    uint32_t tmp;
+
+	    /* tmp = (duty - 10) * 5000 */
+	    tmp = (uint32_t)((uint32_t)sensor_LinRequireDuty - (uint32_t)LOWER_DUTY) * (uint32_t)RPM_RANGE;
+
+	    /* rpm = 1000 + tmp / 80 */
+	    rpm = (uint16_t)((uint32_t)MIN_RPM + (tmp / (uint32_t)DUTY_RANGE));
+	}
+
+	(void)WriteConvertRPM((sint16_t)rpm);
+}
+
+
+static void ConvertRpmToDuty(void)
+{
+	uint8_t duty;
+	sint16_t sensor_ActRPM;
+	uint16_t sensor_diffRPM;
+	uint16_t duty_calc;
+	
+	(void)ReadSpeedFiltered(&sensor_ActRPM);
+	
+	if (sensor_ActRPM <= 0)
+	{
+		/* 0 RPM → 0% duty */
+		duty = 0U;
+	}
+	else if (sensor_ActRPM < (sint16_t)MIN_RPM)  // 0 - 10 Duty area
+	{
+		/* Below mapping range → lower bound */
+		duty = (uint8_t)((uint16_t)sensor_ActRPM/100u);
+	}
+	else if (sensor_ActRPM >= (sint16_t)MAX_RPM) // 90 - 100 Duty area
+	{
+		/* Above mapping range → upper bound */
+		duty = UPPER_DUTY;
+	}
+	else // 10 - 89 Duty area
+	{
+		/* Linear mapping (pure integer math) */
+		sensor_diffRPM = (uint16_t)sensor_ActRPM - (uint16_t)MIN_RPM;	
+		duty_calc = (DUTY_RANGE * sensor_diffRPM) / (uint16_t)RPM_RANGE;
+	
+		duty = (uint8_t)((uint16_t)LOWER_DUTY + duty_calc);
+	}
+	
+	(void)WriteConvertActDuty(duty);
+
+}
+
+
+
+
+static void CheckShortCircuit(void)
+{
+    uint8_t hwShortCircuitCheck = 0;
+	uint8_t     sensor_hwShortCircuitCheck = 0;
+	static DiagState_t sensor_hwShortCircuitState = NORMAL;
+    (void)GetOverCurrent(&sensor_hwShortCircuitCheck);
+
+    hwShortCircuitCheck = sensor_hwShortCircuitCheck;
+
+    if(hwShortCircuitCheck == 0u) 
+    {
+        sensor_hwShortCircuitState = NORMAL;
+    }
+    else
+    {
+        sensor_hwShortCircuitState = FAULT;
+    }
+    
+
+    (void)WriteHwShortCircuitState(sensor_hwShortCircuitState);
+}
+
+
+static void CheckGateDrvError (void)
+{
+    uint8_t hwGateDrvErrorCheck = 0;
+	uint8_t     sensor_hwGateDrvErrorCheck = 0;
+	static DiagState_t sensor_hwGateDrvErrorState = NORMAL;
+    (void)GetGateDrvError(&sensor_hwGateDrvErrorCheck);
+
+    hwGateDrvErrorCheck = sensor_hwGateDrvErrorCheck;
+
+    if(hwGateDrvErrorCheck == 0u)
+    {
+        sensor_hwGateDrvErrorState = NORMAL;
+    }
+    else
+    {
+        sensor_hwGateDrvErrorState = FAULT;
+    }
+    
+
+    (void)WriteHwGateDrvErrorState(sensor_hwGateDrvErrorState);
+}
+
+
+static void MeasVdc (void)
+{    
+	sint16_t CAL_VdcConversionFactor   = VDC_CONVERSION_FACTOR;
+	sint16_t CAL_VdcCompensationFactor = VDC_COMPENSATION_FACTOR;
+	sint16_t    sensor_vdcMeasured		  = 0;
+	sint16_t    sensor_vdcFiltered		  = 0;
+
+    (void)GetVdcMeasured(&sensor_vdcMeasured);
+	if(sensor_vdcMeasured > 0)
+    {
+        sensor_vdcMeasured = (sensor_vdcMeasured / CAL_VdcConversionFactor); /*0.01V from mV*/
+    }
+    sensor_vdcMeasured = (sensor_vdcMeasured + CAL_VdcCompensationFactor); /*Compensate voltage Drop depend on D3*/
+
+    if(sensor_idcFiltered > 200)
+    {
+        sensor_vdcMeasured = (sensor_vdcMeasured + (sensor_idcFiltered * (sint16_t)6 / (sint16_t)100));
+    }
+    else
+    {
+    }
+    
+    sensor_vdcFiltered = iirVdc(sensor_vdcMeasured);
+
+//    (void)WriteVdcMeasured(sensor_vdcMeasured);
+    (void)WriteVdcFiltered(sensor_vdcFiltered);
+}
+
+
+static void MeasIdc (void)
+{    
+	sint16_t CAL_IdcConversionFactor   = IDC_CONVERSION_FACTOR;
+    sint16_t    sensor_idcMeasured         = 0;
+
+    (void)GetIdcMeasured(&sensor_idcMeasured);
+
+    sensor_idcMeasured = (sensor_idcMeasured / CAL_IdcConversionFactor); /*0.01A from mA*/
+    sensor_idcFiltered = iirIdc(sensor_idcMeasured);
+
+//    (void)WriteIdcMeasured(sensor_idcMeasured);
+    (void)WriteIdcFiltered(sensor_idcFiltered);
+}
+
+static void MeasIq (void)
+{
+//	sint16_t    sensor_idMeasured		  = 0;
+	sint16_t    sensor_iqMeasured		  = 0;
+	sint16_t    sensor_iqFiltered		  = 0;
+
+    (void)GetIqMeasured(&sensor_iqMeasured);
+//    (void)GetIdMeasured(&sensor_idMeasured);
+
+    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 393); /*1A 83.33A from 32767*/
+//    sensor_idMeasured = (sint16_t)((sint32_t)sensor_idMeasured * 100 / 393);
+    sensor_iqFiltered = iirIq(sensor_iqMeasured);
+
+//    (void)WriteIqMeasured(sensor_iqMeasured);
+//    (void)WriteIdMeasured(sensor_idMeasured);
+    (void)WriteIqFiltered(sensor_iqFiltered);
+}
+
+
+static void MeasSpeed (void)
+{
+	sint16_t    sensor_speedMeasured 	  = 0;
+	sint16_t    sensor_speedFiltered 	  = 0;
+
+    (void)GetSpeedMeasured(&sensor_speedMeasured);
+    (void)GetOpenPhase(&sensor_hwOpenPhaseCheck);
+
+    if (sensor_hwOpenPhaseCheck == 0x02u) /* over 2 phase open */
+    {
+        sensor_speedFiltered = 0;
+    }
+    else /* less than 1 phase open */
+    {
+        sensor_speedFiltered = iirSpeed(sensor_speedMeasured);
+    }
+
+    
+//    (void)WriteSpeedMeasured(sensor_speedMeasured);
+    (void)WriteSpeedFiltered(sensor_speedFiltered);
+}
+
+
+static void MeasTemperature (void)
+{
+	sint16_t    sensor_temperatureMeasured = 0;
+	sint16_t    sensor_temperatureFiltered = 0;
+
+    (void)GetTemperatureMeasured(&sensor_temperatureMeasured);
+
+    sensor_temperatureFiltered = iirTemperature(sensor_temperatureMeasured);
+
+//    (void)WriteTemperatureMeasured(sensor_temperatureMeasured);
+    (void)WriteTemperatureFiltered(sensor_temperatureFiltered);
+}
+
+
+static void CheckLinError (void)
+{
+    uint8_t linErrorCheck = 0;
+	uint8_t     sensor_linErrorCheck       = 0;
+    static DiagState_t sensor_linErrorState       = NORMAL;
+	
+	(void)ReadLinTimeOutFlag(&sensor_linErrorCheck);
+
+//    (void)GetLinTimeOutError(&sensor_linErrorCheck);
+
+    linErrorCheck = sensor_linErrorCheck;
+
+    if(linErrorCheck == 0u)
+    {
+        sensor_linErrorState = NORMAL;
+    }
+    else
+    {
+        sensor_linErrorState = FAULT;
+    }
+    
+
+    (void)WriteLinTimeOutErrorState(sensor_linErrorState);
+}
+
+static void CheckIgn(void)
+{
+	sint16_t CAL_IgnConversionFactor   = IGN_CONVERSION_FACTOR;
+	sint16_t CAL_IgnOnTh               = IGN_ON_TH;
+	sint16_t CAL_IgnOffTh              = IGN_OFF_TH;
+	sint16_t CAL_IgnFaultCntMax        = IGN_FAULT_CNT_MAX;
+	sint16_t CAL_IgnNormalCntMax	   = IGN_NORMAL_CNT_MAX;
+	sint16_t    sensor_ignMeasured		  = 0;
+	sint16_t    sensor_ignFiltered		  = 0;
+	static sint8_t sensor_ignState 	  = IGN_ON;
+	static sint16_t    ignFaultCnt		   = 0;
+	static sint16_t    ignNormalCnt 	   = 0;
+
+    (void)GetIgnMeasured(&sensor_ignMeasured);
+
+    sensor_ignMeasured = (sensor_ignMeasured / CAL_IgnConversionFactor); /*0.01V from mV*/
+    sensor_ignFiltered = iirIgn(sensor_ignMeasured);
+
+    switch(sensor_ignState)
+    {
+        case IGN_OFF:
+            if (sensor_ignFiltered > CAL_IgnOnTh)
+            {
+                ignNormalCnt++;
+            }
+            else
+            {
+                ignNormalCnt--;
+                if (ignNormalCnt < 0)  /* zero saturation */
+                {
+                    ignNormalCnt = 0;
+                }
+            }
+
+
+            if (ignNormalCnt >= CAL_IgnNormalCntMax)
+            {
+                ignNormalCnt = 0;
+                sensor_ignState = IGN_ON;
+            }
+            else
+            {
+            }
+            break;
+        
+		default: // Case IGN_ON
+            if (sensor_ignFiltered < CAL_IgnOffTh)
+            {
+                ignFaultCnt++;
+            }
+            else
+            {
+                ignFaultCnt--;
+                if (ignFaultCnt < 0)  /* zero saturation */
+                {
+                    ignFaultCnt = 0;
+                }
+            }
+			
+	        if (ignFaultCnt >= CAL_IgnFaultCntMax)
+            {
+                ignFaultCnt = 0;
+                sensor_ignState = IGN_OFF;
+            }
+            else
+            {
+            }			
+			break;
+    }
+
+//    (void)WriteIgnMeasured(sensor_ignMeasured);
+//    (void)WriteIgnFiltered(sensor_ignFiltered);
+    (void)WriteIgnFlag(sensor_ignState);
+}
+
+static void CheckOpenPhase(void)
+{
+	static DiagState_t sensor_hwOpenPhaseState	  = NORMAL;
+
+    (void)GetOpenPhase(&sensor_hwOpenPhaseCheck);
+    
+    if (sensor_hwOpenPhaseCheck == 0x02u)
+    {
+        sensor_hwOpenPhaseState = FAULT;
+    }
+    else if (sensor_hwOpenPhaseCheck == 0x01u)
+    {
+        sensor_hwOpenPhaseState = WARNING;
+    }
+    else if (sensor_hwOpenPhaseCheck == 0u)
+    {
+        sensor_hwOpenPhaseState = NORMAL;
+    }
+    else
+    {
+        /* no action */
+    }
+    
+    (void)WriteHwOpenPhaseState(sensor_hwOpenPhaseState);
+}
+
+static void MeasFluxAbsValue (void)
+{    
+	sint16_t    sensor_fluxAbsValueMeasured = 0;
+
+    (void)GetFluxAbsValue(&sensor_fluxAbsValueMeasured);
+
+    (void)WriteFluxAbsValueMeasured(sensor_fluxAbsValueMeasured);
+}
+
+//static void CheckErrorCodeIndex (void)
+//{    
+//	static uint8_t	   sensor_errorCodeIndex	  = 0;
+
+//    (void)GetErrorCodeIndex(&sensor_errorCodeIndex);
+
+//    (void)WriteErrorCodeIndex(sensor_errorCodeIndex);
+//}
+
+
+//static void CheckPowerLimit (void)
+//{    
+//	static uint8_t	   sensor_Power_Limit	  = 0;
+
+//    (void)GetPowerLimitState(&sensor_Power_Limit);
+
+//    (void)WritePowerLimit(sensor_Power_Limit);
+//}
+
+
+/*
+************************************************************************************************************************
+*                                                      Local functions
+************************************************************************************************************************
+*/
+
+
+
+
+
+
