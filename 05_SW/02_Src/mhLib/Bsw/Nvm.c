@@ -160,19 +160,19 @@ static void NVM_Watchdog_Fault(void)
 //	PMU_Wake_Status = PMU->WAKE_STATUS.reg;
 	
     	//PMU_Clear_Reset_Status();
-    
+
 	if(((PMU_Reset_Flag >> 5u) & 0x01u) == 1u) //WDT1 Reset
 	{
-	    IRV_ptrMCUFaultCodePage[0] = ErrorCodePageC[0] + 1u;  // Up count WDT1 Error Count
-	    Nvm_WDT_Cnt = ErrorCodePageC[0] + 1u;
+        Nvm_WDT_Cnt = PMU->GPUDATA00.reg;	
         if(Nvm_WDT_Cnt >= 3u)   // Check if WDT1 fail occur 3 time
         {
             Nvm_Watchdog_Fault_FLAG = 1;
             //SCUPM->SYS_SUPPLY_IRQ_CLR.reg = (uint32) 0x00FF00FF; // supply interrupt status all clear
             //SCUPM->SYS_ISCLR.reg = (uint32)0x3F3FFFC7;        //  system interrupt status all clear
-            
-			EraseMCUFault();
-			(void)writeNvm(IRV_ptrMCUFaultCodePage, errorCodeAddressPageC);
+            PMU->GPUDATA00.reg = 0;
+//			EraseMCUFault();
+//			IRV_ptrMCUFaultCodePage[0] = 0;
+//			(void)writeNvm(IRV_ptrMCUFaultCodePage, errorCodeAddressPageC);
 			(void)WriteMCUFault(Nvm_Watchdog_Fault_FLAG); 					 
 			SCU_EnterSleepMode(); // Go to MCU Sleep Mode
 		}
@@ -181,9 +181,10 @@ static void NVM_Watchdog_Fault(void)
 		{
 //			  PMU->GPUDATA00.reg = PMU->GPUDATA00.reg + 1;
 //			  PMU_GPU = PMU->GPUDATA00.reg;
-			//EraseMCUFault();
-			IRV_ptrMCUFaultCodePage[0] = Nvm_WDT_Cnt;
-		    (void)writeNvm(IRV_ptrMCUFaultCodePage, errorCodeAddressPageC);
+			PMU->GPUDATA00.reg = PMU->GPUDATA00.reg + 1u;
+//			EraseMCUFault();
+//			IRV_ptrMCUFaultCodePage[0] = Nvm_WDT_Cnt;
+//		    (void)writeNvm(IRV_ptrMCUFaultCodePage, errorCodeAddressPageC);
 		}
 
 
@@ -193,7 +194,8 @@ static void NVM_Watchdog_Fault(void)
 //        Nvm_POR_FLAG = 1;
 //        Nvm_Watchdog_Fault_FLAG = 0;
 //        (void)WriteMCUFault(Nvm_Watchdog_Fault_FLAG);
-        EraseMCUFault();
+//        EraseMCUFault();
+          PMU->GPUDATA00.reg = 0;
 
 			
 //		PORT->P1_DATA.reg = 0x0;
