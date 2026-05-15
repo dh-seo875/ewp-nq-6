@@ -7,7 +7,7 @@
 *                                                                             *
 *    ihr GmbH                                                                 *
 *    Airport Boulevard B210                                                   *
-*    77836 Rheinmünster - Germany                                             *
+*    77836 Rheinm?ster - Germany                                             *
 *    http://www.ihr.de                                                        *
 *    Phone +49(0) 7229-18475-0                                                *
 *    Fax   +49(0) 7229-18475-11                                               *
@@ -53,7 +53,7 @@
 #include "lin_main.h"
 #include "lin_config.h"
 #include "lin_diag_tp.h"
-
+#include "DiagServiceProcess.h"
 /* ===========================================================================
  *  Global Variables
  * ==========================================================================*/
@@ -61,7 +61,7 @@
 /* (MISRA-C:2004 8.10/R, e765) external ... could be made static
  * Reason: Part of API, if configured but not used, MISRA violation will be issued. */
 t_lin_tp_status      g_lin_tp_stat;
-l_u16         g_lin_tp_data_left;
+static l_u16         g_lin_tp_data_left;
 static l_u16         g_lin_tp_rx_data_left;
 static l_u16         g_lin_tp_rx_data_index;
 static l_u8          g_lin_cf_msg_nbr;
@@ -70,17 +70,19 @@ static const l_u8    *g_lin_tp_ptr_tx_data;
 
 static l_u16         g_lin_tp_tx_data_index;
 static l_u16*        g_lin_tp_ptr_rx_size;
-l_u8          *g_lin_tp_ptr_rx_data;
+static l_u8          *g_lin_tp_ptr_rx_data;
 
 //char dummy_2 = 0;
 
 t_lin_tp_tx_rx_ctrl  g_lin_tp_tx_rx_ctrl;
-l_u8          g_lin_tp_rx_preNAD;
+static l_u8          g_lin_tp_rx_preNAD;
+
+static  l_u8 Buffer_updata_Cnt = 0;
 #if ((defined LIN_MASTER)||(defined J2602_MASTER))
 l_u8*              g_lin_tp_ptr_rx_nad;
 #endif /* #if ((defined LIN_MASTER)||(defined J2602_MASTER)) */
-
-   l_u16  loc_length;
+//   l_u8 loc_i;
+//   l_u16  loc_length;
 
 /* ===========================================================================
  *  Functions
@@ -195,9 +197,13 @@ void ld_receive_message(l_u16* const length, l_u8* const data)
    @param  void
    @retval void
 */
+
+
 static void lin_tp_send_cf(void)
 {
-   l_u8  loc_tp_send_cf;
+	 l_u8 i =0;
+   l_u8  loc_i;
+	 static l_u8 index_Compare_Cnt=40;
    g_lin_cf_msg_nbr++;
    g_lin_cf_msg_nbr %= 16u;
 
@@ -206,23 +212,63 @@ static void lin_tp_send_cf(void)
    LIN_DIAG_SEND_FRAME.frame.NAD = g_lin_prod_id.NAD;
 #endif /* #if ((defined LIN_SLAVE)||(defined J2602_SLAVE)) */
    LIN_DIAG_SEND_FRAME.frame.PCI = (l_u8)(CONSECUTIVE_FRAME | g_lin_cf_msg_nbr);
-   for(loc_tp_send_cf = 0u; loc_tp_send_cf < LIN_CF_DATA_LEN; loc_tp_send_cf++)
+   for(loc_i = 0u; loc_i < LIN_CF_DATA_LEN; loc_i++)
    {
-      if(loc_tp_send_cf<g_lin_tp_data_left)
+      if(loc_i<g_lin_tp_data_left)
       {
-         LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_tp_send_cf] = g_lin_tp_ptr_tx_data[loc_tp_send_cf + g_lin_tp_tx_data_index];
+         LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_i] = g_lin_tp_ptr_tx_data[loc_i + g_lin_tp_tx_data_index];
       }
       else
       {
-         LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_tp_send_cf] = 0xFFu;
+         LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_i] = 0xFFu;
          g_lin_tp_data_left = 0u;
       }
    }
-   if((g_lin_tp_data_left != 0u))
+   if(g_lin_tp_data_left != 0u)
    {
       g_lin_tp_data_left -= LIN_CF_DATA_LEN;
       g_lin_tp_tx_data_index += LIN_CF_DATA_LEN;
    }
+	 
+	 
+	 
+	 
+	 	if(g_lin_tp_tx_data_index > index_Compare_Cnt) 
+	{
+	for (i = 0; i < (36u); i++)
+	 { if(Buffer_updata_Cnt == 0u)
+		 {
+		 DiagManager_Buffer_Updata_Sector1(i);
+			 
+			 index_Compare_Cnt=35;
+		 }
+		 else if(Buffer_updata_Cnt == 1u)
+		 {
+		 DiagManager_Buffer_Updata_Sector2(i);
+			 
+			 index_Compare_Cnt=35;
+		 }
+		 else
+		 {
+		 DiagManager_Buffer_Updata_Sector3(i);
+			 if((i+110u) == 128u)
+			 {
+				 break;
+			 }
+			 index_Compare_Cnt=40;
+		 }
+		 
+	 }
+	 if(Buffer_updata_Cnt == 0u)
+	 {
+	 g_lin_tp_tx_data_index -= 38u;
+	 }
+	 else
+	 {
+	 g_lin_tp_tx_data_index -= 36u;
+	 }
+	 Buffer_updata_Cnt++;
+ }
 }
 
 /* ---------------------------------------------------------------------------
@@ -237,6 +283,7 @@ static void lin_tp_send_cf(void)
 */
 void lin_tp_tx_part_complete(void)
 {
+	l_u8 i =0;
    /* callback from slave_task_tx_data */
    /* clear timeout counter for transmit */
    lin_tp_clear_timeout();
@@ -244,6 +291,13 @@ void lin_tp_tx_part_complete(void)
    /* if last cf transmitted reset multiframe flag */
    if(g_lin_tp_data_left == 0u)
    {
+		 		 g_lin_tp_tx_data_index = 0;
+		 Buffer_updata_Cnt = 0;
+		 	for (i = 0; i < (38u); i++)
+	 { 
+		 DiagManager_Buffer_Updata_Sector0(i);
+			 
+		 }
       if(g_lin_tp_stat.tx_stat < LD_COMPLETED)
       {
          g_lin_tp_stat.tx_stat = LD_COMPLETED;
@@ -285,8 +339,14 @@ void ld_send_message(l_u16 length, l_u8 NAD, const l_u8* const data)
 void ld_send_message(l_u16 length, const l_u8* const data)
 #endif /* #if ((defined LIN_MASTER)||(defined J2602_MASTER)) */
 {
-   l_u8  loc_send_message = 0u;
-
+   l_u8  loc_i = 0u;
+   l_u16 local_length = 0u; 
+	 local_length = length;
+	 if(local_length == 41u)
+	 {
+		 local_length = 131;
+	 }
+  
    if(g_lin_rx_ctrl.flag.rx_multiframe_msg == L_SET)
    {
       g_lin_tp_tx_rx_ctrl.tx_on = 0u;
@@ -296,7 +356,7 @@ void ld_send_message(l_u16 length, const l_u8* const data)
    }
    else
    {
-      if(length > LIN_TP_MAX_LEN)
+      if(local_length > LIN_TP_MAX_LEN)
       {
          /* set error in status */
          if(g_lin_tp_stat.tx_stat <= LD_COMPLETED)
@@ -313,7 +373,7 @@ void ld_send_message(l_u16 length, const l_u8* const data)
          /* (MISRA-C:2004 11.4/A, e927) A cast should not be performed between a pointer to object type and a different pointer to object type
           * Reason: make the pointer (req. by LIN specification) accessible as array. */
          g_lin_tp_ptr_tx_data = data; /*lint !e927*/
-         if(length > LIN_SF_DATA_LEN)
+         if(local_length > LIN_SF_DATA_LEN)
          {
             /* Start Multi Frame Transmit */
 #if ((defined LIN_MASTER)||(defined J2602_MASTER))
@@ -321,13 +381,13 @@ void ld_send_message(l_u16 length, const l_u8* const data)
 #else
             LIN_DIAG_SEND_FRAME.frame.NAD = g_lin_prod_id.NAD;
 #endif /* #if ((defined LIN_MASTER)||(defined J2602_MASTER)) */
-            LIN_DIAG_SEND_FRAME.frame.PCI = (l_u8)(FIRST_FRAME | (l_u8)(length>>8u));
-            LIN_DIAG_SEND_FRAME.frame.type.FF.LEN = (l_u8)(length);
-            for(loc_send_message = 0u; loc_send_message < LIN_FF_DATA_LEN; loc_send_message++)
+            LIN_DIAG_SEND_FRAME.frame.PCI = (l_u8)(FIRST_FRAME | (l_u8)(local_length>>8u));
+            LIN_DIAG_SEND_FRAME.frame.type.FF.LEN = (l_u8)(local_length & 0x00FFu);
+            for(loc_i = 0u; loc_i < LIN_FF_DATA_LEN; loc_i++)
             {
-               LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_send_message + 1u] = g_lin_tp_ptr_tx_data[loc_send_message];
+               LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_i + 1u] = g_lin_tp_ptr_tx_data[loc_i];
             }
-            g_lin_tp_data_left  = length - LIN_FF_DATA_LEN;
+            g_lin_tp_data_left  = local_length - LIN_FF_DATA_LEN;
             g_lin_tp_tx_data_index = LIN_FF_DATA_LEN;
             g_lin_cf_msg_nbr = 0u;
 #if ((defined LIN_MASTER)||(defined J2602_MASTER))
@@ -358,16 +418,16 @@ void ld_send_message(l_u16 length, const l_u8* const data)
 #else
                LIN_DIAG_SEND_FRAME.frame.NAD = g_lin_prod_id.NAD;
 #endif /* #if ((defined LIN_MASTER)||(defined J2602_MASTER)) */
-               LIN_DIAG_SEND_FRAME.frame.PCI = (l_u8)(length);
-               for(loc_send_message = 0u; loc_send_message < LIN_SF_DATA_LEN; loc_send_message++)
+               LIN_DIAG_SEND_FRAME.frame.PCI = (l_u8)local_length;
+               for(loc_i = 0u; loc_i < LIN_SF_DATA_LEN; loc_i++)
                {
-                  if(loc_send_message<length)
+                  if(loc_i<local_length)
                   {
-                     LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_send_message] = g_lin_tp_ptr_tx_data[loc_send_message];
+                     LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_i] = g_lin_tp_ptr_tx_data[loc_i];
                   }
                   else
                   {
-                     LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_send_message] = 0xFFu;
+                     LIN_DIAG_SEND_FRAME.frame.type.CF.diag_data[loc_i] = 0xFFu;
                   }
                }
             }
@@ -401,11 +461,12 @@ void ld_send_message(l_u16 length, const l_u8* const data)
 
 static void LIN_DIAG_RECEIVE_FRAME_PCI_SINGLE_FRAME(void)
 {
+	l_u8  loc_i = 0u;
+
 	/* check if appl. wants to receive a message
 		* if so fill buffer and set length for appl.
 		* else clear message and wait for next. */
-       l_u8 loc_i;						   
-	   if(g_lin_tp_ptr_rx_size && g_lin_tp_ptr_rx_data)
+	   if((g_lin_tp_ptr_rx_size != NULL_PTR) && (g_lin_tp_ptr_rx_data != NULL_PTR))
 	   {
 		  if(*g_lin_tp_ptr_rx_size >= ((l_u16)LIN_DIAG_RECEIVE_FRAME.frame.PCI & 0x000Fu) )
 		  {
@@ -428,22 +489,23 @@ static void LIN_DIAG_RECEIVE_FRAME_PCI_SINGLE_FRAME(void)
 
 static void LIN_DIAG_RECEIVE_FRAME_PCI_FIRST_FRAME(void)
 {
+	l_u8  loc_i = 0u;
+  l_u16  loc_length;
 	/* Check if appl. wants to receive a message
 	 * if so fill buffer and config tp for cf receive
 	 * else clear message and wait for next. */
-    l_u8 loc_first_frame;						
 	loc_length = (l_u16)((l_u16)(((l_u16)LIN_DIAG_RECEIVE_FRAME.frame.PCI & 0x000Fu) << 8u) | (l_u16)LIN_DIAG_RECEIVE_FRAME.frame.type.FF.LEN);
 	if(loc_length > LIN_SF_DATA_LEN)
 	{
-	   if(g_lin_tp_ptr_rx_size && g_lin_tp_ptr_rx_data)
+	   if((g_lin_tp_ptr_rx_size != NULL_PTR) && (g_lin_tp_ptr_rx_data != NULL_PTR))
 	   {
 		  if(*g_lin_tp_ptr_rx_size >= loc_length)
 		  {
 			 g_lin_rx_ctrl.flag.rx_multiframe_msg = L_SET;
 			 *g_lin_tp_ptr_rx_size = loc_length;
-			 for(loc_first_frame = 0u; loc_first_frame < LIN_FF_DATA_LEN; loc_first_frame++)
+			 for(loc_i = 0u; loc_i < LIN_FF_DATA_LEN; loc_i++)
 			 {
-				g_lin_tp_ptr_rx_data[loc_first_frame] = LIN_DIAG_RECEIVE_FRAME.frame.type.CF.diag_data[loc_first_frame + 1u];
+				g_lin_tp_ptr_rx_data[loc_i] = LIN_DIAG_RECEIVE_FRAME.frame.type.CF.diag_data[loc_i + 1u];
 			 }
 			 /* Keep used NAD in mind */
 			 g_lin_tp_rx_preNAD = LIN_DIAG_RECEIVE_FRAME.frame.NAD;
@@ -471,9 +533,11 @@ static void LIN_DIAG_RECEIVE_FRAME_PCI_FIRST_FRAME(void)
 
 static void LIN_DIAG_RECEIVE_FRAME_PCI_CONSECUTIVE_FRAME(void)
 {
+	l_u8  loc_i = 0u;
+  l_u16  loc_length;
+	
 	/* check if tp wants to receive and if frame number is right
 	 * if so fill buffer */
-    l_u8 loc_consecutive_frame = 0u;
 	if(g_lin_tp_tx_rx_ctrl.rx_cf_on == 1u)
 	{
 	   if((LIN_DIAG_RECEIVE_FRAME.frame.NAD == g_lin_tp_rx_preNAD) && (g_lin_tp_tx_rx_ctrl.rx_cf_num == (LIN_DIAG_RECEIVE_FRAME.frame.PCI & 0x0Fu)))
@@ -503,9 +567,9 @@ static void LIN_DIAG_RECEIVE_FRAME_PCI_CONSECUTIVE_FRAME(void)
 			 g_lin_tp_tx_rx_ctrl.rx_cf_on = 0u;
 			 g_lin_tp_tx_rx_ctrl.rx_t_out_on = 0u;
 		  }
-		  for(loc_consecutive_frame = 0u; loc_consecutive_frame < loc_length; loc_consecutive_frame++)
+		  for(loc_i = 0u; loc_i < loc_length; loc_i++)
 		  {
-			 g_lin_tp_ptr_rx_data[g_lin_tp_rx_data_index + loc_consecutive_frame] = LIN_DIAG_RECEIVE_FRAME.frame.type.CF.diag_data[loc_consecutive_frame];
+			 g_lin_tp_ptr_rx_data[g_lin_tp_rx_data_index + loc_i] = LIN_DIAG_RECEIVE_FRAME.frame.type.CF.diag_data[loc_i];
 		  }
 		  g_lin_tp_rx_data_index += loc_length;
 	   }
@@ -536,16 +600,16 @@ static void LIN_DIAG_RECEIVE_FRAME_NAD(void)
 
 static void check_config(void)
 {
-						
-	l_u8 loc_check_config = 0u;
+	l_u8  loc_i = 0u;
+
 	if ((LIN_DIAG_RECEIVE_FRAME.frame.NAD == LIN_FUNCTIONAL_NAD) && (g_lin_tp_tx_rx_ctrl.rx_cf_on == 0u) && (g_lin_tp_tx_rx_ctrl.tx_on == 0u) && ((LIN_DIAG_RECEIVE_FRAME.frame.PCI & 0x0Fu) <= LIN_SF_DATA_LEN))
 	 {
-		 if (g_lin_tp_ptr_rx_size && g_lin_tp_ptr_rx_data)
+		 if ((g_lin_tp_ptr_rx_size != NULL_PTR) && (g_lin_tp_ptr_rx_data != NULL_PTR))
 		 {
 			 *g_lin_tp_ptr_rx_size = ((l_u16)LIN_DIAG_RECEIVE_FRAME.frame.PCI & 0x0Fu);
-			  for(loc_check_config = 0u; loc_check_config < (l_u8)(*g_lin_tp_ptr_rx_size); loc_check_config++)
+			  for(loc_i = 0u; loc_i < (l_u8)(*g_lin_tp_ptr_rx_size); loc_i++)
 			  {
-				 g_lin_tp_ptr_rx_data[loc_check_config] = LIN_DIAG_RECEIVE_FRAME.frame.type.CF.diag_data[loc_check_config];
+				 g_lin_tp_ptr_rx_data[loc_i] = LIN_DIAG_RECEIVE_FRAME.frame.type.CF.diag_data[loc_i];
 			  }
 			  if(g_lin_tp_stat.rx_stat < LD_COMPLETED)
 			  {
@@ -561,8 +625,7 @@ static void check_config(void)
 
 static void lin_tp_receive_frame(void)
 {
-//   l_u8 loc_i;
-//   l_u16  loc_length;
+
 
    /* Stop Slave from sending further Slaveresponses from previous Masterrequests */
    LIN_DIAG_RECEIVE_FRAME_NAD();
@@ -597,7 +660,7 @@ static void lin_tp_receive_frame(void)
                break;
 			
             default:
-				   /* Intentionally Empty */
+					/* Intentionally Empty */
                break;
          } /*end switch */
       }
@@ -653,7 +716,7 @@ void ld_tp_task(void)
       lin_tp_inc_timeout_counter();
       if(g_lin_tp_timeoutcounter > LIN_TP_COUNTER_MAX)
       {
-         if((g_lin_tp_tx_rx_ctrl.tx_t_out_on != 0u))
+         if(g_lin_tp_tx_rx_ctrl.tx_t_out_on != 0u)
          {
             if(g_lin_tp_stat.tx_stat <= LD_COMPLETED)
             {
@@ -662,7 +725,7 @@ void ld_tp_task(void)
             g_lin_tp_tx_rx_ctrl.tx_on = 0u;
             g_lin_tp_tx_rx_ctrl.tx_t_out_on = 0u;
          }
-         if((g_lin_tp_tx_rx_ctrl.rx_t_out_on != 0u))
+         if(g_lin_tp_tx_rx_ctrl.rx_t_out_on != 0u)
          {
             if(g_lin_tp_stat.rx_stat <= LD_COMPLETED)
             {

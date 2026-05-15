@@ -413,7 +413,7 @@ __STATIC_INLINE uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp)
   if(AbsImag <= AbsReal)
   {
     /* Get basic angle from table */
-    Index = (((uint32)AbsImag) * 1024u) / ((uint32)AbsReal);
+    Index = (((uint32)AbsImag) << 10u) / ((uint32)AbsReal);
     TableValue = Table_ArcTan[Index];
 
     /* Get amplitude from table */
@@ -446,7 +446,7 @@ __STATIC_INLINE uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp)
   else /* (AbsReal < AbsImag) */
   {
     /* Get basic angle from table */
-    Index = (((uint32)AbsReal) * 1024u) / ((uint32)AbsImag);
+    Index = (((uint32)AbsReal) << 10u) / ((uint32)AbsImag);
 
     TableValue = Table_ArcTan[Index];
 

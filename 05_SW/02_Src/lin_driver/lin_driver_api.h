@@ -988,7 +988,15 @@ void ld_receive_message(l_u16* const length, l_u8* const data);
                                         } while (0)
                                            
 #ifndef LIN_PROTOCOL_VERSION_1_3
-
+//#define ld_response_finished() do                                                              \
+                                        {                                                               \
+                                           if(g_lin_tp_stat.rx_stat < LD_COMPLETED)          \
+                                           {                                                            \
+                                              g_lin_tp_stat.rx_stat = LD_COMPLETED;          \
+                                           }                                                            \
+                                           g_lin_tp_tx_rx_ctrl.rx_cf_on = 0u;                \
+                                           g_lin_tp_tx_rx_ctrl.rx_t_out_on = 0u;             \
+                                        } while (0)
 #else
 #define ld_response_finished() do                                                             \
                                         {                                                     \
@@ -999,7 +1007,15 @@ void ld_receive_message(l_u16* const length, l_u8* const data);
                                            
                                            
 #ifndef LIN_PROTOCOL_VERSION_1_3
-
+//#define ld_response_failed()   do                                                            \
+                                        {                                                    \
+                                        if (g_lin_config_status != LD_SERVICE_IDLE)          \
+                                        {                                                    \
+                                           g_lin_config_status = LD_SERVICE_ERROR;           \
+                                        }                                                    \
+                                        g_lin_tp_tx_rx_ctrl.rx_cf_on = 0u;                   \
+                                        g_lin_tp_tx_rx_ctrl.rx_t_out_on = 0u;                \
+                                        } while (0)
 #else
 #define ld_response_failed()   do                                                              \
                                         {                                                      \

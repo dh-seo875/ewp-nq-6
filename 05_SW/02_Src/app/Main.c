@@ -51,7 +51,6 @@
 #include "Emo_RAM.h"
 #include "RteStd.h"
 #include "DiagManager.h"
-#include "Usr.h"
 
 #include "Sensor.h"
 #include "Diag.h"
@@ -72,8 +71,9 @@
 /*******************************************************************************
 **                      Private Function Declarations                         **
 *******************************************************************************/
+
 static void CreateTask (void);
-static void Task_10ms(void) ;
+static void NVM_EMO_Task(void) ;
 
 static void Uart2_SendByte(unsigned char data);
 
@@ -82,7 +82,6 @@ void BDRV_Diag(void)__attribute__((used));
 void Uart2_RxInterrupt( void );
 void Clear_VsUvStatus(void);
 static void Init_Main(void);
-
 
 /*******************************************************************************
 **                      Globale Variable Definitions                          **
@@ -102,7 +101,7 @@ static void Init_Main(void);
 *******************************************************************************/
 int main(void)
 {
-	Init_Main();
+    Init_Main();
 	
     /* begin myunghwa software */
     schedulerInit();
@@ -114,9 +113,7 @@ int main(void)
         (void)WDT1_Service();
 
         schedulerRun(schedulerGetTick());
-
-        /* Find */
-        CheckDiagnosis();
+			
     }
 }
 /* End of main() */
@@ -125,8 +122,7 @@ int main(void)
 /* In case the VCP supply fails the motor stops */
 void BDRV_Diag_Supply(void)/* PRQA S 1503 1 */ /* Used as callback via function pointer */
 {
-    (void)Emo_StopMotor(); 
-
+    (void)Emo_StopMotor();
 }
 
 /* in case an over current is detected on one of   **
@@ -136,8 +132,7 @@ void BDRV_Diag(void) /* PRQA S 1503 1 */ /* Used as callback via function pointe
     /* Deviation: This function is referenced indirectly via a macro. */
     /* Short Circuit  is mapped to BDRV_Diag and used in interrupt. */
 
-    (void)Emo_StopMotor(); 
-
+    (void)Emo_StopMotor();
 }
 
 void Uart2_RxInterrupt( void )
@@ -160,30 +155,23 @@ void Clear_VsUvStatus(void)
     (void)ClearVsUnderVoltage();
 }
 
-uint8 Emo_OpenPhaseStatus(void)
-{
-    return bMotorOPFlag;
-}
-
-/*******************************************************************************
+/*******************************************************************************10
 **                      Private Function Definitions                          **
 *******************************************************************************/
 static void CreateTask (void)
 {
-    (void)schedulerAddTask(Priority_1  , schedulerGetTick(),    INFINITE_LOOP,    1u/* 0.25ms*/, (taskfuncptr)&LIN_LLD_Service);
-    (void)schedulerAddTask(Priority_2  , schedulerGetTick()+1u, INFINITE_LOOP,   40u/*   10ms*/, (taskfuncptr)&SensorSWComponentPack1);
-    (void)schedulerAddTask(Priority_3  , schedulerGetTick()+5u, INFINITE_LOOP,   40u/*   10ms*/, (taskfuncptr)&SensorSWComponentPack2);	
-    (void)schedulerAddTask(Priority_4  , schedulerGetTick()+9u, INFINITE_LOOP,   40u/*   10ms*/, (taskfuncptr)&DiagSWComponentPack1);
-    (void)schedulerAddTask(Priority_5  , schedulerGetTick()+13u, INFINITE_LOOP,  40u/*   10ms*/, (taskfuncptr)&DiagSWComponentPack2);	
-    (void)schedulerAddTask(Priority_6  , schedulerGetTick()+17u, INFINITE_LOOP,  40u/*   10ms*/, (taskfuncptr)&Task_10ms);
-    (void)schedulerAddTask(Priority_7  , schedulerGetTick()+21u, INFINITE_LOOP,  40u/*   10ms*/, (taskfuncptr)&ManageNvm);
-    (void)schedulerAddTask(Priority_8  , schedulerGetTick()+23u, INFINITE_LOOP,   4u/*   1ms*/, (taskfuncptr)&DiagManager_MainFunction);
+    (void)schedulerAddTask(Priority_1  , schedulerGetTick(),    INFINITE_LOOP,    4u/* 1ms*/, (taskfuncptr)&LIN_LLD_Service);
+    (void)schedulerAddTask(Priority_2  , schedulerGetTick()+1u, INFINITE_LOOP,   10u/*    2.5ms*/, (taskfuncptr)&SensorSWComponentPack);
+    (void)schedulerAddTask(Priority_3  , schedulerGetTick()+3u, INFINITE_LOOP,   10u/*   2.5ms*/, (taskfuncptr)&DiagSWComponentPack);
+    (void)schedulerAddTask(Priority_4  , schedulerGetTick()+5u, INFINITE_LOOP,   20u/*   5ms*/, (taskfuncptr)&ManageSWComponentPack);
+    (void)schedulerAddTask(Priority_5  , schedulerGetTick()+6u, INFINITE_LOOP,    4u/*    1ms*/, (taskfuncptr)&DiagManager_MainFunction);
+    (void)schedulerAddTask(Priority_6  , schedulerGetTick()+9u,	INFINITE_LOOP,     40u/* 10ms*/, (taskfuncptr)&NVM_EMO_Task);
 }
 
-static void Task_10ms(void) 
+static void NVM_EMO_Task(void)
 {
-	ManageSWComponentPack();
-	Task_Emo_MotorControl();
+	  ManageNvm();
+	  Task_Emo_MotorControl();
 }
 
 static void Init_Main(void) 
@@ -194,8 +182,7 @@ static void Init_Main(void)
     
     /* Initialize device drivers */
     /* Note: Watchdog is already initialized during startup! */
-    TLE_Init1();
-    TLE_Init2();	
+    TLE_Init();	
     (void)Emo_Init();
 
     /* Diagnostic mode init. It should be located in upper than LIN INIT. */
@@ -212,9 +199,9 @@ static void Init_Main(void)
     MakeCheckSum();
     /*  2. regist UDS_CHECKSUM to ReadDataByIdentifier Service */
     DiagManager_AddParameterOfDataIdentifier(UDS_CHECKSUM, OnLineCheckSum, 4, CallBack_ReportEcuCheckSum);
-    DiagManager_AddParameterOfDataIdentifier(UDS_BSIDID, main_ptrErrorCodePage, 128, CallBack_BootSoftwareIdentifier);
+    DiagManager_AddParameterOfDataIdentifier(UDS_BSIDID, main_ptrErrorCodePage, 38, CallBack_BootSoftwareIdentifier);
     DiagManager_AddParameterOfDataIdentifier(UDS_RESET_ERROR, CommandOfEeprom, 3, CallBack_ReportEraseEeprom);
-		
+	  DiagManager_AddEEPROMaddressData(main_ptrErrorCodePage);
     
 }
 

@@ -18,221 +18,109 @@ z = 0.509521 + j -0.000000
 ***************************************************************/
 #include "Std_Types.h"
 
-#define NCoef 1
-#define DCgain 4
+//#define NCoef 1
+//#define DCgain 4
 
 sint16_t iirVdc(sint16_t NewSample) {
-    const sint32_t ACoef[NCoef+1] = {
-        32143,
-        32143
-    };
-
-    const sint32_t BCoef[NCoef+1] = {
-        32768,
-        -16696
-    };
-
-    static sint32_t y[NCoef+1]; //output samples
-    //Warning!!!!!! This variable should be signed (input sample width + Coefs width + 1 )-bit width to avoid saturation.
-
-    static sint32_t x[NCoef+1]; //input samples
-    int n;
-
-    //shift the old samples
-    for(n=NCoef; n>0; n--) {
-       x[n] = x[n-1];
-       y[n] = y[n-1];
-    }
-
-    //Calculate the new output
-    x[0] = NewSample;
-    y[0] = ACoef[0] * x[0];
-    for(n=1; n<=NCoef; n++)
-    {
-        y[0] += ((ACoef[n] * x[n]) - (BCoef[n] * y[n]));
-    }
-    y[0] /= BCoef[0];
+	
+    static sint32_t x1 = 0; // x[n-1]
+    static sint32_t y1 = 0; // y[n-1] 
     
-    return (sint16_t)(y[0] / DCgain);
+    sint32_t y0;
+
+    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+
+    y0 = (y0 + 16384L) / 32768L;
+
+    x1 = (sint32_t)NewSample;
+    y1 = y0;
+
+    return (sint16_t)((y0 + 2L) / 4L);
 }
 
 sint16_t iirIdc(sint16_t NewSample) {
-    const sint32_t ACoef[NCoef+1] = {
-        32143,
-        32143
-    };
-
-    const sint32_t BCoef[NCoef+1] = {
-        32768,
-        -16696
-    };
-
-    static sint32_t y[NCoef+1]; //output samples
-    //Warning!!!!!! This variable should be signed (input sample width + Coefs width + 1 )-bit width to avoid saturation.
-
-    static sint32_t x[NCoef+1]; //input samples
-    int n;
-
-    //shift the old samples
-    for(n=NCoef; n>0; n--) {
-       x[n] = x[n-1];
-       y[n] = y[n-1];
-    }
-
-    //Calculate the new output
-    x[0] = NewSample;
-    y[0] = ACoef[0] * x[0];
-    for(n=1; n<=NCoef; n++)
-    {
-        y[0] += ((ACoef[n] * x[n]) - (BCoef[n] * y[n]));
-    }
-    y[0] /= BCoef[0];
+	
+    static sint32_t x1 = 0; // x[n-1]
+    static sint32_t y1 = 0; // y[n-1] 
     
-    return (sint16_t)(y[0] / DCgain);
+    sint32_t y0;
+
+    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+
+    y0 = (y0 + 16384L) / 32768L;
+
+    x1 = (sint32_t)NewSample;
+    y1 = y0;
+
+    return (sint16_t)((y0 + 2L) / 4L);
 }
 
 sint16_t iirIq(sint16_t NewSample) {
-    const sint32_t ACoef[NCoef+1] = {
-        32143,
-        32143
-    };
-
-    const sint32_t BCoef[NCoef+1] = {
-        32768,
-        -16696
-    };
-
-    static sint32_t y[NCoef+1]; //output samples
-    //Warning!!!!!! This variable should be signed (input sample width + Coefs width + 1 )-bit width to avoid saturation.
-
-    static sint32_t x[NCoef+1]; //input samples
-    int n;
-
-    //shift the old samples
-    for(n=NCoef; n>0; n--) {
-       x[n] = x[n-1];
-       y[n] = y[n-1];
-    }
-
-    //Calculate the new output
-    x[0] = NewSample;
-    y[0] = ACoef[0] * x[0];
-    for(n=1; n<=NCoef; n++)
-    {
-        y[0] += ((ACoef[n] * x[n]) - (BCoef[n] * y[n]));
-    }
-
-    y[0] /= BCoef[0];
+	
+    static sint32_t x1 = 0; // x[n-1]
+    static sint32_t y1 = 0; // y[n-1] 
     
-    return (sint16_t)(y[0] / DCgain);
+    sint32_t y0;
+
+    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+
+    y0 = (y0 + 16384L) / 32768L;
+
+    x1 = (sint32_t)NewSample;
+    y1 = y0;
+
+    return (sint16_t)((y0 + 2L) / 4L);
 }
 
 sint16_t iirSpeed(sint16_t NewSample) {
-    const sint32_t ACoef[NCoef+1] = {
-        32143,
-        32143
-    };
-
-    const sint32_t BCoef[NCoef+1] = {
-        32768,
-        -16696
-    };
-
-    static sint32_t y[NCoef+1]; //output samples
-    //Warning!!!!!! This variable should be signed (input sample width + Coefs width + 1 )-bit width to avoid saturation.
-
-    static sint32_t x[NCoef+1]; //input samples
-    int n;
-
-    //shift the old samples
-    for(n=NCoef; n>0; n--) {
-       x[n] = x[n-1];
-       y[n] = y[n-1];
-    }
-
-    //Calculate the new output
-    x[0] = NewSample;
-    y[0] = ACoef[0] * x[0];
-    for(n=1; n<=NCoef; n++)
-    {
-        y[0] += ((ACoef[n] * x[n]) - (BCoef[n] * y[n]));
-    }
-
-    y[0] /= BCoef[0];
+	
+    static sint32_t x1 = 0; // x[n-1]
+    static sint32_t y1 = 0; // y[n-1] 
     
-    return (sint16_t)(y[0] / DCgain);
+    sint32_t y0;
+
+    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+
+    y0 = (y0 + 16384L) / 32768L;
+
+    x1 = (sint32_t)NewSample;
+    y1 = y0;
+
+    return (sint16_t)((y0 + 2L) / 4L);
 }
 
 sint16_t iirTemperature(sint16_t NewSample) {
-    const sint32_t ACoef[NCoef+1] = {
-        32143,
-        32143
-    };
-
-    const sint32_t BCoef[NCoef+1] = {
-        32768,
-        -16696
-    };
-
-    static sint32_t y[NCoef+1]; //output samples
-    //Warning!!!!!! This variable should be signed (input sample width + Coefs width + 1 )-bit width to avoid saturation.
-
-    static sint32_t x[NCoef+1]; //input samples
-    int n;
-
-    //shift the old samples
-    for(n=NCoef; n>0; n--) {
-       x[n] = x[n-1];
-       y[n] = y[n-1];
-    }
-
-    //Calculate the new output
-    x[0] = NewSample;
-    y[0] = ACoef[0] * x[0];
-    for(n=1; n<=NCoef; n++)
-    {
-        y[0] += ((ACoef[n] * x[n]) - (BCoef[n] * y[n]));
-    }
 	
-    y[0] /= BCoef[0];
+    static sint32_t x1 = 0; // x[n-1]
+    static sint32_t y1 = 0; // y[n-1] 
     
-    return (sint16_t)(y[0] / DCgain);
+    sint32_t y0;
+
+    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+
+    y0 = (y0 + 16384L) / 32768L;
+
+    x1 = (sint32_t)NewSample;
+    y1 = y0;
+
+    return (sint16_t)((y0 + 2L) / 4L);
 }
 
 sint16_t iirIgn(sint16_t NewSample) {
-    const sint32_t ACoef[NCoef+1] = {
-        32143,
-        32143
-    };
 
-    const sint32_t BCoef[NCoef+1] = {
-        32768,
-        -16696
-    };
-
-    static sint32_t y[NCoef+1]; //output samples
-    //Warning!!!!!! This variable should be signed (input sample width + Coefs width + 1 )-bit width to avoid saturation.
-
-    static sint32_t x[NCoef+1]; //input samples
-    int n;
-
-    //shift the old samples
-    for(n=NCoef; n>0; n--) {
-       x[n] = x[n-1];
-       y[n] = y[n-1];
-    }
-
-    //Calculate the new output
-    x[0] = NewSample;
-    y[0] = ACoef[0] * x[0];
-    for(n=1; n<=NCoef; n++)
-    {
-        y[0] += ((ACoef[n] * x[n]) - (BCoef[n] * y[n]));
-    }
-
-    y[0] /= BCoef[0];
+    static sint32_t x1 = 0; // x[n-1]
+    static sint32_t y1 = 0; // y[n-1] 
     
-    return (sint16_t)(y[0] / DCgain);
+    sint32_t y0;
+
+    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+
+    y0 = (y0 + 16384L) / 32768L;
+
+    x1 = (sint32_t)NewSample;
+    y1 = y0;
+
+    return (sint16_t)((y0 + 2L) / 4L);
 }
 
 

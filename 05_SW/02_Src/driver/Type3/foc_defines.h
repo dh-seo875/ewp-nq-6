@@ -62,7 +62,7 @@ created on:? 7 20 17:56:34 2021
 #endif
 
 #ifndef FOC_L_PHASE
-  #define FOC_L_PHASE 0.0000700
+  #define FOC_L_PHASE 0.0001878
 #endif
 
 #ifndef FOC_MAX_CUR_SPEED
@@ -70,15 +70,15 @@ created on:? 7 20 17:56:34 2021
 #endif
 
 #ifndef FOC_MAX_NEG_REF_CUR
-  #define FOC_MAX_NEG_REF_CUR -20
+  #define FOC_MAX_NEG_REF_CUR -15
 #endif
 
 #ifndef FOC_MAX_POS_REF_CUR
-  #define FOC_MAX_POS_REF_CUR 20
+  #define FOC_MAX_POS_REF_CUR 15
 #endif
 
 #ifndef FOC_MAX_SPEED
-  #define FOC_MAX_SPEED 6000
+  #define FOC_MAX_SPEED 4000
 #endif
 
 #ifndef FOC_MIN_CUR_SPEED
@@ -86,11 +86,11 @@ created on:? 7 20 17:56:34 2021
 #endif
 
 #ifndef FOC_MIN_NEG_REF_CUR
-  #define FOC_MIN_NEG_REF_CUR -10
+  #define FOC_MIN_NEG_REF_CUR -5
 #endif
 
 #ifndef FOC_MIN_POS_REF_CUR
-  #define FOC_MIN_POS_REF_CUR 10
+  #define FOC_MIN_POS_REF_CUR 5
 #endif
 
 #ifndef FOC_NOM_CUR
@@ -103,15 +103,15 @@ created on:? 7 20 17:56:34 2021
 #endif
 
 #ifndef FOC_PWM_FREQ
-  #define FOC_PWM_FREQ 12000
+  #define FOC_PWM_FREQ 15000
 #endif
 
 #ifndef FOC_PWM_PERIOD
-  #define FOC_PWM_PERIOD 83.333
+  #define FOC_PWM_PERIOD 66.6667
 #endif
 
 #ifndef FOC_R_PHASE
-  #define FOC_R_PHASE 0.034
+  #define FOC_R_PHASE 0.07948
 #endif
 
 #ifndef FOC_R_SHUNT
@@ -131,11 +131,11 @@ created on:? 7 20 17:56:34 2021
 #endif
 
 #ifndef FOC_START_ACCEL
-  #define FOC_START_ACCEL 1500
+  #define FOC_START_ACCEL 3000
 #endif
 
 #ifndef FOC_START_CUR
-  #define FOC_START_CUR 8
+  #define FOC_START_CUR 3
 #endif
 
 #ifndef FOC_START_CUR_IF

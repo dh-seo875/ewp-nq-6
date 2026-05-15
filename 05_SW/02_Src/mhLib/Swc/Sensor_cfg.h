@@ -45,6 +45,15 @@
 #define IGN_FAULT_CNT_MAX        (sint16_t)(100) /*       1 sec */
 #define IGN_NORMAL_CNT_MAX       (sint16_t)( 20) /*     0.1 sec */
 
+
+/* OpenPhase */
+#define UPPER_LIMIT            7    /* Cal : 7 * 4 * 100 / 197 = 15.28, 0.15A, (* 100 / 197) is gain factor */
+#define LOWER_LIMIT            -7   /* reasons of the multiply 4, translate from phase current to iq current in Clarke transformation. */
+#define UPPER_COUNTER_LIMIT    300  /* upper limit count */
+#define LOWER_COUNTER_LIMIT    1     /* lower limit count */
+#define CONFIRM_OP_COUNT       10    /* finally OpenPhase count 100ms, 10ms Task*/
+#define UNCONFIRM_OP_COUNT     5     /* release OpenPhase count 50ms*/
+
 /*
 ************************************************************************************************************************
 *                                                         Typedefs

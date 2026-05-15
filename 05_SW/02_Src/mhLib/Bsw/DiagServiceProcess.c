@@ -50,7 +50,7 @@
 ************************************************************************************************************************
 */
 static DidNode_t DIDS [MAX_DID_NUMBER];
-//uint8_t DidIndex = 0;
+
 
 
 /*
@@ -66,7 +66,6 @@ static DidNode_t DIDS [MAX_DID_NUMBER];
 ************************************************************************************************************************
 */
 static uint8_t DiagService_SearchDid (uint16_t mDid, DidNode_t* mDidNode);
-static void DiagService_UdsInitSession (SessionCtrl_t *sessionCtrl);
 
 
 /*
@@ -77,8 +76,8 @@ static void DiagService_UdsInitSession (SessionCtrl_t *sessionCtrl);
 Std_ReturnType DiagService_AddDidForReadDataByIdentifier (uint16_t mDid, uint8_t* mDataPtr, uint16_t mDataLength, DidAttr_t mType, ReadWriteAttr_t mRW, DidFunctionPointer mCallBack)
 {
     Std_ReturnType mRetValue = E_OK;
-	static uint8_t DidIndex = 0;
-
+    static uint8_t DidIndex = 0;
+	
     if (DidIndex == MAX_DID_NUMBER)
     {
         mRetValue = E_NOT_OK;

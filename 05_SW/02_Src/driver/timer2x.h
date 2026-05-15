@@ -100,9 +100,101 @@
 /******************************************************************************
 **                      Global Macro Definitions                             **
 *******************************************************************************/
+/* TIMER2 macros */
+//#define TIMER2_Clk_Prescaler_En()        (TIMER2->T2MOD.reg |= (uint8) (1u << 4u))
+//#define TIMER2_Clk_Prescaler_Dis()       (TIMER2->T2MOD.reg &= (uint8)~(1u << 4u))
+//#define TIMER2_Clk_Prescaler_Sel(t2pre)  (TIMER2->T2MOD.bit.T2PRE = (uint16)(t2pre & 7u))
+//#define TIMER2_Clk_Prescaler_Get()      ((TIMER2->T2MOD.reg >> 1u) & 7u)
 
+//#define TIMER2_Overflow_Sts()           ((TIMER2->T2CON.reg >> 7u) & 1u)
+//#define TIMER2_External_Sts()           ((TIMER2->T2CON.reg >> 6u) & 1u)
+
+//#define TIMER2_External_Ctrl_En()        (TIMER2->T2CON.reg |= (uint8) (1u << 3u))
+//#define TIMER2_External_Ctrl_Dis()       (TIMER2->T2CON.reg &= (uint8)~(1u << 3u))
+
+//#define TIMER2_Reload_Capture_Rising_Sel() \
+                                         (TIMER2->T2MOD.reg |= (uint8) (1u << 5u))
+//#define TIMER2_Reload_Capture_Falling_Sel() \
+                                         (TIMER2->T2MOD.reg &= (uint8)~(1u << 5u))
+
+//#define TIMER2_ExtStart_Rising_Sel() \
+                                         (TIMER2->T2MOD.reg |= (uint8) (1u << 7u))
+//#define TIMER2_ExtStart_Falling_Sel()\
+                                         (TIMER2->T2MOD.reg &= (uint8)~(1u << 7u))
+
+//#define TIMER2_UpDownCount_En()          (TIMER2->T2MOD.reg |= (uint8) (1u << 0u))
+//#define TIMER2_UpDownCount_Dis()         (TIMER2->T2MOD.reg &= (uint8)~(1u << 0u))
+
+//#define TIMER2_Mode_Capture_Set()        (TIMER2->T2CON.reg |= (uint8) (1u << 0u))
+//#define TIMER2_Mode_Reload_Set()         (TIMER2->T2CON.reg &= (uint8)~(1u << 0u))
+
+//#define TIMER2_Mode_Counter_Set()        (TIMER2->T2CON.reg |= (uint8) (1u << 1u))
+//#define TIMER2_Mode_Timer_Set()          (TIMER2->T2CON.reg &= (uint8)~(1u << 1u))
+
+//#define TIMER2_Value_Get()               (((uint16)TIMER2->T2H.reg << 8u) | \
+                                          ((uint16)TIMER2->T2L.reg & 0xFFu))
+//#define TIMER2_Value_Set(t2)             {(TIMER2->T2H.reg = ((t2) >> 8u) & 0xFFu); \
+//                                          (TIMER2->T2L.reg = ((t2) & 0xFFu));}
+//#define TIMER2_Capture_Value_Get()       (((uint16)TIMER2->RC2H.reg << 8u) | \
+                                          ((uint16)TIMER2->RC2L.reg & 0xFFu))
+//#define TIMER2_Reload_Value_Set(t2)      {(TIMER2->RC2H.reg = ((t2) >> 8u) & 0xFFu); \
+                                          (TIMER2->RC2L.reg = ((t2) & 0xFFu));}
+
+/* TIMER21 macros */
+//#define TIMER21_Clk_Prescaler_En()        (TIMER21->T2MOD.reg |= (uint8) (1u << 4u))
+//#define TIMER21_Clk_Prescaler_Dis()       (TIMER21->T2MOD.reg &= (uint8)~(1u << 4u))
+//#define TIMER21_Clk_Prescaler_Sel(t2pre)  (TIMER21->T2MOD.bit.T2PRE = (uint16)(t2pre & 7u))
+//#define TIMER21_Clk_Prescaler_Get()      ((TIMER21->T2MOD.reg >> 1u) & 7u)
+
+//#define TIMER21_Overflow_Sts()           ((TIMER21->T2CON.reg >> 7u) & 1u)
+//#define TIMER21_External_Sts()           ((TIMER21->T2CON.reg >> 6u) & 1u)
+
+//#define TIMER21_ExternalCtrl_En()         (TIMER21->T2CON.reg |= (uint8) (1u << 3u))
+//#define TIMER21_ExternalCtrl_Dis()        (TIMER21->T2CON.reg &= (uint8)~(1u << 3u))
+
+//#define TIMER21_ReloadCapture_RisingEdge_Set() \
+                                          (TIMER21->T2MOD.reg |= (uint8) (1u << 5u))
+//#define TIMER21_ReloadCapture_FallingEdge_Set() \
+                                          (TIMER21->T2MOD.reg &= (uint8)~(1u << 5u))
+
+//#define TIMER21_ExtStart_RisingEdge_Set() \
+                                          (TIMER21->T2MOD.reg |= (uint8) (1u << 7u))
+//#define TIMER21_ExtStart_FallingEdge_Set()\
+                                          (TIMER21->T2MOD.reg &= (uint8)~(1u << 7u))
+
+//#define TIMER21_UpDownCount_En()          (TIMER21->T2MOD.reg |= (uint8) (1u << 0u))
+//#define TIMER21_UpDownCount_Dis()         (TIMER21->T2MOD.reg &= (uint8)~(1u << 0u))
+
+//#define TIMER21_Mode_Capture_Set()        (TIMER21->T2CON.reg |= (uint8) (1u << 0u))
+//#define TIMER21_Mode_Reload_Set()         (TIMER21->T2CON.reg &= (uint8)~(1u << 0u))
+
+//#define TIMER21_Mode_Counter_Set()        (TIMER21->T2CON.reg |= (uint8) (1u << 1u))
+//#define TIMER21_Mode_Timer_Set()          (TIMER21->T2CON.reg &= (uint8)~(1u << 1u))
+
+/* TIMER2x Interrupt Clear Macros */
+//#define TIMER2_Overflow_Int_Clr()         (TIMER2->T2ICLR.reg = (uint8)1u << 7u)
 #define TIMER2_External_Int_Clr()         (TIMER2->T2ICLR.reg = (uint8)1u << 6u)
 #define TIMER21_Overflow_Int_Clr()        (TIMER21->T2ICLR.reg = (uint8)1u << 7u)
+//#define TIMER21_External_Int_Clr()        (TIMER21->T2ICLR.reg = (uint8)1u << 6u)
+
+/* TIMER2x Interrupt Enable/Disable Macros */
+//#define TIMER2_Overflow_Int_En()          (TIMER2->T2CON1.bit.TF2EN = 1u)
+//#define TIMER2_Overflow_Int_Dis()         (TIMER2->T2CON1.bit.TF2EN = 0u)
+//#define TIMER2_External_Int_En()          (TIMER2->T2CON1.bit.EXF2EN = 1u)
+//#define TIMER2_External_Int_Dis()         (TIMER2->T2CON1.bit.EXF2EN = 0u)
+//#define TIMER21_Overflow_Int_En()         (TIMER21->T2CON1.bit.TF2EN = 1u)
+//#define TIMER21_Overflow_Int_Dis()        (TIMER21->T2CON1.bit.TF2EN = 0u)
+//#define TIMER21_External_Int_En()         (TIMER21->T2CON1.bit.EXF2EN = 1u)
+//#define TIMER21_External_Int_Dis()        (TIMER21->T2CON1.bit.EXF2EN = 0u)
+
+//#define TIMER21_Value_Get()               (((uint16)TIMER21->T2H.reg << 8u) | \
+                                          ((uint16)TIMER21->T2L.reg & 0xFFu))
+//#define TIMER21_Value_Set(t2)             {(TIMER21->T2H.reg = ((t2) >> 8u) & 0xFFu); \
+//                                           (TIMER21->T2L.reg = ((t2) & 0xFFu));}
+//#define TIMER21_Capture_Value_Get()       (((uint16)TIMER21->RC2H.reg << 8u) | \
+                                           ((uint16)TIMER21->RC2L.reg & 0xFFu))
+//#define TIMER21_Reload_Value_Set(t2)       {(TIMER21->RC2H.reg = ((t2) >> 8u) & 0xFFu); \
+                                           (TIMER21->RC2L.reg = ((t2) & 0xFFu));}
 
 /*******************************************************************************
 **                      Global Variable Declarations                          **

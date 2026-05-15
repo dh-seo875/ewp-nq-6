@@ -71,7 +71,7 @@
 */
 uint8_t CommRouter_Init (OutModuleType srcModule, uint8_t* requestBuf,const uint8_t* responseBuf, uint8_t requestBufMaxLength)
 {
-    uint8_t retValue = 1u;
+    uint8_t retValue = TRUE;
 
     switch (srcModule)
     {
@@ -90,7 +90,7 @@ uint8_t CommRouter_Init (OutModuleType srcModule, uint8_t* requestBuf,const uint
         case ROUTER_SOURCE_LINTP:
             if (LIN_TP_INIT(requestBuf, responseBuf, requestBufMaxLength) != TRUE)
             {
-                retValue = 0u;
+                retValue = FALSE;
             }
         break;
 
@@ -101,7 +101,7 @@ uint8_t CommRouter_Init (OutModuleType srcModule, uint8_t* requestBuf,const uint
         break;
 
         default:
-            retValue = 0u;
+            retValue = FALSE;
         break;
     }
 

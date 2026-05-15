@@ -130,7 +130,7 @@ uint16_t GetCheckSumValue(uint8_t *pu8Buf)
 
 void uds_tx_checksum_set(void)
 {
-	uds.tx_data[9]=(uint8_t)GetCheckSumValue((void *)&uds.tx_data[1]);   
+	uds.tx_data[9]=GetCheckSumValue((void *)&uds.tx_data[1]);   
 	uds.p_rx_data=0u;
 	uds.p_tx_data=0u;
 	uds.tx_data_len=10u;		// 0~9
@@ -261,7 +261,7 @@ void LIN_IRQHandler (uint8_t c)
 			}	
 		} else if(uds.p_rx_data==9u) {
 			uds.request_response=0;
-			cs=(uint8_t)GetCheckSumValue((void *)&uds.rx_data[1]);
+			cs=GetCheckSumValue((void *)&uds.rx_data[1]);
 			#ifdef LIN_CS_SKIP
 				uds.p_rx_data=0u;
 				lin_data_set();

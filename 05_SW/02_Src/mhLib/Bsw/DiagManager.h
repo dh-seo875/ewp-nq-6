@@ -28,7 +28,7 @@
 ************************************************************************************************************************
 */
 #include "Std_Types.h"
-
+#include "Main.h"
 /*
 ************************************************************************************************************************
 *                                                   Defines and macros
@@ -61,7 +61,7 @@
 
 
 /* Diag buffer max Length */
-#define DiagBufferMax (160)
+#define DiagBufferMax (41)
 
 /* error code */
 //#define ERR_CODE_OV  0x01
@@ -226,7 +226,11 @@ extern void DiagManager_MainFunction (void);
 extern void DiagManager_RxIndicationFromRouter (ProtocolAddrType addrType, uint16_t length, const uint8_t* txConfirmation);
 extern void DiagManager_TxIndicationFromRouter (const uint8_t* txConfirmation);
 extern void DiagManager_AddParameterOfDataIdentifier (uint16_t mDid, uint8_t* mDataPtr, uint16_t mDataLength, const void* ptrFunction);
-
+extern void DiagManager_AddEEPROMaddressData(const uint8_t* mAddress);
+extern void DiagManager_Buffer_Updata_Sector0(uint8_t buffercnt);
+extern void DiagManager_Buffer_Updata_Sector1(uint8_t buffercnt);
+extern void DiagManager_Buffer_Updata_Sector2(uint8_t buffercnt);
+extern void DiagManager_Buffer_Updata_Sector3(uint8_t buffercnt);
 /*
 ************************************************************************************************************************
 *                                               Exported function prototypes

@@ -66,8 +66,7 @@
 ************************************************************************************************************************
 */
 
-extern void SensorSWComponentPack1( void );
-extern void SensorSWComponentPack2( void );
+extern void SensorSWComponentPack( void );
 
 
 

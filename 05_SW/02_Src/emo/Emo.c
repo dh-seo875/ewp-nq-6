@@ -31,31 +31,18 @@
 **                      Includes                                              **
 *******************************************************************************/
 #include "Emo_RAM.h"
-#include "Variant_cfg.h"
 #include "Manage.h"
 #include "RteStd.h"
-
-
-
-#if((EWP_TYPE == PEWP_TYPE2_0X37) || (EWP_TYPE == PEWP_TYPE2_0X38) || (EWP_TYPE == IEWP_TYPE2_0X37) || (EWP_TYPE == AEWP_TYPE2_0X37) || (EWP_TYPE == AEWP_TYPE2_0X37_WITHOUTHOTSPOT))
-#include "../driver/Type2/foc_defines.h"
-
-#elif((EWP_TYPE == PEWP_TYPE3_0X37) || (EWP_TYPE == PEWP_TYPE3_0X38) || (EWP_TYPE == IEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X38))
-#include "../driver/Type3/foc_defines.h"
-
-#else
-/* No Action */
-#endif
-
 /*******************************************************************************
 **                      Global Constant Definitions to be changed             **
 *******************************************************************************/
 /* Constants for MCMOUTS register */
 #define CCU6_MASK_MCMOUTS_ENABLE_MCMOUTS  (0x00BFu)
 TEmo_Status Emo_Status;
-
+uint16 EMO_SVM_MINTIME = 60;
 sint16 Emo_speedRef = 0;
-uint16 EMO_SVM_MINTIME;
+uint8_t Power_Limit_Flag = 0;
+
 /** \brief Initializes E-Motor HW and SW.
  *
  * \param None
@@ -70,38 +57,34 @@ static void Emo_lInitFocVar(void);
 static void Emo_lInitFocPar(void);
 static uint32 Emo_StartMotor(void);
 
-
-void Task_Emo_MotorControl(void) 
+void Task_Emo_MotorControl(void)
 {
-    sint16_t main_speedRef = 0;
-	(void)GetSpeedRef(&main_speedRef);
-	
-	if (main_speedRef >= 1000)
-	{
-		/* set speed as reference speed for the BLDC motor */
-    	Emo_Ctrl.RefSpeed = (sint16)main_speedRef * (-1);
-		/* start the motor if not running yet */
-		(void)Emo_StartMotor();
-	}
-	else
-	{			 
-		(void)SetDiagnosisCurrentSource();
-		(void)ClearVsUnderVoltage();
-		(void)ClearShortCircuit();
-		(void)ClearGateDrvError();
-		(void)ClearOverCurrent();
-		(void)ClearVcpWarningStatus();
-		(void)ClearVddExtShortCircuitStatus();
+	    sint16_t main_speedRef = 0;
+	    (void)GetSpeedRef(&main_speedRef);
+        
+       if ((main_speedRef >= 500)&&(Emo_Svm.CounterOffsetAdw > 127u))
+       {
+            /* set speed as reference speed for the BLDC motor */            
+           Emo_Ctrl.RefSpeed = (sint16)main_speedRef * (-1);
+            /* start the motor if not running yet */
+           (void)Emo_StartMotor();
+       }
+       else
+       {            
+           (void)SetDiagnosisCurrentSource();
+           (void)ClearVsUnderVoltage();
+           (void)ClearShortCircuit();
+           (void)ClearGateDrvError();
+           (void)ClearOverCurrent();
+           (void)ClearVcpWarningStatus();
+           (void)ClearVddExtShortCircuitStatus();
 
-    	Emo_Ctrl.RefSpeed = (sint16)main_speedRef * (-1);		
-		
-		/* if speed is below Speed Min, stop the motor */
-		(void)Emo_StopMotor();
-	}
+          Emo_Ctrl.RefSpeed = (sint16)main_speedRef * (-1);
+            
+           /* if speed is below Speed Min, stop the motor */
+          (void)Emo_StopMotor();
+       }
 }
-
-
-
 uint32 Emo_Init(void)
 {
     uint32 retval = 0u;
@@ -257,7 +240,7 @@ static void Emo_lInitFocPar(void)
     /* 1.25 => 125mV, secured OpAmp differential input voltage range */
 	//x = Emo_Focpar_Cfg.NominalCurrent * Emo_Focpar_Cfg.Rshunt * 40.0;
 //    OpGain = 40.0;
-    CSA_Set_Gain(2u);
+    CSA_Set_Gain(1u);
 
     /* KI current regulator parameter          **
     ** 5.0 => 5V ADC referenc voltage          */
@@ -298,7 +281,6 @@ static void Emo_lInitFocPar(void)
     }
 
     Emo_Svm.CsaOffset = i;
-
     /* Initialize parameters for FOC */
     //Emo_Foc.PhaseRes = 14468; // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
 	
@@ -309,7 +291,7 @@ static void Emo_lInitFocPar(void)
     //Emo_Foc.Kdcfactoriqc = 9614; // 32768.0 * KUZ / (1.7320508 * KU * 32.0);
     //Emo_Foc.PolePair = 3; // Emo_Focpar_Cfg.PolePair = 3
 
-    Emo_Foc.StartCurrent = 3145; // Emo_Focpar_Cfg.StartCurrent / KI * 32768.0;	
+    Emo_Foc.StartCurrent = 250; // Emo_Focpar_Cfg.StartCurrent / KI * 32768.0;	
 
     //Emo_Foc.TimeSpeedzero = 27;	// Emo_Focpar_Cfg.TimeSpeedzero * SCU_FSYS / ((GPT12E_T2) * 4.0);
     //Emo_Foc.StartEndSpeed = 300; // Emo_Focpar_Cfg.StartSpeedEnd;	
@@ -324,17 +306,17 @@ static void Emo_lInitFocPar(void)
 //    Emo_Foc.LpCoefb2 = 218;   32768.0 / (0.01 * CCU6_T12_FREQ); Time const = 0.010s
     Emo_Foc.RealFluxLp.CoefB = 109; // Emo_Foc.LpCoefb1;
     Emo_Foc.ImagFluxLp.CoefB = 109; // Emo_Foc.LpCoefb1;
-    Emo_Ctrl.SpeedPi.Kp = 1200; // Emo_Focpar_Cfg.SpeedPi_Kp;
+    Emo_Ctrl.SpeedPi.Kp = 400; // Emo_Focpar_Cfg.SpeedPi_Kp;
     Emo_Ctrl.SpeedPi.Ki = 600; // Emo_Focpar_Cfg.SpeedPi_Ki;
-    Emo_Ctrl.SpeedPi.PiMin = -3933; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
-    Emo_Ctrl.SpeedPi.PiMax = 3932; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
+    Emo_Ctrl.SpeedPi.PiMin = -984; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
+    Emo_Ctrl.SpeedPi.PiMax = 983; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
 
     
-    //Emo_Ctrl.MaxRefCurrent = 5898; // 32767.0 * Emo_Focpar_Cfg.MaxRefCurr / KI;
-    //Emo_Ctrl.MinRefCurrent = -5899; // 32767.0 * Emo_Focpar_Cfg.MinRefCurr / KI;	
+    Emo_Ctrl.MaxRefCurrent = 2949; // 32767.0 * Emo_Focpar_Cfg.MaxRefCurr / KI;
+    Emo_Ctrl.MinRefCurrent = -2950; // 32767.0 * Emo_Focpar_Cfg.MinRefCurr / KI;	
     
-    //Emo_Ctrl.MaxRefStartCurrent = 3932; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
-    //Emo_Ctrl.MinRefStartCurrent = -3933; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
+    Emo_Ctrl.MaxRefStartCurrent = 983; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
+    Emo_Ctrl.MinRefStartCurrent = -984; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
 	
     //Emo_Ctrl.Speedlevelmaxstart = 1000; // Emo_Focpar_Cfg.SpeedLevelPos;
     //Emo_Ctrl.Speedlevelminstart = -1000; // Emo_Focpar_Cfg.SpeedLevelNeg;
@@ -343,8 +325,8 @@ static void Emo_lInitFocPar(void)
 
     // x = 0.2f;  Emo_Focpar_Cfg.AdjustmCurrentControl;
     
-    Emo_Ctrl.RealCurrPi.Kp = 149; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
-    Emo_Ctrl.RealCurrPi.Ki = 309; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
+    Emo_Ctrl.RealCurrPi.Kp = 1173; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
+    Emo_Ctrl.RealCurrPi.Ki = 1165; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
 	
     /* id = PI regulator limits */
     Emo_Ctrl.RealCurrPi.IMin = -28272;
@@ -374,7 +356,7 @@ static void Emo_lInitFocPar(void)
 	
     /* Speed PLL adjustment based on max. mech. speed             **
     ** 60.0 => conversion frequency into rpm (seconds to minutes) **
-    ** 4.0 => 1/4 electrical rotation => 90°                      */
+    ** 4.0 => 1/4 electrical rotation => 90?                     */
     // 60.0 * Emo_Focpar_Cfg.PWM_Frequency / (Emo_Focpar_Cfg.MaxSpeed * Emo_Focpar_Cfg.PolePair * 4.0);
     
 //	Emo_Ctrl.Exppllhigh = 4;
@@ -451,7 +433,6 @@ static void Emo_lInitFocVar(void)
     Emo_Foc.RotVolt.Imag = 0;
     Emo_Foc.Angle = 0u;
     Emo_Foc.FluxAngle = 0u;
-    Emo_Foc.StoredAngle = 0u;
     Emo_Foc.RealFluxLp.Out = 0;
     Emo_Foc.ImagFluxLp.Out = 0;
     Emo_Ctrl.ActSpeed = 0;
@@ -459,20 +440,20 @@ static void Emo_lInitFocVar(void)
     Emo_Ctrl.RealCurrPi.IOut = 0;
     Emo_Ctrl.ImagCurrPi.IOut = 0;
     Emo_Foc.StartSpeedSlopeMem = 0;
-    Emo_Foc.CountStart = 54;//Emo_Foc.TimeSpeedzero;
-    /* define 30° as start angle */
+    Emo_Foc.CountStart = 100;//Emo_Foc.TimeSpeedzero;
+    /* define 30?as start angle */
     Emo_Foc.StartAngle = (uint16)(30.0 / 360.0 * 65536.0);
 
-    for (i = 0u; i < 32u; i++)
+    for (i = 0u; i < 16u; i++)
     {
         Emo_Ctrl.AngleBuffer[i] = 0;
     }
 
     Emo_Ctrl.SpeedLpdisplay.Out = 0;
     Emo_Ctrl.SpeedLp.Out = 0;
-    //Emo_Svm.CounterOffsetAdw=0;
-    //Emo_Svm.CsaOffsetAdwSumme=0;
-		Emo_Foc.StartCurrent = 600;
+//    Emo_Svm.CounterOffsetAdw=0;
+//    Emo_Svm.CsaOffsetAdwSumme=0;
+		Emo_Foc.StartCurrent = 150;
 		EMO_SVM_MINTIME = 60;
 } /* End of Emo_lInitFocVar */
 
@@ -487,8 +468,8 @@ static void Emo_lInitFocVar(void)
 
 static void Emo_HandleT2Overflow_Start(void)
 {
-		 sint16_t Emo_Foc_StartEndSpeed = 800; // Emo_Focpar_Cfg.StartSpeedEnd;	 
-		 sint32_t Emo_Foc_StartSpeedSlewRate = 180004; 
+		 sint16_t Emo_Foc_StartEndSpeed = 400; // Emo_Focpar_Cfg.StartSpeedEnd;	 
+		 sint32_t Emo_Foc_StartSpeedSlewRate = 120000; 
 		 sint16_t Emo_Foc_SpeedtoFrequency = 7158; // (32768.0 * (1.0 / CCU6_T12_FREQ) * 32768.0 / 30.0) * FOC_POLE_PAIRS;
 
 		 /* Open loop: */
@@ -511,7 +492,7 @@ static void Emo_HandleT2Overflow_Start(void)
 					 Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;						/*Start Foc */
 #endif
 					 /* preload speed regulator */
-					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)16384);
+					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)8192);
 				 }
 			 }
 			 else
@@ -526,9 +507,9 @@ static void Emo_HandleT2Overflow_Start(void)
 				 {
 #if (EMO_RUN==1)
 					 Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;						/*Start Foc */
-					 EMO_SVM_MINTIME = 100;
+                     EMO_SVM_MINTIME = 70;
 #endif
-					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)16384);
+					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)8192);
 				 }
 			 }
 		 }
@@ -536,17 +517,16 @@ static void Emo_HandleT2Overflow_Start(void)
 		 {
 			 Emo_Foc.CountStart--;
 			 Emo_Foc.StartFrequencySlope = 0;
-			 Emo_Foc.StartCurrent += 80;
-			 if(Emo_Foc.StartCurrent < 600)
+			 Emo_Foc.StartCurrent += 20;
+			 if(Emo_Foc.StartCurrent < 150)
 			 {
-				 Emo_Foc.StartCurrent = 600;
+				 Emo_Foc.StartCurrent = 150;
 			 }
-			 if(Emo_Foc.StartCurrent > 3145)
-			 {Emo_Foc.StartCurrent = 3145;}
-			 
+			 if(Emo_Foc.StartCurrent > 1572)
+			 {Emo_Foc.StartCurrent = 1572;}
 		 }
 				 
-		 //Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
+		 Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
 		 //Emo_Ctrl.EnableStartVoltage = 1;
 }
 
@@ -555,29 +535,48 @@ static void Emo_HandleT2Overflow_Run(void)
 	/* switch speed regulator current limits based on speed */
 	if (Emo_Ctrl.ActSpeed > Emo_Ctrl_Speedlevelmaxstart)
 	{
-		Emo_Ctrl.SpeedPi.PiMax = 7864;
-		Emo_Ctrl.SpeedPi.IMax = 7864;
+		Emo_Ctrl.SpeedPi.PiMax = Emo_Ctrl.MaxRefCurrent;
+		Emo_Ctrl.SpeedPi.IMax = Emo_Ctrl.MaxRefCurrent;
 	}
 	else
 	{
 		if (Emo_Ctrl.ActSpeed < Emo_Ctrl_Speedlevelminstart)
 		{
-			Emo_Ctrl.SpeedPi.PiMin = -7865;
-			Emo_Ctrl.SpeedPi.IMin = -7865;
+			Emo_Ctrl.SpeedPi.PiMin = Emo_Ctrl.MinRefCurrent;
+			Emo_Ctrl.SpeedPi.IMin = Emo_Ctrl.MinRefCurrent;
 		}
 		else
 		{
-			Emo_Ctrl.SpeedPi.PiMax = 7864;
-			Emo_Ctrl.SpeedPi.IMax = 7864;
-			Emo_Ctrl.SpeedPi.PiMin = -7865;
-			Emo_Ctrl.SpeedPi.IMin = -7865;
+			Emo_Ctrl.SpeedPi.PiMax = Emo_Ctrl.MaxRefStartCurrent;
+			Emo_Ctrl.SpeedPi.IMax = Emo_Ctrl.MaxRefStartCurrent;
+			Emo_Ctrl.SpeedPi.PiMin = Emo_Ctrl.MinRefStartCurrent;
+			Emo_Ctrl.SpeedPi.IMin = Emo_Ctrl.MinRefStartCurrent;
 		}
 	}
-	
+	if(Emo_Ctrl.RefSpeed < (-3000))
+	{
+		EMO_SVM_MINTIME = 240;
+	}
+	else
+	{
+		EMO_SVM_MINTIME = 70;
+	}
 	/* Speed Regulator: Execute PI algorithm for (imaginary) reference current */
 	Emo_Ctrl.RefCurr = Mat_ExePi(&Emo_Ctrl.SpeedPi, Emo_Ctrl.RefSpeed - Emo_Ctrl.ActSpeed);
-	/* Actual Speed Filter */
-	//Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
+	if(Emo_Ctrl.RefCurr > 0)
+	{
+		Emo_Ctrl.RefCurr = 0;
+	}
+    if((Emo_Ctrl.RefCurr < (Emo_Ctrl.SpeedPi.PiMin + 80)) &&(Emo_Ctrl.ActSpeed > (Emo_Ctrl.RefSpeed + 140)))
+    {
+    	Power_Limit_Flag = 1u;
+	}
+	else
+	{
+    	Power_Limit_Flag = 0u;
+	}
+ 	/* Actual Speed Filter */
+	Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
 }
 
 static void Emo_HandleT2Overflow(void)
@@ -586,27 +585,60 @@ static void Emo_HandleT2Overflow(void)
 	uint32 Emo_Foc_Kdcdivident1 = 19771316;
 	uint16 Emo_Foc_Kdcfactor2 = 13902; // KUZ * 32768.0 * 32768.0 / (KU * 1.7320508 * Emo_Svm.MaxAmp * 64);
 	uint16 Emo_Foc_Kdcfactoriqc = 9614; // 32768.0 * KUZ / (1.7320508 * KU * 32.0);
-			
-   
-	switch (Emo_Status.MotorState)
-	{			 
-		 case EMO_MOTOR_STATE_START:
-			 Emo_HandleT2Overflow_Start();
-			 break;
-	
-		 case EMO_MOTOR_STATE_RUN:
-			 Emo_HandleT2Overflow_Run();
-			 break;
-			 
-		 default: 
-			 (void)Emo_StopMotor();
-			 break;
-	 }
+	uint16 i;
+	if(Emo_Svm.CounterOffsetAdw < 128u)
+	{
+		//Emo_StartMotor();
+		CCU6_StartTmr_T12();
+		Emo_Svm.Amp    = 0u;
+		Emo_Svm.CsaOffsetAdwSumme = Emo_Svm.CsaOffsetAdwSumme+Emo_AdcResult[3u];
+		Emo_Svm.CounterOffsetAdw++;
+		if (Emo_Svm.CounterOffsetAdw == 128u)
+		{	
+			i = (uint16)(Emo_Svm.CsaOffsetAdwSumme >> 8u);
+			if (i < Emo_Svm.CsaOffset)
+			{
+				i = Emo_Svm.CsaOffset;
+			}
+			else if (i > (Emo_Svm.CsaOffset+100u))
+			{
+				i = Emo_Svm.CsaOffset + 100u;	
+			}
+			else
+			{
+				/* no action */
+			}
+	        Emo_Svm.CsaOffsetAdw = i;							
+	        /* Stop PWM */
+	        CCU6_StopTmr_T12();
+
+	        /* Initialize variables */
+	        Emo_lInitFocVar(); 
+        }
+    }
+    else
+    {  
+		
+				switch (Emo_Status.MotorState)
+				{			 
+					 case EMO_MOTOR_STATE_START:
+						 Emo_HandleT2Overflow_Start();
+						 break;
+
+					 case EMO_MOTOR_STATE_RUN:
+						 Emo_HandleT2Overflow_Run();
+						 break;
+						 
+					 default: 
+						 (void)Emo_StopMotor();
+						 break;
+				 }
+    }
 
     if (Emo_Status.MotorState == EMO_MOTOR_STATE_STOP)
     {
         Emo_Ctrl.ActSpeed = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLp, 0);
-        //Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
+        Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
     }
 
     /* read DC-Link-Voltage */
@@ -638,7 +670,7 @@ static void Emo_HandleT2Overflow(void)
         Emo_Foc.RealFluxLp.CoefB = 218;
         Emo_Foc.ImagFluxLp.CoefB = 218;
     }
-
+    
 } /* End of Emo_HandleT2Overflow */
 
 void GPT1_T2_Handler(void)

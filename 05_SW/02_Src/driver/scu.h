@@ -110,8 +110,8 @@ void SCU_EnterSleepMode(void);
 #if (PMU_STOP_MODE == 1)
 void SCU_EnterStopMode(void);
 #endif
-//void SCU_EnterSlowMode(void);
-//void SCU_ExitSlowMode(void);
+void SCU_EnterSlowMode(void);
+void SCU_ExitSlowMode(void);
 
 __STATIC_INLINE void SCU_WDT_Start(void);
 __STATIC_INLINE void SCU_WDT_Stop(void);

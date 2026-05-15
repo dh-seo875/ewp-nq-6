@@ -51,7 +51,6 @@
 **                      Includes                                              **
 *******************************************************************************/
 #include "Emo_RAM.h"
-#include "Usr.h"
 
 /******************************************************************************
 **                      Private Macro Definitions                            **
@@ -68,30 +67,27 @@
 __STATIC_INLINE void Emo_lEstFlux(void);
 __STATIC_INLINE void Emo_FluxAnglePll(void);
 __STATIC_INLINE void Emo_lExeSvm(TEmo_Svm *pSvm);
-__STATIC_INLINE void Emo_lExeSvm_Sector0(void);
-__STATIC_INLINE void Emo_lExeSvm_Sector1(void);
-__STATIC_INLINE void Emo_lExeSvm_Sector2(void);
-__STATIC_INLINE void Emo_lExeSvm_Sector3(void);
-__STATIC_INLINE void Emo_lExeSvm_Sector4(void);
-__STATIC_INLINE void Emo_lExeSvm_Sector5(void);
 __STATIC_INLINE void Emo_lExeMintime_Compare(void);
-__STATIC_INLINE void Emo_adc_Foc_Flux(void);
-__STATIC_INLINE void Emo_lExeSvm_LoadShadow(void);
-
+__STATIC_INLINE void Emo_lExeSvm_Compare(void);
+__STATIC_INLINE void Emo_CalcT13Compare(void);
+__STATIC_INLINE void Emo_CalcSvmTimes(TEmo_Svm *pSvm);
+__STATIC_INLINE void Emo_CalcSvmDuties(void);
+__STATIC_INLINE void Emo_SetSvmCompareValues(TEmo_Svm *pSvm);
+__STATIC_INLINE void Emo_UpdateHardwareRegisters(void);
 
 
 #if (EMO_DECOUPLING==1)
     __STATIC_INLINE TComplex Emo_CurrentDecoupling(void);
 #endif
 
-#define EMO_IMESS  1
+//#define EMO_IMESS  1
 
 /*******************************************************************************
 **                      Global Variable Definitions                           **
 *******************************************************************************/
 
 sint16 FluxAbsValueTemp;
-static uint32 Emo_AdcResult[4u];
+uint16 Emo_AdcResult[4u];
 TEmo_Ctrl Emo_Ctrl;
 TEmo_Foc Emo_Foc;
 TEmo_Svm Emo_Svm;
@@ -120,16 +116,15 @@ void Emo_HandleAdc1(void)
     /* Set Timer13 Trigger calculated previous period pm*/
     CCU6_SetT13Trigger(0x76);
     /*read ADC digital value and store in array*/
-    Emo_AdcResult[0u] = ADC1->RES_OUT1.reg;
+    Emo_AdcResult[0u] = (uint16)(ADC1->RES_OUT1.reg);
     /*disable ESM interrupt*/
     ADC1->IE.bit.ESM_IE = 0;
 }
 
-
 static void Emo_CurrAdc1(void)
 {
-    uint32 AdcResult0;
-    uint32 AdcResult1;
+    uint16 AdcResult0;
+    uint16 AdcResult1;
     uint16 sector;
     sint16 R0mioffs;
     sint16 OffsmiR1;
@@ -141,12 +136,12 @@ static void Emo_CurrAdc1(void)
     AdcResult1 = (Emo_AdcResult[1u] & 0x0FFFu);
     Emo_AdcResult[3u]= (AdcResult0+AdcResult1);
     /*result 0 minus CSA Offset*/
-    R0mioffs = (sint16)((sint32)AdcResult0 - (sint32)Emo_Svm.CsaOffsetAdw);
+    R0mioffs = ((sint16)AdcResult0 - (sint16)Emo_Svm.CsaOffsetAdw);
 
     /*CSA Offset minus result 1*/
-    OffsmiR1 = (sint16)((sint32)Emo_Svm.CsaOffsetAdw - (sint32)AdcResult1);
+    OffsmiR1 = ((sint16)Emo_Svm.CsaOffsetAdw - (sint16)AdcResult1);
     /*Result 1 - Result 0*/
-    R1miR0 = (sint16)((sint32)AdcResult1 - (sint32)AdcResult0);
+    R1miR0 = ((sint16)AdcResult1 - (sint16)AdcResult0);
     /* Calculate currents according to sector number */
     sector = Emo_Svm.StoredSector1;
 
@@ -196,27 +191,21 @@ static void Emo_CurrAdc1(void)
             Emo_Svm.PhaseCurr.C = R0mioffs;
         }
         break;
-
-        case 5:
+        default: //case 5
         {
-            Emo_Svm.PhaseCurr.A = R0mioffs;
-            Emo_Svm.PhaseCurr.B = OffsmiR1;
-					  /* FIND */
-            Emo_Svm.PhaseCurr.C = R1miR0;
-        }
-        break;
-        default:
-        {
-            /* unexpected error => halt motor, reset device */
-            (void)Emo_StopMotor();
+    		Emo_Svm.PhaseCurr.A = R0mioffs;
+    		Emo_Svm.PhaseCurr.B = OffsmiR1;
+    				  /* FIND */
+    		Emo_Svm.PhaseCurr.C = R1miR0;
         }
         break;
     }
-    CheckOpenPhaseState(&Emo_Svm);
+    //CheckOpenPhaseState(&Emo_Svm);
 
     /*prepare sector number for next period*/
     Emo_Svm.StoredSector1 = Emo_Svm.Sector;
 } /* End of Emo_HandleAdc1 */
+
 
 
 void Emo_HandleCCU6ShadowTrans(void)
@@ -232,31 +221,49 @@ void Emo_HandleCCU6ShadowTrans(void)
     /*disable Timer12 PM Interrupt*/
     CCU6->IEN.bit.ENT12PM = 0;
 }
-
+    
 void Emo_HandleFoc(void)
 {
     uint16 angle;
-    uint16 ampl;
     //uint16 i;
     TComplex Vect1 = {0, 0};
     TComplex Vect2;
     sint16 Speed;
     sint32 jj;
-	uint16 i;
-
-    Emo_adc_Foc_Flux();		
-  
-    if (Emo_Status.MotorState == EMO_MOTOR_STATE_START)
+		uint16 ampl;
+	if(Emo_Svm.CounterOffsetAdw >= 128){	
+    Emo_AdcResult[2u] = Emo_AdcResult[0u];
+    /* Enable ADC Interrupt */
+    ADC1->ICLR.bit.ESM_ICLR = 1;
+    ADC1->IE.bit.ESM_IE = 1;
+    /*get 2nd ADC measurement from previous period*/
+    Emo_AdcResult[1u] = (uint16)(ADC1->RES_OUT1.reg);
+    /*set PWM compare values for T12 down-counting part*/
+    CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60down);
+    CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61down);
+    CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
+    CCU6_EnableST_T12();
+    Emo_CurrAdc1();
+    /* Perform Clarke transformation to stationary 2-phase system */
+    Emo_Foc.StatCurr = Mat_Clarke(Emo_Svm.PhaseCurr);
+    
+    /* Perform Park transformation to rotating 2-phase system */
+    Emo_Foc.RotCurr = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
+		
+    /* Estimate flux and calculate rotor angle */
+    Emo_lEstFlux();
+		if (Emo_Status.MotorState == EMO_MOTOR_STATE_START)
     {
 		/* Open loop: */
 		/* Increment angle */
 		Emo_Foc.StartAngle = Emo_Foc.StartAngle + (uint16)Emo_Foc.StartFrequencySlope;
 		Emo_Foc.Angle = Emo_Foc.StartAngle;
-    }
-		Emo_Ctrl.PtrAngle = (Emo_Ctrl.PtrAngle + 1u) & 0x1fu;
+
+		}
+		Emo_Ctrl.PtrAngle = (Emo_Ctrl.PtrAngle + 1u) & 0xfu;
 
 		Emo_Ctrl.AngleBuffer[Emo_Ctrl.PtrAngle] = Emo_Foc.FluxAngle;
-		Emo_Ctrl.Speedest = (sint16)Emo_Foc.FluxAngle - (sint16)Emo_Ctrl.AngleBuffer[(Emo_Ctrl.PtrAngle - 8u) & 0x1fu];
+		Emo_Ctrl.Speedest = (sint16)Emo_Foc.FluxAngle - (sint16)Emo_Ctrl.AngleBuffer[(Emo_Ctrl.PtrAngle - 8u) & 0xfu];
 
 
 		Emo_Ctrl.Speedpll = Emo_Ctrl.Speedest / 8;
@@ -271,25 +278,14 @@ void Emo_HandleFoc(void)
 
     if (Emo_Status.MotorState == EMO_MOTOR_STATE_START)
     {
-            Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;
-
-        /* Current Regulator: Execute PI algorithm for rotating voltage */
-        /* id */
-        Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi,  - Emo_Foc.RotCurr.Real);
-        /* iq */
-        Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr-(Emo_Foc.RotCurr.Imag));
+        Emo_Ctrl.RefCurr = -Emo_Foc.StartCurrent;
     }
     else /* (Emo_Status.MotorState == EMO_MOTOR_STATE_RUN) */
     {
          /* assign PLL output angle to Emo_Foc.Angle */
         Emo_Foc.Angle = Emo_Ctrl.FluxAnglePll;
 #if (EMO_DECOUPLING==0)
-        /* Current Regulator: Execute PI algorithm for rotating voltage */
-        /* id */ 
-        Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, -(Emo_Foc.RotCurr.Real));
 
-        /* iq */
-        Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
 #else
         Emo_Foc.RotVoltCurrentcontrol.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi,  -(Emo_Foc.RotCurr.Real));
         Emo_Foc.RotVoltCurrentcontrol.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
@@ -297,6 +293,13 @@ void Emo_HandleFoc(void)
         Emo_Foc.RotVolt = Emo_CurrentDecoupling();
 #endif
     }
+				
+    /* Current Regulator: Execute PI algorithm for rotating voltage */
+    /* id */ 
+    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, -(Emo_Foc.RotCurr.Real));
+
+    /* iq */
+    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
 
     /* DC-link voltage correction */
     Vect1.Real = (sint16)__ssat((((sint32)Emo_Foc.RotVolt.Real *  (sint32)Emo_Foc.Dcfactor1) / 16384), MAT_FIX_SAT);
@@ -308,37 +311,12 @@ void Emo_HandleFoc(void)
     angle = Mat_CalcAngleAmp(Vect2, &ampl);
     
     /* limitation of max. amplitude */
-    if (ampl > 11000u)
+    if (ampl > Emo_Svm.MaxAmp)
     {
-        ampl = 11000u;
+        ampl = Emo_Svm.MaxAmp;
     }
-	
-	if (Emo_Svm.CounterOffsetAdw > 127u)
-	{
-		Emo_Svm.Amp = ampl;
-	}
-	else
-	{
-		Emo_Svm.Amp = 0u;
-		Emo_Svm.CsaOffsetAdwSumme = Emo_Svm.CsaOffsetAdwSumme+Emo_AdcResult[3u];
-		Emo_Svm.CounterOffsetAdw++;
-		if (Emo_Svm.CounterOffsetAdw == 128u)
-		{
-			i = (uint16)(Emo_Svm.CsaOffsetAdwSumme >> (uint32_t)8u);
-			if (i < Emo_Svm.CsaOffset)
-			{
-				i = Emo_Svm.CsaOffset;
-			}
-			else 
-			{
-				if (i > (Emo_Svm.CsaOffset+100u))
-				{
-					i = Emo_Svm.CsaOffset + 100u;
-				}
-			}
-			Emo_Svm.CsaOffsetAdw = i;
-		}
-	}
+
+        Emo_Svm.Amp = ampl;
     /* sum of regulated angle out of Current Regulation + PLL-Angle */
     Emo_Svm.Angle = angle + Emo_Foc.Angle;
 
@@ -351,33 +329,8 @@ void Emo_HandleFoc(void)
     Emo_lExeSvm(&Emo_Svm);
     /* Filter for Iq  */
     //Emo_Ctrl.RotCurrImagdisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.RotCurrImagLpdisplay, Emo_Foc.RotCurr.Imag);
+	}
 } /* End of Emo_HandleFoc */
-
-
-__STATIC_INLINE void Emo_adc_Foc_Flux(void)
-{
-	Emo_AdcResult[2u] = Emo_AdcResult[0u];
-	/* Enable ADC Interrupt */
-	ADC1->ICLR.bit.ESM_ICLR = 1;
-	ADC1->IE.bit.ESM_IE = 1;
-	/*get 2nd ADC measurement from previous period*/
-	Emo_AdcResult[1u] = ADC1->RES_OUT1.reg;
-	/*set PWM compare values for T12 down-counting part*/
-	CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60down);
-	CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61down);
-	CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
-	CCU6_EnableST_T12();
-	Emo_CurrAdc1();
-	/* Perform Clarke transformation to stationary 2-phase system */
-	Emo_Foc.StatCurr = Mat_Clarke(Emo_Svm.PhaseCurr);
-
-	/* Perform Park transformation to rotating 2-phase system */
-	Emo_Foc.RotCurr = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
-	  
-	/* Estimate flux and calculate rotor angle */
-	Emo_lEstFlux();
-}
-
 
 
 /*******************************************************************************
@@ -393,7 +346,6 @@ __STATIC_INLINE void Emo_adc_Foc_Flux(void)
    static uint32 ci_A;
    static uint32 ci_B;
    static uint32 ci_C;
-
    static uint32 T1;
    static uint32 T2;
    static uint16 Compare0up;
@@ -401,152 +353,83 @@ __STATIC_INLINE void Emo_adc_Foc_Flux(void)
    static uint16 Compare2up;
    static uint16 Compare0down;
    static uint16 Compare1down;
-   static uint16 Compare2down;
-	 static	uint16 i_compare;
-	 static uint32 Sector;
+   static uint16 Compare2down;	 
+   static uint32 Sector;
+	 static uint16 T13ValueUp;
+   static uint16 T13ValueDown;
+	 
 __STATIC_INLINE void Emo_lExeSvm(TEmo_Svm *pSvm)
 {
-
-
+    Emo_CalcSvmTimes(pSvm);
+    Emo_CalcSvmDuties();
+    Emo_SetSvmCompareValues(pSvm);
+    Emo_UpdateHardwareRegisters();
+}
+/* 1. Function to calculate Angle, Sector, and Time (T1, T2) */
+__STATIC_INLINE void Emo_CalcSvmTimes(TEmo_Svm *pSvm)
+{
     uint32 Angle;
     uint32 Index;
 
-    uint16 T13ValueUp;
-    uint16 T13ValueDown;
-   
-    //uint16 per;
- 
     /* Calculate sector number 0..5 and table index 0..255 */
     Angle = ((uint32)pSvm->Angle) * 6u;
-	Sector = (Angle >> 16u);
+    Sector = (Angle >> 16u);
     pSvm->Sector = (uint16)Sector;
     Index = (Angle >> 8u) & 0xFFu;
+
     /* Calculate and limit times */
-	T1 = ((((uint32)pSvm->Amp) * (uint32)Table_Sin60[255u - Index]) >> 16u);
+    T1 = ((((uint32)pSvm->Amp) * (uint32)Table_Sin60[255u - Index]) >> 16u);
     pSvm->T1 = (uint16)T1;
+
     /* RandVector1 = Amp * sin(gamma) */
-	T2 = ((((uint32)pSvm->Amp) * (uint32)Table_Sin60[Index]) >> 16u);
+    T2 = ((((uint32)pSvm->Amp) * (uint32)Table_Sin60[Index]) >> 16u);
     pSvm->T2 = (uint16)T2;
+}
 
-    /* in case of sector borders this defines the min. Null Vector duration **
-    ** 10 ticks => 250ns@40MHz                                              **/
-    //per = CCU6_T12PR;
+/* 2.Function to calculate intermediate compare values (ci_A, ci_B, ci_C) based on the sector */
+__STATIC_INLINE void Emo_CalcSvmDuties(void)
+{
+    ci_A = 666u - T1 - T2;
+    if (ci_A < EMO_SVM_DEADTIME) { ci_A = 0u; }
 
-    /* Set compare values according to sector number */
-		    /* Set compare values according to sector number */
-		ci_A = 666u - T1 - T2;
-		if (ci_A < EMO_SVM_DEADTIME) {ci_A = 0u;};
-		if((Sector == 0u)||(Sector == 2u)||(Sector == 4u))
-		{
-		    ci_B = 666u + T1 - T2;
-		}
-		else
-		{
-		    ci_B = 666u - T1 + T2;
-		}
-		if (ci_B < EMO_SVM_DEADTIME) {ci_B = 0u;};
-		if (ci_B > (CCU6_T12PR - EMO_SVM_DEADTIME)) {ci_B = (CCU6_T12PR + 1u);}
-		ci_C = 666u + T1 + T2;
-		if (ci_C > (CCU6_T12PR - EMO_SVM_DEADTIME)) {ci_C = (CCU6_T12PR + 1u);}
-		
-		
-    switch (Sector)
+    if ((Sector == 0u) || (Sector == 2u) || (Sector == 4u))
     {
-        case 0u:
-        {
-			Emo_lExeSvm_Sector0();
-            Compare0down = Compare0up; Compare1down = Compare1up; Compare2down = Compare2up;
-#if (EMO_IMESS==1)
-						Emo_lExeMintime_Compare();
-#endif /* (EMO_IMESS==1) */
+        ci_B = 666u + T1 - T2;
+    }
+    else
+    {
+        ci_B = 666u - T1 + T2;
+    }
+    
+    if (ci_B < EMO_SVM_DEADTIME) { ci_B = 0u; }
+    if (ci_B > (CCU6_T12PR - EMO_SVM_DEADTIME)) { ci_B = (CCU6_T12PR + 1u); }
 
-            T13ValueUp = (Compare1up + Compare0up) / 2u;
-            T13ValueDown = (CCU6_T12PR - ((Compare1down + Compare2down) / 2u));
-            break;
-        }
+    ci_C = 666u + T1 + T2;
+    if (ci_C > (CCU6_T12PR - EMO_SVM_DEADTIME)) { ci_C = (CCU6_T12PR + 1u); }
+}
 
-        case 1u:
-        {
-			Emo_lExeSvm_Sector1();
-            Compare0down = Compare0up; Compare1down = Compare1up; Compare2down = Compare2up;
-            
-#if (EMO_IMESS==1)
-            i_compare = (uint16)T1;
-            T1 = T2;
-            T2 = (uint32)i_compare;
-			Emo_lExeMintime_Compare();
-#endif /* (EMO_IMESS==1) */
+/* 3. Function to update compare values and save them to the structure */
+__STATIC_INLINE void Emo_SetSvmCompareValues(TEmo_Svm *pSvm)
+{
+	  static	uint16 temp;
+    /* Set compare values according to sector number */
+    Emo_lExeSvm_Compare();
 
-            T13ValueUp = (Compare0up + Compare1up) / 2u;
-            T13ValueDown = (CCU6_T12PR - ((Compare0down + Compare2down) / 2u));
-            break;
-        }
+    Compare0down = Compare0up; 
+    Compare1down = Compare1up; 
+    Compare2down = Compare2up;
 
-        case 2u:
-        {
-
-			Emo_lExeSvm_Sector2();
-            Compare0down = Compare0up; Compare1down = Compare1up; Compare2down = Compare2up;
-
-#if (EMO_IMESS==1)
-			Emo_lExeMintime_Compare();
-#endif /* (EMO_IMESS==1) */
-
-            T13ValueUp = (Compare2up + Compare1up) / 2u;
-            T13ValueDown = (CCU6_T12PR - ((Compare2down + Compare0down) / 2u));
-            break;
-        }
-
-        case 3u:
-        {
-
-			Emo_lExeSvm_Sector3();
-            Compare0down = Compare0up; Compare1down = Compare1up; Compare2down = Compare2up;
-
-#if (EMO_IMESS==1)
-            i_compare = (uint16)T1;
-            T1 = T2;
-            T2 = (uint32)i_compare;
-						Emo_lExeMintime_Compare();
-#endif
-            T13ValueUp = (Compare1up + Compare2up) / 2u;
-            T13ValueDown = (CCU6_T12PR - ((Compare1down + Compare0down) / 2u));
-            break;
-        }
-
-        case 4u:
-        {
-
-			Emo_lExeSvm_Sector4();
-            Compare0down = Compare0up; Compare1down = Compare1up; Compare2down = Compare2up;
-
-#if (EMO_IMESS==1)
-						Emo_lExeMintime_Compare();
-#endif /* (EMO_IMESS==1) */
-            T13ValueUp = (Compare0up + Compare2up) / 2u;
-            T13ValueDown = (CCU6_T12PR - ((Compare0down + Compare1down) / 2u));
-            break;
-        }
-
-        default: /* case 5u: */
-        {
-
-						Emo_lExeSvm_Sector5();
-            Compare0down = Compare0up; Compare1down = Compare1up; Compare2down = Compare2up;
-
-#if (EMO_IMESS==1)
-            i_compare = (uint16)T1;
-            T1 = T2;
-            T2 = (uint32)i_compare;
-						Emo_lExeMintime_Compare();
-#endif /* (EMO_IMESS==1) */
-            T13ValueUp = (Compare2up + Compare0up) / 2u;
-            T13ValueDown = (CCU6_T12PR - ((Compare2down + Compare1down) / 2u));
-            break;
-        }
+    if ((Sector & 1u) != 0u)
+    {
+        temp = (uint16)T1;
+        T1 = T2;
+        T2 = (uint32)temp;
     }
 
-    /* Set compare values */
+    Emo_lExeMintime_Compare();
+    Emo_CalcT13Compare();    
+
+    /* Set T13 compare values based on CounterOffsetAdw */
     if (Emo_Svm.CounterOffsetAdw > 127u)
     {
         pSvm->CompT13ValueUp = T13ValueUp;
@@ -554,40 +437,43 @@ __STATIC_INLINE void Emo_lExeSvm(TEmo_Svm *pSvm)
     }
     else
     {
-        pSvm->CompT13ValueUp = 444u; // CCU6_T12PR / 3u
+        pSvm->CompT13ValueUp = 444u;   // CCU6_T12PR / 3u
         pSvm->CompT13ValueDown = 888u; // CCU6_T12PR * 2 / 3u
     }    
-    pSvm->comp60up = Compare0up; pSvm->comp61up = Compare1up; pSvm->comp62up = Compare2up;
-    pSvm->comp60down = Compare0down; pSvm->comp61down = Compare1down; pSvm->comp62down = Compare2down;
 
-    /*ensure loading of shadow registers only during T12 down_counting part*/
+    pSvm->comp60up = Compare0up; 
+    pSvm->comp61up = Compare1up; 
+    pSvm->comp62up = Compare2up;
+    pSvm->comp60down = Compare0down; 
+    pSvm->comp61down = Compare1down; 
+    pSvm->comp62down = Compare2down;
+}
+
+/* 4. Function to apply values to hardware registers (CCU6) */
+__STATIC_INLINE void Emo_UpdateHardwareRegisters(void)
+{
+    /* ensure loading of shadow registers only during T12 down_counting part */
     if (CCU6->TCTR0.bit.CDIR == 0u)
     {
         /* T12 still in up-counting part, enable T12 Period Match Interrupt **
-        ** to load the shadow register inside extra ISR                    */
+        ** to load the shadow register inside extra ISR                     */
         CCU6->IEN.bit.ENT12PM = 1;
     }
     else
     {
         /* T12 in down-counting part, load shadow register */
-		Emo_lExeSvm_LoadShadow();
+        CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60up);
+        CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61up);
+        CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62up);
+        CCU6_EnableST_T12();
+        
+        /* Set Timer13 Trigger calculated previous period zero-match */
+        CCU6_SetT13Trigger(0x7a);
+        
+        /* Set T13 Compare Value */
+        CCU6_SetT13Compare(Emo_Svm.CompT13ValueUp);
     }
 } /* End of Emo_lExeSvm */
-
-
-__STATIC_INLINE void Emo_lExeSvm_LoadShadow(void)
-{
-	/* T12 in down-counting part, load shadow register */
-	CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60up);
-	CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61up);
-	CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62up);
-	CCU6_EnableST_T12();
-	/* Set Timer13 Trigger calculated previous period zero-match*/
-	CCU6_SetT13Trigger(0x7a);
-	/* Set T13 Compare Value */
-	CCU6_SetT13Compare(Emo_Svm.CompT13ValueUp);
-}
-
 __STATIC_INLINE void Emo_lEstFlux(void)
 {
     sint16 Temp;
@@ -656,129 +542,97 @@ __STATIC_INLINE void Emo_FluxAnglePll(void)
     Emo_Ctrl.FluxAnglePll = Emo_Ctrl.FluxAnglePll + (uint16)domega;
 }
 
-__STATIC_INLINE void Emo_lExeSvm_Sector0(void)
-{
-	
-
-		Compare0up = (uint16)ci_A;
-	
-		Compare1up = (uint16)ci_B;
-
-		Compare2up = (uint16)ci_C;
-}
-
-__STATIC_INLINE void Emo_lExeSvm_Sector1(void)
-{
-
-		Compare1up = (uint16)ci_A;
-
-		Compare0up = (uint16)ci_B;
-
-		Compare2up = (uint16)ci_C;
-}
-
-__STATIC_INLINE void Emo_lExeSvm_Sector2(void)
-{
-
-		Compare1up = (uint16)ci_A;
-
-		Compare2up = (uint16)ci_B;
-
-		Compare0up = (uint16)ci_C;
-}
-
-__STATIC_INLINE void Emo_lExeSvm_Sector3(void)
-{
-
-		Compare2up = (uint16)ci_A;
-
-		Compare1up = (uint16)ci_B;
-
-		Compare0up = (uint16)ci_C;
-}
-
-__STATIC_INLINE void Emo_lExeSvm_Sector4(void)
-{
-
-		Compare2up = (uint16)ci_A;
-
-		Compare0up = (uint16)ci_B;
-
-		Compare1up = (uint16)ci_C;
-}
-
-__STATIC_INLINE void Emo_lExeSvm_Sector5(void)
-{
-		Compare0up = (uint16)ci_A;
-
-		Compare2up = (uint16)ci_B;
-
-		Compare1up = (uint16)ci_C;
-}
 
 __STATIC_INLINE void Emo_lExeMintime_Compare(void)
-{
-			if ((T1 < ((uint32)EMO_SVM_MINTIME >> (uint32)1u)) || (T2 < ((uint32)EMO_SVM_MINTIME >> (uint32)1u)))
-		{
-				/* pattern has to be applied asymetric because T1 too short */
-			  if(T1 < T2 ) {i_compare = (uint16)EMO_SVM_MINTIME - (uint16)T1 - (uint16)T1; }
-				else {i_compare = (uint16)EMO_SVM_MINTIME - (uint16)T2 - (uint16)T2;}
-			  if((Sector == 1u) || (Sector == 4u))
-				{
-					Compare0up = Compare0up + i_compare;
+{    	uint16 threshold = (uint16)(EMO_SVM_MINTIME >> 1);
+	uint16 tempUp;
+	static	uint16 i_compare;
+	volatile uint16 *CompareUp = NULL_PTR;
+  volatile uint16 *CompareDown = NULL_PTR;
+    
+    if ((T1 < threshold) || (T2 < threshold))
+    {
+        if (T1 < T2) { i_compare = (uint16)((uint32)EMO_SVM_MINTIME - ((uint32)(T1 << 1))); }
+        else         { i_compare = (uint16)((uint32)EMO_SVM_MINTIME - ((uint32)(T2 << 1))); }
+        
+        switch (Sector) {
+					  case 0: CompareUp = &Compare1up; CompareDown = &Compare1down; break;
+            case 1: CompareUp = &Compare0up; CompareDown = &Compare0down; break;
+            case 2: CompareUp = &Compare2up; CompareDown = &Compare2down; break;
+					  case 3: CompareUp = &Compare1up; CompareDown = &Compare1down; break;
+					  case 4: CompareUp = &Compare0up; CompareDown = &Compare0down; break;
+					  case 5: CompareUp = &Compare2up; CompareDown = &Compare2down; break;
+            default:
+                    CompareUp = &Compare0up;
+                    CompareDown = &Compare0down;
+						    break;
+        }
 
-					if (Compare0up > CCU6_T12PR)
-					{
-							Compare0up = CCU6_T12PR;
-					}
-					
-					if (i_compare < Compare0down)
-					{
-							Compare0down = Compare0down - i_compare;
-					}
-					else
-					{
-							Compare0down = 1;
-					}
-			  }
-				
-				if((Sector == 0u) || (Sector == 3u))
-				{
-					Compare1up = Compare1up + i_compare;
+         tempUp = *CompareUp + i_compare;
+        if (tempUp > CCU6_T12PR) {*CompareUp = (uint16)CCU6_T12PR;}
+        else                     {*CompareUp = (uint16)tempUp;}
 
-					if (Compare1up > CCU6_T12PR)
-					{
-							Compare1up = CCU6_T12PR;
-					}
-					
-					if (i_compare < Compare1down)
-					{
-							Compare1down = Compare1down - i_compare;
-					}
-					else
-					{
-							Compare1down = 1;
-					}
-			  }
-				
-				if((Sector == 2u) || (Sector == 5u))
-				{
-					Compare2up = Compare2up + i_compare;
-
-					if (Compare2up > CCU6_T12PR)
-					{
-							Compare2up = CCU6_T12PR;
-					}
-					
-					if (i_compare < Compare2down)
-					{
-							Compare2down = Compare2down - i_compare;
-					}
-					else
-					{
-							Compare2down = 1;
-					}
-			  }
-		}
+        if (i_compare < *CompareDown)  {*CompareDown = *CompareDown - i_compare;}
+        else                    {*CompareDown = 1;}
+    }
 	}
-
+__STATIC_INLINE void Emo_lExeSvm_Compare(void)
+{
+    switch (Sector)
+    {
+        case 0u: 
+				{
+		        Compare0up = (uint16)ci_A;
+		        Compare1up = (uint16)ci_B;
+		        Compare2up = (uint16)ci_C;
+				}
+					break;
+        case 1u: 
+				{
+						Compare1up = (uint16)ci_A;
+		        Compare0up = (uint16)ci_B;
+		        Compare2up = (uint16)ci_C;
+				}
+				  break;
+        case 2u: 
+				{
+          	Compare1up = (uint16)ci_A;
+	          Compare2up = (uint16)ci_B;
+	          Compare0up = (uint16)ci_C;
+				}
+   				break;
+        case 3u: 
+				{
+		        Compare2up = (uint16)ci_A;
+		        Compare1up = (uint16)ci_B;
+		        Compare0up = (uint16)ci_C;
+				}
+  				break;
+        case 4u: 
+				{
+		        Compare2up = (uint16)ci_A;
+		        Compare0up = (uint16)ci_B;
+		        Compare1up = (uint16)ci_C;
+				} 
+  				break;
+        default: 
+				{
+		        Compare0up = (uint16)ci_A;
+		        Compare2up = (uint16)ci_B;
+		        Compare1up = (uint16)ci_C;
+				}
+  				break;
+    }
+}
+__STATIC_INLINE void Emo_CalcT13Compare(void)
+{
+		switch (Sector)
+    {
+        case 0u: T13ValueUp = (Compare1up + Compare0up) >>1u; T13ValueDown = (CCU6_T12PR - ((Compare1down + Compare2down) >>1u)); break;
+        case 1u: T13ValueUp = (Compare1up + Compare0up) >>1u; T13ValueDown = (CCU6_T12PR - ((Compare0down + Compare2down) >>1u)); break;
+        case 2u: T13ValueUp = (Compare2up + Compare1up) >>1u; T13ValueDown = (CCU6_T12PR - ((Compare0down + Compare2down) >>1u)); break;
+        case 3u: T13ValueUp = (Compare2up + Compare1up) >>1u; T13ValueDown = (CCU6_T12PR - ((Compare1down + Compare0down) >>1u)); break;
+        case 4u: T13ValueUp = (Compare0up + Compare2up) >>1u; T13ValueDown = (CCU6_T12PR - ((Compare1down + Compare0down) >>1u)); break;
+        default: T13ValueUp = (Compare0up + Compare2up) >>1u; T13ValueDown = (CCU6_T12PR - ((Compare1down + Compare2down) >>1u)); break;
+    }
+}

@@ -73,8 +73,7 @@ typedef enum            /* Diagnostic Entry Condition state */
 *                                               Exported function prototypes
 ************************************************************************************************************************
 */
-extern void DiagSWComponentPack1( void );
-extern void DiagSWComponentPack2( void );
+extern void DiagSWComponentPack( void );
 
 
 

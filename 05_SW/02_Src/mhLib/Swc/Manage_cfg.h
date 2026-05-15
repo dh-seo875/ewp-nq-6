@@ -80,21 +80,21 @@
 #define IQ_DIAG_COOLANT       (sint16_t)(  400) /*  iq 4.0 A */
 
 #elif((EWP_TYPE == BEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X38))
-#define LIMP_HOME_RPM         (sint16_t)( 6000) /*  6000 RPM */
-#define SPEED_MAX_RUN         (sint16_t)( 6000) /*  6000 RPM */
-#define SPEED_MIN_RUN         (sint16_t)( 1000) /*  1000 RPM */
+#define LIMP_HOME_RPM         (sint16_t)( 4200) /*  4200 RPM */
+#define SPEED_MAX_RUN         (sint16_t)( 4200) /*  4200 RPM */
+#define SPEED_MIN_RUN         (sint16_t)(  500) /*  1200 RPM */
 //#define SLEEP_CNT_MAX         (sint16_t)( 6000) 
-#define IQ_DIAG_COOLANT       (sint16_t)(  400) /*  iq 4.0 A */
+#define IQ_DIAG_COOLANT       (sint16_t)(  300) /*  iq 3.0 A */
 
 
 #else
 /* No Action */
 #endif
 
-#define SPEED_MAX_DEGRADE      (sint16_t)( 4125) /*  4125 RPM */
+#define SPEED_MAX_DEGRADE      (sint16_t)( 3000) /*  3000 RPM */
 #define DIAG_COOLANT_KP        (sint16_t)( 2000) /*   P Gain  */
 #define DIAG_COOLANT_KI        (sint16_t)(30000) /*   I Gain  */
-#define DIAG_COOLANT_SPEED_MAX (sint16_t)( 6000) /*  SpeedMax */
+#define DIAG_COOLANT_SPEED_MAX (sint16_t)( 4200) /*  SpeedMax */
 //#define STAY_STOP_CNT_MAX      (sint16_t)(   50) 
 
 /*
