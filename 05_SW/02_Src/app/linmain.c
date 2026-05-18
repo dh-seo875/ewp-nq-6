@@ -419,6 +419,7 @@ static void LIN_LLD_Service_TX_Cal(void)
 {
     uint8_t uint8_temp =0;
 	sint16_t sint16_temp =0;
+	timer_100ms = timer_100ms + 1u;
     if (timer_100ms > 100u )
     {
         timer_100ms = 0;
@@ -542,6 +543,7 @@ void LIN_COM_Handler(void)
     {
         l_ifc_rx();
         UART1->SCONCLR.bit.RICLR = 1u;
+		l_cyclic_com_task();
     }
 }
 
