@@ -2,7 +2,6 @@
 ".\objects\main.o"
 ".\objects\linmain.o"
 ".\objects\remapvector.o"
-".\objects\usr.o"
 ".\objects\emo.o"
 ".\objects\emo_cfg.o"
 ".\objects\emo_ram.o"

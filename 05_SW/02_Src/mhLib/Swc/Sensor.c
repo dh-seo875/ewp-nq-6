@@ -84,8 +84,9 @@ static void MeasFluxAbsValue(void);
 static void CheckLinError (void);
 static void CheckIgn (void);
 static void CheckOpenPhase (void);
-static void CheckErrorCodeIndex (void);
-static void CheckPowerLimit (void);
+static void ConvertDutyToRpm (void);
+static void ConvertRpmToDuty (void);
+
 
 
 
@@ -99,9 +100,11 @@ void SensorSWComponentPack(void)
     static uint8_t SensorTask_Cnt = 0;
 	if(SensorTask_Cnt == 0u)  //11us
 	{
+    	ConvertDutyToRpm();
 	    CheckOpenPhase();
 	    CheckShortCircuit();
 	    CheckGateDrvError();
+		ConvertRpmToDuty();
 		SensorTask_Cnt++;
 		
 	}
@@ -123,13 +126,75 @@ void SensorSWComponentPack(void)
 	else  //6us
 	{
 	  	MeasFluxAbsValue();
-	  	CheckErrorCodeIndex();
-		CheckPowerLimit();
+//	  	CheckErrorCodeIndex();
+//		CheckPowerLimit();
 		SensorTask_Cnt = 0u;
 	}
 }
+static void ConvertDutyToRpm(void)
+{
+	uint16_t rpm = 0U;
+	uint8_t sensor_LinRequireDuty = 0U;
 
+	(void)ReadLinRequireDuty(&sensor_LinRequireDuty);
 
+	if (sensor_LinRequireDuty < LOWER_DUTY)
+	{
+	    rpm = 0U;
+	}
+	else if (sensor_LinRequireDuty >= UPPER_DUTY)
+	{
+	    rpm = MAX_RPM;
+	}
+	else
+	{
+	    uint32_t tmp;
+
+	    /* tmp = (duty - 10) * 5000 */
+	    tmp = (uint32_t)((uint32_t)sensor_LinRequireDuty - (uint32_t)LOWER_DUTY) * (uint32_t)RPM_RANGE;
+
+	    /* rpm = 1000 + tmp / 80 */
+	    rpm = (uint16_t)((uint32_t)MIN_RPM + (tmp / (uint32_t)DUTY_RANGE));
+	}
+
+	(void)WriteConvertRPM((sint16_t)rpm);
+}
+static void ConvertRpmToDuty(void)
+{
+	uint8_t duty;
+	sint16_t sensor_ActRPM;
+	uint16_t sensor_diffRPM;
+	uint16_t duty_calc;
+	
+	(void)ReadSpeedFiltered(&sensor_ActRPM);
+	
+	if (sensor_ActRPM <= 0)
+	{
+		/* 0 RPM ¡æ 0% duty */
+		duty = 0U;
+	}
+	else if (sensor_ActRPM < (sint16_t)MIN_RPM)  // 0 - 10 Duty area
+	{
+		/* Below mapping range ¡æ lower bound */
+		duty = (uint8_t)((uint16_t)sensor_ActRPM/100u);
+	}
+	else if (sensor_ActRPM >= (sint16_t)MAX_RPM) // 90 - 100 Duty area
+	{
+		/* Above mapping range ¡æ upper bound */
+		duty = UPPER_DUTY;
+	}
+	else // 10 - 89 Duty area
+	{
+		/* Linear mapping (pure integer math) */
+		sensor_diffRPM = (uint16_t)sensor_ActRPM - (uint16_t)MIN_RPM;	
+		duty_calc = (DUTY_RANGE * sensor_diffRPM) / (uint16_t)RPM_RANGE;
+	
+		duty = (uint8_t)((uint16_t)LOWER_DUTY + duty_calc);
+	}
+	
+	(void)WriteConvertActDuty(duty);
+
+}
 static void CheckShortCircuit(void)
 {
 	uint8_t     sensor_hwShortCircuitCheck = 0;
@@ -222,7 +287,7 @@ static void MeasIq (void)
     (void)GetIqMeasured(&sensor_iqMeasured);
 //    (void)GetIdMeasured(&sensor_idMeasured);
 
-    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 393); /*1A 83.33A from 32767*/
+    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 197); /*1A 83.33A from 32767*/
 //    sensor_idMeasured = (sint16_t)((sint32_t)sensor_idMeasured * 100 / 393);
     sensor_iqFiltered = iirIq(sensor_iqMeasured);
 
@@ -277,7 +342,7 @@ static void CheckLinError (void)
 	uint8_t     sensor_linErrorCheck       = 0;
     DiagState_t sensor_linErrorState       = NORMAL;
 	
-    (void)GetLinTimeOutError(&sensor_linErrorCheck);
+    (void)ReadLinTimeOutFlag(&sensor_linErrorCheck);
 
     linErrorCheck = sensor_linErrorCheck;
 
@@ -470,24 +535,24 @@ static void MeasFluxAbsValue (void)
     (void)WriteFluxAbsValueMeasured(sensor_fluxAbsValueMeasured);
 }
 
-static void CheckErrorCodeIndex (void)
-{    
-	uint8_t	   sensor_errorCodeIndex	  = 0;
+//static void CheckErrorCodeIndex (void)
+//{    
+//	uint8_t	   sensor_errorCodeIndex	  = 0;
 
-    (void)GetErrorCodeIndex(&sensor_errorCodeIndex);
+//    (void)GetErrorCodeIndex(&sensor_errorCodeIndex);
 
-    (void)WriteErrorCodeIndex(sensor_errorCodeIndex);
-}
+//    (void)WriteErrorCodeIndex(sensor_errorCodeIndex);
+//}
 
 
-static void CheckPowerLimit (void)
-{    
-	uint8_t	   sensor_Power_Limit	  = 0;
+//static void CheckPowerLimit (void)
+//{    
+//	uint8_t	   sensor_Power_Limit	  = 0;
 
-    (void)GetPowerLimitState(&sensor_Power_Limit);
+//    (void)GetPowerLimitState(&sensor_Power_Limit);
 
-    (void)WritePowerLimit(sensor_Power_Limit);
-}
+//    (void)WritePowerLimit(sensor_Power_Limit);
+//}
 
 
 /*

@@ -137,10 +137,8 @@ static void NVM_Watchdog_Fault(void)
 	uint8_t PMU_Reset_Flag = 0;
     uint8_t	Nvm_Watchdog_Fault_FLAG = 0;
 //	uint8_t PMU_Wake_Status =0;
+//	static uint8_t* IRV_ptrMCUFaultCodePage;
 
-	static uint8_t* IRV_ptrMCUFaultCodePage;
-
-	
 	/* Get PMU Reset Flag */
 	PMU_Reset_Flag = PMU_Get_Reset_Status();
     PMU_Clear_Reset_Status();	

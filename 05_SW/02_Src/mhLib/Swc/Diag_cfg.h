@@ -154,8 +154,6 @@
 ************************************************************************************************************************
 */
 
-extern sint16_t CAL_LC_FaultCheckCntMax;
-extern sint16_t CAL_SpeedMin;
 //extern sint16_t CAL_OC_IqWarningLwrTh;
 //extern sint16_t CAL_OC_IqFaultUprTh;
 

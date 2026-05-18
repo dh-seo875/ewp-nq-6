@@ -25,7 +25,7 @@
 ;************************** Version History ************************************
 ; V1.0, Sep,  9, 2012 DM: initial version
 ;*******************************************************************************
-Stack_Size      EQU     0x3F0
+Stack_Size      EQU     0x380
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size

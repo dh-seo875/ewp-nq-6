@@ -102,9 +102,9 @@
 
 
 //#define Emo_Foc_PolePair     3
-#define Emo_Foc_PhaseRes 28937 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
+#define Emo_Foc_PhaseRes 12379 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
 
-#define Emo_Foc_PhaseInd 10256	 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
+#define Emo_Foc_PhaseInd 3822	 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
 
 /*******************************************************************************
 **                      Global Type Definitions                              **
