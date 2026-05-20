@@ -326,8 +326,8 @@ static void Emo_lInitFocPar(void)
 
     // x = 0.2f;  Emo_Focpar_Cfg.AdjustmCurrentControl;
     
-    Emo_Ctrl.RealCurrPi.Kp = 1173; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
-    Emo_Ctrl.RealCurrPi.Ki = 1165; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
+    Emo_Ctrl.RealCurrPi.Kp = 298; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
+    Emo_Ctrl.RealCurrPi.Ki = 618; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
 	
     /* id = PI regulator limits */
     Emo_Ctrl.RealCurrPi.IMin = -28272;
