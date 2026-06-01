@@ -97,7 +97,7 @@ __STATIC_INLINE sint32_t Emo_GetIdcDecimalPoint(void)
     Idc_real = (Iq_real_float * (sint32)Emo_Foc.RotVolt.Real) / Emo_Ctrl.RealCurrPi.PiMax;
     
     /* Idc = ((Iq * Vq) + (Id * Vd)) * (efficient * coffcient) */
-    Idc = (((Idc_imag) + (Idc_real)) * 85) / 100;	
+    Idc = (((Idc_imag) + (Idc_real)) * 86) / 100;	
     
     return ((sint16_t)Idc);
 }
