@@ -129,7 +129,6 @@ static void EraseNvm (void);
 static void checkDrivingCycle (void);
 static void NVM_Watchdog_Fault(void);
 
-static void VAREF_Claer(void);
 
 
 /*
@@ -282,7 +281,6 @@ void ManageNvm (void)
 	NvmVariables();
 	ManageNVMBuildArray();
 	ManageNVMConvertErrorCode();
-	VAREF_Claer();
 
     if (Nvm_errorCode != 0u)
     {
@@ -359,36 +357,6 @@ sint8_t CompareNvm (void)
     return (resultCompare)
 }
 */
-
-static void VAREF_Claer(void)
-{
-    sint16_t vdc = 0;
-	static uint8_t reset_cnt = 0;
-	(void)ReadVdcFiltered(&vdc);
-//	if(SCUPM->SYS_IS.bit.VREF5V_LOWTH_IS == 1)
-//	{
-//    PORT->P1_DATA.reg = 2;
-//	}
-//	else
-//	{
-//	PORT->P1_DATA.reg = 0;
-//	}
-	SCUPM->SYS_ISCLR.bit.VREF5V_LOWTH_ICLR = 1;
-    if((vdc>=700) && (SCUPM->SYS_IS.bit.VREF5V_LOWTH_IS == 1))
-    {
-        reset_cnt ++;
-		if(reset_cnt >= 10)
-		{
-    		__NVIC_SystemReset();
-		}
-    }
-	else
-    {
-        reset_cnt = 0;
-	}
-}
-
-
 
 static uint8_t checkNvmStatus (const uint8_t*  errorCode)
 {
