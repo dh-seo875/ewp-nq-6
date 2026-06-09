@@ -92,17 +92,17 @@ static void ManageStepControlOn(void);
 void ManageSWComponentPack(void)
 {
     static uint8_t ManageTask_Cnt = 0;
-	if(ManageTask_Cnt == 0u) 
-	{
+	if(ManageTask_Cnt == 0u) //14us
+	{		
 		DiagCoolant();
 		ManageSystemOnOff();
-		ManageTask_Cnt++;
+		ManageTask_Cnt++;	
 	}
-	else
-	{
+	else //14us
+	{ 	
 		ManageProtection();
 		ManageRPMStepControl();
-		ManageTask_Cnt = 0u;
+		ManageTask_Cnt = 0u;	
 	}
 }
 

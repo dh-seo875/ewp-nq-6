@@ -120,6 +120,7 @@ static void EraseNvm (void);
 static void checkDrivingCycle (void);
 static void NVM_Watchdog_Fault(void);
 
+static void VAREF_Claer(void);
 
 
 /*
@@ -233,10 +234,10 @@ void ManageNvm (void)
 	NvmVariables();
 	ManageNVMBuildArray();
 	ManageNVMConvertErrorCode();
-    
+	VAREF_Claer();
+
     if (Nvm_errorCode != 0u)
     {
-        
         if (linSuccessfulFlag == 1u) /* check the finish of LIN */
         {
 
@@ -310,6 +311,30 @@ sint8_t CompareNvm (void)
     return (resultCompare)
 }
 */
+
+static void VAREF_Claer(void)
+{
+    sint16_t vdc = 0;
+	(void)ReadVdcFiltered(&vdc);
+	SCUPM->SYS_ISCLR.bit.VREF5V_LOWTH_ICLR = 1;
+    if((vdc>=600) && (SCUPM->SYS_IS.bit.VREF5V_LOWTH_IS == 1))
+    {
+        /* 1. LDO Power Down */
+		MF->REF2_CTRL.bit.VREF5V_PD_N = 0;
+        /* 2. Clear VREF5V Interrupt */
+        SCUPM->SYS_ISCLR.bit.VREF5V_LOWTH_ICLR = 1;
+        SCUPM->SYS_ISCLR.bit.VREF5V_UPTH_ICLR = 1;
+        SCUPM->SYS_ISCLR.bit.VREF5V_OVL_ICLR = 1;	
+
+        /* 3. LDO Power ON - VAREF(Re-enable) */
+        MF->REF2_CTRL.bit.VREF5V_PD_N = 1;
+    }
+	else
+    {
+	}
+}
+
+
 
 static uint8_t checkNvmStatus (const uint8_t*  errorCode)
 {

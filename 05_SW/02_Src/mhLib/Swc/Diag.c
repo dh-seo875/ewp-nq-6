@@ -92,7 +92,7 @@ static uint8_t UV_faultflag                  = 0;
 
 /* via Rte */
 static DiagState_t diag_hwOpenPhaseState      = NORMAL;
-static sint16_t diag_vdcFiltered              = 0;
+ sint16_t diag_vdcFiltered              = 0;
 static sint16_t diag_speedRef                 = 0;
 static sint16_t diag_iqFiltered               = 0;
 
@@ -261,38 +261,38 @@ static void DiagEwpInital(void);
 void DiagSWComponentPack(void)
 {
     static uint8_t DiagTask_Cnt = 0;
-	if(DiagTask_Cnt == 0u) 
-	{	
+	if(DiagTask_Cnt == 0u) // 26us
+	{			
 		DiagOverVoltage();
 		DiagUnderVoltage();
-//		DiagLowCurrent();
 		DiagWarningCurrent();
-		DiagOverCurrent();
-		DiagStallError();
+		DiagOverCurrent();		
 		DiagTask_Cnt++;
 	}
-	else if(DiagTask_Cnt == 1u) //19.5us
-	{
+	else if(DiagTask_Cnt == 1u) //26us
+	{		
+		DiagStallError();	
 		DiagShortCircuit();
 		DiagGateDrvOVUV();
-		DiagPhaseOpen();
+		DiagPhaseOpen(); 		
 //		DiagPowerLimit();
 		DiagTask_Cnt++;
 	}
-	else if(DiagTask_Cnt == 2u) 
-	{
+	else if(DiagTask_Cnt == 2u) // 26us
+	{ 			
 		DiagLINError();
 		DiagLINInvalidValue();
 		DiagSpeedError();
 		DiagOverTemperature();
-		DiagTask_Cnt++;
+		DiagTask_Cnt++; 	
 	}
-	else //19us
-	{
+	else //27us
+	{ 	
+		DiagLowCurrent();	
     	DiagEwpInital();
 		MergeDiagState();
 		SetDiagFlagState();
-		DiagTask_Cnt = 0u;
+		DiagTask_Cnt = 0u; 	
 	}
 }
 

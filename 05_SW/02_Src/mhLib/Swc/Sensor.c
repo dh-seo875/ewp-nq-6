@@ -98,23 +98,18 @@ static void ConvertRpmToDuty (void);
 void SensorSWComponentPack(void)
 {
     static uint8_t SensorTask_Cnt = 0;
-	if(SensorTask_Cnt == 0u)  //11us
+	if(SensorTask_Cnt == 0u)  //16us
 	{
     	ConvertDutyToRpm();
 	    CheckOpenPhase();
-	    CheckShortCircuit();
-	    CheckGateDrvError();
+	    MeasSpeed();
 		ConvertRpmToDuty();
-		SensorTask_Cnt++;
-		
 	}
-	else if(SensorTask_Cnt == 1u) //8us
+	else if(SensorTask_Cnt == 1u) //17us
 	{
 	    MeasVdc();
 	    MeasIdc();
 	    MeasIq();
-	    MeasSpeed();
-	    MeasTemperature();
 		SensorTask_Cnt++;
 	}
 	else if(SensorTask_Cnt == 2u) //10us
@@ -123,8 +118,11 @@ void SensorSWComponentPack(void)
 	    CheckIgn();
 		SensorTask_Cnt++;
 	}
-	else  //6us
+	else  //13us
 	{
+	    CheckShortCircuit();
+	    CheckGateDrvError();
+	    MeasTemperature();
 	  	MeasFluxAbsValue();
 //	  	CheckErrorCodeIndex();
 //		CheckPowerLimit();
