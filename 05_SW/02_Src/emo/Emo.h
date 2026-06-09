@@ -68,14 +68,10 @@ extern TEmo_Status Emo_Status;
 //uint32 Emo_GetSpeed(void);
 uint32 Emo_Init(void);
 //void Emo_SetRefSpeed(sint16 RefSpeed);
-
 extern uint32 Emo_StopMotor(void);
 extern void GPT1_T2_Handler(void);
 extern void Task_Emo_MotorControl( void );
 
-
-extern uint8 Emo_OpenPhaseStatus(void);
-__STATIC_INLINE uint32 Emo_GetMotorState(void);
 
 /** \brief Returns the motor state.
  *
@@ -84,13 +80,9 @@ __STATIC_INLINE uint32 Emo_GetMotorState(void);
  *
  * \ingroup emo_api
  */
-__STATIC_INLINE uint32 Emo_GetMotorState(void)
-{
-    return (uint32)Emo_Status.MotorState;
-}
+
 extern sint16 Emo_speedRef;
 extern uint16 EMO_SVM_MINTIME;
-
 #endif  /* EMO_CFG_H */
 
 

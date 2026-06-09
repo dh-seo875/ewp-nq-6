@@ -33,15 +33,6 @@
 #include "Emo_RAM.h"
 #include "Variant_cfg.h"
 
-#if((EWP_TYPE == PEWP_TYPE2_0X37) || (EWP_TYPE == PEWP_TYPE2_0X38) || (EWP_TYPE == IEWP_TYPE2_0X37) || (EWP_TYPE == AEWP_TYPE2_0X37) || (EWP_TYPE == AEWP_TYPE2_0X37_WITHOUTHOTSPOT))
-#include "../driver/Type2/foc_defines.h"
-
-#elif((EWP_TYPE == PEWP_TYPE3_0X37) || (EWP_TYPE == PEWP_TYPE3_0X38) || (EWP_TYPE == IEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X38))
-#include "../driver/Type3/foc_defines.h"
-
-#else
-/* No Action */
-#endif
 
 /*******************************************************************************
 **                      Global Constant Definitions to be changed             **

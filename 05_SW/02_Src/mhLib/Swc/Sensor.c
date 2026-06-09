@@ -46,7 +46,7 @@
 
 /* via Rte */
 static sint16_t    sensor_idcFiltered		  = 0;	
-static uint8_t     sensor_hwOpenPhaseCheck    = 0;
+
 
 
 /* Only used Sensor.c */
@@ -77,15 +77,13 @@ static void CheckGateDrvError (void);
 static void MeasVdc (void);
 static void MeasIdc (void);
 static void MeasIq (void);
-//static void MeasId (void);
+static void MeasId (void);
 static void MeasSpeed (void);
 static void MeasTemperature(void);
 static void MeasFluxAbsValue(void);
 static void CheckLinError (void);
 static void CheckIgn (void);
 static void CheckOpenPhase (void);
-//static void CheckErrorCodeIndex (void);
-//static void CheckPowerLimit (void);
 static void ConvertDutyToRpm (void);
 static void ConvertRpmToDuty (void);
 
@@ -97,28 +95,42 @@ static void ConvertRpmToDuty (void);
 *                                                    Exported functions
 ************************************************************************************************************************
 */
-void SensorSWComponentPack1(void)
+void SensorSWComponentPack(void)
 {
-	ConvertDutyToRpm();
-    MeasVdc();
-    MeasIdc();
-    MeasIq();
-    MeasSpeed();
-	ConvertRpmToDuty();
+    static uint8_t SensorTask_Cnt = 0;
+	if(SensorTask_Cnt == 0u)  //11us
+	{
+    	ConvertDutyToRpm();
+	    CheckOpenPhase();
+	    CheckShortCircuit();
+	    CheckGateDrvError();
+		ConvertRpmToDuty();
+		SensorTask_Cnt++;
+		
+	}
+	else if(SensorTask_Cnt == 1u) //8us
+	{
+	    MeasVdc();
+	    MeasIdc();
+	    MeasIq();
+	    MeasSpeed();
+	    MeasTemperature();
+		SensorTask_Cnt++;
+	}
+	else if(SensorTask_Cnt == 2u) //10us
+	{
+	    CheckLinError();
+	    CheckIgn();
+		SensorTask_Cnt++;
+	}
+	else  //6us
+	{
+	  	MeasFluxAbsValue();
+//	  	CheckErrorCodeIndex();
+//		CheckPowerLimit();
+		SensorTask_Cnt = 0u;
+	}
 }
-
-void SensorSWComponentPack2(void)
-{
-    CheckShortCircuit();
-    CheckGateDrvError();
-    CheckLinError();
-    CheckIgn();
-    CheckOpenPhase();
-    MeasTemperature();
-  	MeasFluxAbsValue();
-}
-
-
 static void ConvertDutyToRpm(void)
 {
 	uint16_t rpm = 0U;
@@ -147,8 +159,6 @@ static void ConvertDutyToRpm(void)
 
 	(void)WriteConvertRPM((sint16_t)rpm);
 }
-
-
 static void ConvertRpmToDuty(void)
 {
 	uint8_t duty;
@@ -160,17 +170,17 @@ static void ConvertRpmToDuty(void)
 	
 	if (sensor_ActRPM <= 0)
 	{
-		/* 0 RPM â†’ 0% duty */
+		/* 0 RPM ¡æ 0% duty */
 		duty = 0U;
 	}
 	else if (sensor_ActRPM < (sint16_t)MIN_RPM)  // 0 - 10 Duty area
 	{
-		/* Below mapping range â†’ lower bound */
+		/* Below mapping range ¡æ lower bound */
 		duty = (uint8_t)((uint16_t)sensor_ActRPM/100u);
 	}
 	else if (sensor_ActRPM >= (sint16_t)MAX_RPM) // 90 - 100 Duty area
 	{
-		/* Above mapping range â†’ upper bound */
+		/* Above mapping range ¡æ upper bound */
 		duty = UPPER_DUTY;
 	}
 	else // 10 - 89 Duty area
@@ -185,20 +195,13 @@ static void ConvertRpmToDuty(void)
 	(void)WriteConvertActDuty(duty);
 
 }
-
-
-
-
 static void CheckShortCircuit(void)
 {
-    uint8_t hwShortCircuitCheck = 0;
 	uint8_t     sensor_hwShortCircuitCheck = 0;
-	static DiagState_t sensor_hwShortCircuitState = NORMAL;
+	DiagState_t sensor_hwShortCircuitState = NORMAL;
     (void)GetOverCurrent(&sensor_hwShortCircuitCheck);
 
-    hwShortCircuitCheck = sensor_hwShortCircuitCheck;
-
-    if(hwShortCircuitCheck == 0u) 
+    if(sensor_hwShortCircuitCheck == 0u) 
     {
         sensor_hwShortCircuitState = NORMAL;
     }
@@ -214,14 +217,11 @@ static void CheckShortCircuit(void)
 
 static void CheckGateDrvError (void)
 {
-    uint8_t hwGateDrvErrorCheck = 0;
 	uint8_t     sensor_hwGateDrvErrorCheck = 0;
-	static DiagState_t sensor_hwGateDrvErrorState = NORMAL;
+	DiagState_t sensor_hwGateDrvErrorState = NORMAL;
     (void)GetGateDrvError(&sensor_hwGateDrvErrorCheck);
 
-    hwGateDrvErrorCheck = sensor_hwGateDrvErrorCheck;
-
-    if(hwGateDrvErrorCheck == 0u)
+    if(sensor_hwGateDrvErrorCheck == 0u)
     {
         sensor_hwGateDrvErrorState = NORMAL;
     }
@@ -237,8 +237,8 @@ static void CheckGateDrvError (void)
 
 static void MeasVdc (void)
 {    
-	sint16_t CAL_VdcConversionFactor   = VDC_CONVERSION_FACTOR;
-	sint16_t CAL_VdcCompensationFactor = VDC_COMPENSATION_FACTOR;
+	static const sint16_t CAL_VdcConversionFactor   = VDC_CONVERSION_FACTOR;
+	static const sint16_t CAL_VdcCompensationFactor = VDC_COMPENSATION_FACTOR;
 	sint16_t    sensor_vdcMeasured		  = 0;
 	sint16_t    sensor_vdcFiltered		  = 0;
 
@@ -259,14 +259,14 @@ static void MeasVdc (void)
     
     sensor_vdcFiltered = iirVdc(sensor_vdcMeasured);
 
-//    (void)WriteVdcMeasured(sensor_vdcMeasured);
+    //(void)WriteVdcMeasured(sensor_vdcMeasured);
     (void)WriteVdcFiltered(sensor_vdcFiltered);
 }
 
 
 static void MeasIdc (void)
 {    
-	sint16_t CAL_IdcConversionFactor   = IDC_CONVERSION_FACTOR;
+	static const sint16_t CAL_IdcConversionFactor   = IDC_CONVERSION_FACTOR;
     sint16_t    sensor_idcMeasured         = 0;
 
     (void)GetIdcMeasured(&sensor_idcMeasured);
@@ -280,14 +280,14 @@ static void MeasIdc (void)
 
 static void MeasIq (void)
 {
-//	sint16_t    sensor_idMeasured		  = 0;
+	sint16_t    sensor_idMeasured		  = 0;
 	sint16_t    sensor_iqMeasured		  = 0;
 	sint16_t    sensor_iqFiltered		  = 0;
 
     (void)GetIqMeasured(&sensor_iqMeasured);
 //    (void)GetIdMeasured(&sensor_idMeasured);
 
-    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 393); /*1A 83.33A from 32767*/
+    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 197); /*1A 83.33A from 32767*/
 //    sensor_idMeasured = (sint16_t)((sint32_t)sensor_idMeasured * 100 / 393);
     sensor_iqFiltered = iirIq(sensor_iqMeasured);
 
@@ -301,12 +301,14 @@ static void MeasSpeed (void)
 {
 	sint16_t    sensor_speedMeasured 	  = 0;
 	sint16_t    sensor_speedFiltered 	  = 0;
+    DiagState_t	   sensor_hwOpenPhaseCheck	  = NORMAL;
 
     (void)GetSpeedMeasured(&sensor_speedMeasured);
-    (void)GetOpenPhase(&sensor_hwOpenPhaseCheck);
+    (void)ReadHwOpenPhaseState(&sensor_hwOpenPhaseCheck);
 
-    if (sensor_hwOpenPhaseCheck == 0x02u) /* over 2 phase open */
+    if (sensor_hwOpenPhaseCheck == FAULT) /* over 2 phase open */
     {
+        sensor_speedMeasured = 0;
         sensor_speedFiltered = 0;
     }
     else /* less than 1 phase open */
@@ -338,11 +340,9 @@ static void CheckLinError (void)
 {
     uint8_t linErrorCheck = 0;
 	uint8_t     sensor_linErrorCheck       = 0;
-    static DiagState_t sensor_linErrorState       = NORMAL;
+    DiagState_t sensor_linErrorState       = NORMAL;
 	
-	(void)ReadLinTimeOutFlag(&sensor_linErrorCheck);
-
-//    (void)GetLinTimeOutError(&sensor_linErrorCheck);
+    (void)ReadLinTimeOutFlag(&sensor_linErrorCheck);
 
     linErrorCheck = sensor_linErrorCheck;
 
@@ -361,17 +361,18 @@ static void CheckLinError (void)
 
 static void CheckIgn(void)
 {
-	sint16_t CAL_IgnConversionFactor   = IGN_CONVERSION_FACTOR;
-	sint16_t CAL_IgnOnTh               = IGN_ON_TH;
-	sint16_t CAL_IgnOffTh              = IGN_OFF_TH;
-	sint16_t CAL_IgnFaultCntMax        = IGN_FAULT_CNT_MAX;
-	sint16_t CAL_IgnNormalCntMax	   = IGN_NORMAL_CNT_MAX;
+	static const sint16_t CAL_IgnConversionFactor   = IGN_CONVERSION_FACTOR;
+	static const sint16_t CAL_IgnOnTh               = IGN_ON_TH;
+	static const sint16_t CAL_IgnOffTh              = IGN_OFF_TH;
+	static const sint16_t CAL_IgnFaultCntMax        = IGN_FAULT_CNT_MAX;
+	static const sint16_t CAL_IgnNormalCntMax	   = IGN_NORMAL_CNT_MAX;
+
 	sint16_t    sensor_ignMeasured		  = 0;
 	sint16_t    sensor_ignFiltered		  = 0;
-	static sint8_t sensor_ignState 	  = IGN_ON;
 	static sint16_t    ignFaultCnt		   = 0;
 	static sint16_t    ignNormalCnt 	   = 0;
-
+    static sint8_t sensor_ignState 	  = IGN_ON;
+	
     (void)GetIgnMeasured(&sensor_ignMeasured);
 
     sensor_ignMeasured = (sensor_ignMeasured / CAL_IgnConversionFactor); /*0.01V from mV*/
@@ -436,25 +437,90 @@ static void CheckIgn(void)
 
 static void CheckOpenPhase(void)
 {
-	static DiagState_t sensor_hwOpenPhaseState	  = NORMAL;
+	DiagState_t sensor_hwOpenPhaseState	  = NORMAL;
+	sint16_t sensor_Phas_A = 0;
+	sint16_t sensor_Phas_B = 0;
+	sint16_t sensor_Phas_C = 0;
+	
+	static sint16_t ErrCnt_Phs_A = 0;
+    static sint16_t ErrCnt_Phs_B = 0;
+    static sint16_t ErrCnt_Phs_C = 0;
+	uint8_t sensor_MotorState = 0;
+	uint8_t sensor_Confirm_OPflag_sum = 0;
+	uint8_t Confirm_OPflag_A = 0;
+	uint8_t Confirm_OPflag_B = 0;
+	uint8_t Confirm_OPflag_C = 0;
+	
+	(void)GetPhaseCurrA(&sensor_Phas_A);
+	(void)GetPhaseCurrB(&sensor_Phas_B);	
+	(void)GetPhaseCurrC(&sensor_Phas_C);
+	(void)GetMotorState(&sensor_MotorState);	
 
-    (void)GetOpenPhase(&sensor_hwOpenPhaseCheck);
+
+    /* Closed Loop*/
+	if(sensor_MotorState == 3u)
+	{
+		/******************************* Check A,B and C Phase *******************************/
+		ErrCnt_Phs_A = ((sensor_Phas_A < UPPER_LIMIT) && (sensor_Phas_A > LOWER_LIMIT)) ? (ErrCnt_Phs_A+1) : (ErrCnt_Phs_A-1);
+		
+		ErrCnt_Phs_B = ((sensor_Phas_B < UPPER_LIMIT) && (sensor_Phas_B > LOWER_LIMIT)) ? (ErrCnt_Phs_B+1) : (ErrCnt_Phs_B-1);
+			
+		ErrCnt_Phs_C = ((sensor_Phas_C < UPPER_LIMIT) && (sensor_Phas_C > LOWER_LIMIT)) ? (ErrCnt_Phs_C+1) : (ErrCnt_Phs_C-1);
+
+		/*****************************************************************************************/
+		
+		/**************************** Saturation OpenPhase Error Count ***************************/
+
+		ErrCnt_Phs_A = (ErrCnt_Phs_A >= UPPER_COUNTER_LIMIT) ? UPPER_COUNTER_LIMIT : ErrCnt_Phs_A;
+        ErrCnt_Phs_A = (ErrCnt_Phs_A < LOWER_COUNTER_LIMIT) ? LOWER_COUNTER_LIMIT : ErrCnt_Phs_A;
+
+		ErrCnt_Phs_B = (ErrCnt_Phs_B >= UPPER_COUNTER_LIMIT) ? UPPER_COUNTER_LIMIT : ErrCnt_Phs_B;
+        ErrCnt_Phs_B = (ErrCnt_Phs_B < LOWER_COUNTER_LIMIT) ? LOWER_COUNTER_LIMIT : ErrCnt_Phs_B;
+
+		ErrCnt_Phs_C = (ErrCnt_Phs_C >= UPPER_COUNTER_LIMIT) ? UPPER_COUNTER_LIMIT : ErrCnt_Phs_C;
+        ErrCnt_Phs_C = (ErrCnt_Phs_C < LOWER_COUNTER_LIMIT) ? LOWER_COUNTER_LIMIT : ErrCnt_Phs_C;		
+
+		/************************************************************************************/
+
+				/************************** OpenPhase A,B and C Hysteresis************************/
+		Confirm_OPflag_A = (ErrCnt_Phs_A >= CONFIRM_OP_COUNT) ? 1u : Confirm_OPflag_A;
+		Confirm_OPflag_A = (ErrCnt_Phs_A <= UNCONFIRM_OP_COUNT) ? 0u : Confirm_OPflag_A;
+
+		Confirm_OPflag_B = (ErrCnt_Phs_B >= CONFIRM_OP_COUNT) ? 1u : Confirm_OPflag_B;
+		Confirm_OPflag_B = (ErrCnt_Phs_B <= UNCONFIRM_OP_COUNT) ? 0u : Confirm_OPflag_B;		
+
+		Confirm_OPflag_C = (ErrCnt_Phs_C >= CONFIRM_OP_COUNT) ? 1u : Confirm_OPflag_C;
+		Confirm_OPflag_C = (ErrCnt_Phs_C <= UNCONFIRM_OP_COUNT) ? 0u : Confirm_OPflag_C;		
+
+		/*********************************************************************************/
+		
+		/************************************ Other **************************************/
+		sensor_Confirm_OPflag_sum  = Confirm_OPflag_A + Confirm_OPflag_B + Confirm_OPflag_C;
+	}
+	/* Motor Stop*/
+	else if(sensor_MotorState == 1u) 
+	{
+		ErrCnt_Phs_A = 0;
+		ErrCnt_Phs_B = 0;
+		ErrCnt_Phs_C = 0;
+		sensor_Confirm_OPflag_sum = 0u;
+	}
+	else
+    {
+        /* no action */
+	}
     
-    if (sensor_hwOpenPhaseCheck == 0x02u)
+    if (sensor_Confirm_OPflag_sum >= 0x02u)
     {
         sensor_hwOpenPhaseState = FAULT;
     }
-    else if (sensor_hwOpenPhaseCheck == 0x01u)
+    else if (sensor_Confirm_OPflag_sum == 0x01u)
     {
         sensor_hwOpenPhaseState = WARNING;
     }
-    else if (sensor_hwOpenPhaseCheck == 0u)
-    {
-        sensor_hwOpenPhaseState = NORMAL;
-    }
     else
     {
-        /* no action */
+        sensor_hwOpenPhaseState = NORMAL;
     }
     
     (void)WriteHwOpenPhaseState(sensor_hwOpenPhaseState);
@@ -471,7 +537,7 @@ static void MeasFluxAbsValue (void)
 
 //static void CheckErrorCodeIndex (void)
 //{    
-//	static uint8_t	   sensor_errorCodeIndex	  = 0;
+//	uint8_t	   sensor_errorCodeIndex	  = 0;
 
 //    (void)GetErrorCodeIndex(&sensor_errorCodeIndex);
 
@@ -481,7 +547,7 @@ static void MeasFluxAbsValue (void)
 
 //static void CheckPowerLimit (void)
 //{    
-//	static uint8_t	   sensor_Power_Limit	  = 0;
+//	uint8_t	   sensor_Power_Limit	  = 0;
 
 //    (void)GetPowerLimitState(&sensor_Power_Limit);
 

@@ -62,12 +62,12 @@
 
 /* via Rte */
 static sint16_t                      manage_speedCmd           = 0;
-sint16_t                      manage_IRV_SpeedRef       = 0;
-sint16_t                      manage_SpeedFiltered           = 0;
+static sint16_t                      manage_IRV_SpeedRef       = 0;
+static sint16_t                      manage_SpeedFiltered           = 0;
 static sint16_t                      manage_Prev_SpeedRef           = 0;
 static sint16_t                      manage_Diff_SpeedRef           = 0;
-sint16_t                      manage_IRV_Step_SpeedRef       = 0;
- ManageEWPStepControlState_t   manage_RPMStepControlState     = STEPCONTROLOFF;
+static sint16_t                      manage_IRV_Step_SpeedRef       = 0;
+static ManageEWPStepControlState_t   manage_RPMStepControlState     = STEPCONTROLOFF;
 
 /*
 ************************************************************************************************************************
@@ -91,10 +91,19 @@ static void ManageStepControlOn(void);
 */
 void ManageSWComponentPack(void)
 {
-    DiagCoolant();
-    ManageSystemOnOff();
-    ManageProtection();
+    static uint8_t ManageTask_Cnt = 0;
+	if(ManageTask_Cnt == 0u) 
+	{
+		DiagCoolant();
+		ManageSystemOnOff();
+		ManageTask_Cnt++;
+	}
+	else
+	{
+		ManageProtection();
 		ManageRPMStepControl();
+		ManageTask_Cnt = 0u;
+	}
 }
 
 
@@ -255,7 +264,7 @@ static void ManageSystemOnOff(void)
 				{
 				    /* Intentionally Empty */
 				}
-            }
+			}
 			else         // (power latch run (no limphome)
 		    {
     			manage_IRV_SpeedRef = manage_speedCmd;
@@ -401,12 +410,7 @@ static void ManageRPMStepControl(void)
 static void ManageStepControlVariables(void)
 {
     (void)ReadSpeedFiltered(&manage_SpeedFiltered); 
- //   (void)ReadAbnormalFlag_(&manage_AbnormalFlag); 
- //   (void)ReadSensingFaultStateMerged_(&manage_SensingFaultStateMerged); 
- //   (void)ReadControlFaultStateMerged_(&manage_ControlFaultStateMerged); 
- //   (void)ReadFailureStateMerged_(&manage_FailureStateMerged); 
- //   (void)ReadWarningStateMerged_(&manage_WarningStateMerged); 
- //   (void)ReadLinInitialRequired(&manage_LinInitial); 
+	
     if(manage_IRV_SpeedRef > SPEED_MAX_RUN)
     {
         manage_IRV_SpeedRef = SPEED_MAX_RUN;
@@ -460,7 +464,7 @@ static void ManageStepControlOn(void)
     }
     else if(manage_IRV_SpeedRef > manage_IRV_Step_SpeedRef) //increased rpm step
     {
-        CAL_SPEED_STEP       = SPEED_STEP_70;
+        CAL_SPEED_STEP       = SPEED_STEP_60;
     }
     else if(manage_IRV_SpeedRef < manage_IRV_Step_SpeedRef) //decreased rpm step
     {

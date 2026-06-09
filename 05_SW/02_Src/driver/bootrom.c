@@ -271,7 +271,7 @@ lint +e534
    check if Read_100TP returned a PASS (== 0) 
   if (res == 0)
   {
-     return customer ID to caller 
+    /* return customer ID to caller 
 lint -e9029 Supressing MISRA 2012 Rule 10.4 
     *CustID = buf[0];
 lint +e9029 

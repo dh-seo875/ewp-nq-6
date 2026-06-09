@@ -210,8 +210,6 @@
 
 extern uint32 SystemFrequency;
 
-void TLE_Init1(void);
-void TLE_Init2(void);
-
+void TLE_Init(void);
 
 #endif

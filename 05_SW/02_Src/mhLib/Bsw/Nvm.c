@@ -59,16 +59,9 @@
 ************************************************************************************************************************
 */
 static uint8_t ErrorCodePageA[FlashPageSize];
-static uint8_t ErrorCodePageB[FlashPageSize];
-static uint8_t ErrorCodePageC[FlashPageSize]; //MCU Fault
-
 static uint8_t* IRV_ptrErrorCodePage;
 
-
 #define errorCodeAddressPageA (0x1100F000u)
-#define errorCodeAddressPageB (0x1100F080u)
-#define errorCodeAddressPageC (0x1100F100u)
-
 #define errorCodeIndexMax (128u)
 
 
@@ -88,7 +81,6 @@ static void ManageNVMEWP(uint16_t Nvm_convert_errorCode);
 static void CheckPrevValueNVMPEEWP(void);
 static void NvmVariables(void);
 static void ManageNVMBuildArray(void);
-static void EraseMCUFault (void);
 
 
 
@@ -102,7 +94,6 @@ static void EraseMCUFault (void);
 uint8_t Nvm_errorCode  = 0;
 uint8_t Nvm_errorCodeIndex = 0;
 static uint16_t Nvm_drivingCycleIndicator = 0;
-
 
 static uint8_t NVM_fault_merged = 0;
 static uint8_t NVM_failure_mereged = 0;
@@ -146,14 +137,8 @@ static void NVM_Watchdog_Fault(void)
 	uint8_t PMU_Reset_Flag = 0;
     uint8_t	Nvm_Watchdog_Fault_FLAG = 0;
 //	uint8_t PMU_Wake_Status =0;
-	static const uint8* ptrErrorCodeAddressPageC = (uint8*)(uintptr_t)errorCodeAddressPageC;
-	static uint8_t* IRV_ptrMCUFaultCodePage;
+//	static uint8_t* IRV_ptrMCUFaultCodePage;
 
-    readNvm(ptrErrorCodeAddressPageC, ErrorCodePageC);
-
-	/* read data move to write data */
-	IRV_ptrMCUFaultCodePage = ErrorCodePageC;
-	
 	/* Get PMU Reset Flag */
 	PMU_Reset_Flag = PMU_Get_Reset_Status();
     PMU_Clear_Reset_Status();	
@@ -214,62 +199,29 @@ static void NVM_Watchdog_Fault(void)
 uint8_t* Nvm_Init (void)
 {
     uint8_t nvmStatusPageA = 0;
-    uint8_t nvmStatusPageB = 0;
-    uint8_t nvmStatusPageAB = 0;
+
+
     //uint8_t nvmWriteResult = 0;
 	static const uint8* ptrErrorCodeAddressPageA = (uint8*)(uintptr_t)errorCodeAddressPageA;
-	static const uint8* ptrErrorCodeAddressPageB = (uint8*)(uintptr_t)errorCodeAddressPageB;
 
 	NVM_Watchdog_Fault();
     readNvm(ptrErrorCodeAddressPageA, ErrorCodePageA);
-    readNvm(ptrErrorCodeAddressPageB, ErrorCodePageB);
     nvmStatusPageA = checkNvmStatus(ErrorCodePageA);
-    nvmStatusPageB = checkNvmStatus(ErrorCodePageB);
-    nvmStatusPageAB = nvmStatusPageA | (nvmStatusPageB <<1);
 
     /* nvmStatusPageAB = 0b00 (0) : Normal Page1 and 2
        nvmStatusPageAB = 0b01 (1) : Normal Page1 and Fault Page2
        nvmStatusPageAB = 0b10 (2) : Fault Page1 and Normal Page2
        nvmStatusPageAB = 0b11 (3) : Fault Page1 and 2 */
-    switch(nvmStatusPageAB)
+    if(nvmStatusPageA == 0u)
     {
-        case 0:
-            Nvm_errorCodeIndex = countErrorCodeIndex(ErrorCodePageA);
-            IRV_ptrErrorCodePage = ErrorCodePageA;
-            break;
-
-        case 1:
-            Nvm_errorCodeIndex = countErrorCodeIndex(ErrorCodePageA);
-            IRV_ptrErrorCodePage = ErrorCodePageA;
-            (void)writeNvm(ErrorCodePageA, errorCodeAddressPageB);
-			
-           /* if (nvmWriteResult == 1u)
-            {
-                nvmWriteResult = writeNvm(ErrorCodePageA, errorCodeAddressPageB);
-            }
-            else
-            {
-            }*/
-            break;
-
-        case 2:
-            Nvm_errorCodeIndex = countErrorCodeIndex(ErrorCodePageB);
-            IRV_ptrErrorCodePage = ErrorCodePageB;
-            (void)writeNvm(ErrorCodePageB, errorCodeAddressPageA);
-    
-            /*if (nvmWriteResult == 1u)
-            {
-                nvmWriteResult = writeNvm(ErrorCodePageB, errorCodeAddressPageA);
-            }
-            else
-            {
-            }*/
-            break;
-
-        default:   /* case 3 is Default */
-			EraseNvm();
-            break;
+        Nvm_errorCodeIndex = countErrorCodeIndex(ErrorCodePageA);
+        IRV_ptrErrorCodePage = ErrorCodePageA;
     }
+    else
+    {
+        EraseNvm();
+	}
+
     checkDrivingCycle();
 
     return IRV_ptrErrorCodePage;
@@ -281,9 +233,10 @@ void ManageNvm (void)
 	NvmVariables();
 	ManageNVMBuildArray();
 	ManageNVMConvertErrorCode();
-
+    
     if (Nvm_errorCode != 0u)
     {
+        
         if (linSuccessfulFlag == 1u) /* check the finish of LIN */
         {
 
@@ -297,7 +250,7 @@ void ManageNvm (void)
             {
             }*/
 
-            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
+//            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
             /*if (nvmWriteResult == 1u)
             {
                 nvmWriteResult = writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
@@ -320,7 +273,7 @@ void ManageNvm (void)
             {
             }*/
 
-            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
+//            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
             /*if (nvmWriteResult == 1u)
             {
                 nvmWriteResult = writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
@@ -432,45 +385,18 @@ static void EraseNvm (void)
     for (nvmRepeatCnt = 0; nvmRepeatCnt < FlashPageSize; nvmRepeatCnt++)
     {
     	ErrorCodePageA[nvmRepeatCnt] = 0;
-    	ErrorCodePageB[nvmRepeatCnt] = 0;
     }
 
     SCU_ChangeNVMProtection(NVM_DATA_WRITE, PROTECTION_CLEAR);
     SCU_ChangeNVMProtection(NVM_CODE_WRITE, PROTECTION_CLEAR);
     
     (void)USER_ERASEPG((uint32_t *)(uintptr_t)errorCodeAddressPageA, 0);
-    (void)USER_ERASEPG((uint32_t *)(uintptr_t)errorCodeAddressPageB, 0);
 
     SCU_ChangeNVMProtection(NVM_DATA_WRITE, PROTECTION_SET);
     SCU_ChangeNVMProtection(NVM_CODE_WRITE, PROTECTION_SET);
     
     Nvm_errorCodeIndex = 0;
 }
-
-
-static void EraseMCUFault (void)
-{
-    uint8_t nvmRepeatCnt = 0;
-	int (*USER_ERASEPG)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG);
-	USER_ERASEPG = (int (*)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG)) addr_USER_ERASEPG;
-
-
-    for (nvmRepeatCnt = 0; nvmRepeatCnt < FlashPageSize; nvmRepeatCnt++)
-    {
-    	ErrorCodePageC[nvmRepeatCnt] = 0;
-    }
-
-    SCU_ChangeNVMProtection(NVM_DATA_WRITE, PROTECTION_CLEAR);
-    SCU_ChangeNVMProtection(NVM_CODE_WRITE, PROTECTION_CLEAR);
-    
-    (void)USER_ERASEPG((uint32_t *)(uintptr_t)errorCodeAddressPageC, 0);
-
-    SCU_ChangeNVMProtection(NVM_DATA_WRITE, PROTECTION_SET);
-    SCU_ChangeNVMProtection(NVM_CODE_WRITE, PROTECTION_SET);
-    
-
-}
-
 
 static void checkDrivingCycle (void)
 {

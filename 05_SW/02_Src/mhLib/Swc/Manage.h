@@ -62,9 +62,13 @@
 #define    IQ_CONTROL     1
 
 /* Step control */
+
+#define    SPEED_STEP_10 10
 #define    SPEED_STEP_15 15
 #define    SPEED_STEP_60 60
-#define    SPEED_STEP_70 70
+#define    SPEED_STEP_120 120
+#define    SPEED_STEP_300 300
+
 
 typedef enum
 {
@@ -89,7 +93,7 @@ typedef enum
 */
 extern void ManageSWComponentPack( void );
 
-
+extern uint8_t Soft_Startcompleteflag;
 
 
 

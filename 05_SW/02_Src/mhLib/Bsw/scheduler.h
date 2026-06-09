@@ -36,8 +36,8 @@
 *                                                   Defines and macros
 ************************************************************************************************************************
 */
-#define TASKLIST_SIZE      (8u)
-#define TASKLIST_RANDOM    (8u)
+#define TASKLIST_SIZE      (6u)
+#define TASKLIST_RANDOM    (6u)
 #define INFINITE_LOOP     	(0u)
 #define SCH_MAX_TIME       (2000000000u)
 
@@ -48,9 +48,7 @@
 #define    Priority_4  3u
 #define    Priority_5  4u
 #define    Priority_6  5u
-#define    Priority_7  6u
-#define    Priority_8  7u
-
+//#define    Priority_7  6
 //#define    Priority_LOW	   		(TASKLIST_SIZE-1),
 #define    Priority_Random			(TASKLIST_RANDOM)
 

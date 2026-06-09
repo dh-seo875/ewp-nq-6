@@ -42,12 +42,10 @@
 #if((EWP_TYPE == PEWP_TYPE3_0X37) || (EWP_TYPE == PEWP_TYPE3_0X38) || (EWP_TYPE == BEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X38))
 //#define SE_NORMAL_UPR_TH        (sint16_t)(  500)  500 RPM 
 //#define SE_NORMAL_LWR_TH        (sint16_t)(  500)  500 RPM 
-#define SE_FAULT_UPR_TH         (sint16_t)(  500) /* 500 RPM */
-#define SE_WARNING_LWR_TH       (sint16_t)(  200) /* 200 RPM */
-#define SE_NORMAL_LWR_TH        (sint16_t)(  140) /* 140 RPM */
-
+#define SE_FAULT_UPR_TH         (sint16_t)( 1340) /* 1340 RPM */
+#define SE_WARNING_LWR_TH       (sint16_t)(  980) /* 980 RPM */
 //#define SE_FAULT_LWR_TH         (sint16_t)(  500)  500 RPM 
-//#define SE_NORMAL_CNT_MAX       (sint16_t)( 2000)
+#define SE_NORMAL_CNT_MAX       (sint16_t)( 2000) /*  20 sec */
 #define SE_WARNING_CNT_MAX      (sint16_t)( 2000) /*  20 sec */ 
 #define SE_FAULT_CNT_MAX        (sint16_t)( 2000) /*  20 sec */
 #define SE_RETRY_ATTEMPT_MAX    (sint16_t)(   10) /* Retry 4 */
@@ -55,38 +53,34 @@
 #define SE_AttemptCLR_CNT_MAX   (sint16_t)( 2000) /* 20 sec */
 
 
-#define OC_IQ_WARNING_UPR_TH    (sint16_t)( 1450) /* iq 14.5 A */
-#define OC_IQ_WARNING_LWR_TH    (sint16_t)( 1350) /* iq 13.5 A */
+#define WC_IQ_WARNING_UPR_TH    (sint16_t)( 1500) /* iq 15 A */
+#define WC_IQ_WARNING_LWR_TH    (sint16_t)( 1400) /* iq 14 A */
+#define WC_WARNING_CNT_MAX      (sint16_t)(  100) /*  1 sec */
+#define WC_NORMAL_CNT_MAX       (sint16_t)(  100) /* 1 sec */
 
 #define OC_IQ_FAULT_UPR_TH      (sint16_t)( 1600) /* iq 16 A */
-#define OC_AttemptCLR_CNT_MAX   (sint16_t)( 500) /* 5s */
+#define OC_AttemptCLR_CNT_MAX   (sint16_t)( 1000) /* 10s */
+//#define OC_IQ_FAULT_LWR_TH      (sint16_t)( 1600)  iq 16 A 
 
+//#define OC_FLUXABS_FAULT_LWR_TH (sint16_t)(  500)  FluxAbs 500 
 
-
-#define OC_NORMAL_CNT_MAX       (sint16_t)(  100) /* 1 sec */
 #define OC_RETRY_ATTEMPT_MAX    (sint16_t)(   10) /* Retry 7 */
-#define OC_WARNING_CNT_MAX      (sint16_t)(  100) /*  1 sec */
 #define OC_FAULT_CNT_MAX        (sint16_t)(  250) /*  2.5 sec */
-#define OC_RETRY_CNT_MAX        (sint16_t)(  200) /* 2 sec */
-
-
 #define ST_FLUXABS_FAULT_UPR_TH (sint16_t)(  500) /* FluxAbs 500 */
 #define ST_FAULT_CNT_MAX        (sint16_t)(  100) /* 1 sec */
 #define ST_AttemptCLR_CNT_MAX   (sint16_t)(  100) /* 1s */
 #define ST_RETRY_ATTEMPT_MAX    (sint16_t)(   10) /* Retry 10 */
 #define ST_RETRY_CNT_MAX        (sint16_t)(  200) /* 10 sec */
+#define OC_RETRY_CNT_MAX        (sint16_t)(  200) /* 10 sec */
 
-
-//#define LC_FAULT_UPR_TH         (sint16_t)(  150)  iq 1.5 A 
-#define LC_FAULT_LWR_TH         (sint16_t)(  90) /* iq 0.9 A */
-#define LC_NORMAL_UPR_TH        (sint16_t)(  150) /* iq 1.5 A */
-
+#define LC_NORMAL_UPR_TH        (sint16_t)(  150) /*  iq 1.5 A */
+#define LC_FAULT_LWR_TH         (sint16_t)(  100) /* iq 1.0 A */
 #define LC_FAULT_CNT_MAX        (sint16_t)(  500) /* 5 sec */
 #define LC_RETRY_CNT_MAX        (sint16_t)(  500) /* 5 sec */
 #define LC_RETRY_ATTEMPT_MAX  (sint16_t)(   10) /* Retry 20 */
 
 #define LC_AttemptCLR_CNT_MAX   (sint16_t)(  500) /*  5 sec */
-#define LC_SPEED_MIN            (sint16_t)( 3500) /* 3500 RPM */
+#define LC_SPEED_MIN            (sint16_t)( 2500) /* 2500 RPM */
 
 #define SC_NORMAL_CNT_MAX       (sint16_t)(  100) /*  1 sec */
 #define SC_FAULT_CNT_MAX        (sint16_t)(  100) /*  1 sec */
@@ -102,7 +96,7 @@
 //#define OT_RETRYCLR_CNT_MAX     (sint16_t)(  1000)   1 sec
 
 //#define OT_NORMAL_UPR_TH        (sint16_t)(  140)  140 degree 
-#define OT_NORMAL_LWR_TH        (sint16_t)(  135) /* 135 degree */
+#define OT_NORMAL_LWR_TH        (sint16_t)(  130) /* 130 degree */
 #define OT_WARNING_UPR_TH       (sint16_t)(  140) /* 140 degree */
 #define OT_WARNING_LWR_TH       (sint16_t)(  140) /* 140 degree */
 #define OT_FAULT_UPR_TH         (sint16_t)(  150) /* 150 degree */
@@ -129,13 +123,16 @@
 #define OV_NORMAL_CNT_MAX       (sint16_t)(  100) /*  1 sec  */
 #define OV_FAULT_CNT_MAX        (sint16_t)(  100) /*  1 sec  */
 
-#define PO_NORMAL_CNT_MAX       (sint16_t)(  100) /*  1 sec */
-#define PO_FAULT_CNT_MAX        (sint16_t)(  100) /*  1 sec */
+#define PO_NORMAL_CNT_MAX       (sint16_t)(  300) /*  3 sec */
+#define PO_FAULT_CNT_MAX        (sint16_t)(  300) /*  3 sec */
 #define PO_RETRY_CNT_MAX        (sint16_t)(  100) /*  1 sec */
 #define PO_RETRY_ATTEMPT_MAX    (sint16_t)(    4) /* Retry 4 */
 
-#define SPEED_MIN               (sint16_t)( 1000) /* 1200 RPM */
-
+#define SPEED_MIN               (sint16_t)( 500) /* 1200 RPM */
+#define PL_VOLT_LWR_TH          (sint16_t)( 850) /*  16   V */
+#define PL_VOLT_UPR_TH          (sint16_t)( 1200) /*  17.0 V */
+#define PL_NORMAL_CNT_MAX       (sint16_t)(  100) /*  1 sec */
+#define PL_WARNING_CNT_MAX      (sint16_t)(  100) /*  1 sec */
 
 
 
@@ -156,6 +153,26 @@
 *                                                    Exported variables
 ************************************************************************************************************************
 */
+
+//extern sint16_t CAL_OC_IqWarningLwrTh;
+//extern sint16_t CAL_OC_IqFaultUprTh;
+
+/********** Speed Error **********/
+//extern sint16_t CAL_SE_WarningLwrTh;
+//extern sint16_t CAL_SE_FaultUprTh;
+//extern sint16_t CAL_SE_FaultCntMax;
+
+
+/********** Over Temp **********/
+//extern sint16_t CAL_OT_NormalLwrTh;
+//extern sint16_t CAL_OT_FaultUprTh;
+//extern sint16_t CAL_OT_NormalCntMax;
+//extern sint16_t CAL_OT_WarningCntMax;
+//extern sint16_t CAL_OT_AttemptCLRCntMax;
+
+
+
+
 
 
 

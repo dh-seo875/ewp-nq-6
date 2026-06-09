@@ -49,8 +49,8 @@
 /*******************************************************************************
 **                      Includes                                              **
 *******************************************************************************/
-#ifndef BOOTROM_H
-#define BOOTROM_H
+#ifndef _BOOTROM_H
+#define _BOOTROM_H
 
 #include <Types.h>
 #include <RTE_Components.h>

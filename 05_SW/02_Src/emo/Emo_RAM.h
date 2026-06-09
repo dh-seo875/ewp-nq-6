@@ -90,8 +90,8 @@
 /* EMO_SVM_MINTIME defines the minimum time slot required to place **
 ** the ADC measurement inside the 3phase PWM pattern               **
 ** 80 * CCU6_CLK = 80 * 25ns = 2us                                 */
-//#define EMO_SVM_MINTIME           (260)
-#define EMO_SVM_DEADTIME          (30u)
+//#define EMO_SVM_MINTIME           (80)
+#define EMO_SVM_DEADTIME          (60u)
 #define EMO_DECOUPLING            (0u)
 
 /* FluxEstimator filter time */
@@ -102,9 +102,9 @@
 
 
 //#define Emo_Foc_PolePair     3
-#define Emo_Foc_PhaseRes 6189 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
+#define Emo_Foc_PhaseRes 12379 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
 
-#define Emo_Foc_PhaseInd 1911// 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
+#define Emo_Foc_PhaseInd 3822	 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
 
 /*******************************************************************************
 **                      Global Type Definitions                              **
@@ -138,14 +138,14 @@ typedef struct
     TComplex RotVolt;               /**< \brief Rotating voltage 6*/
     uint16 Angle;                   /**< \brief Angle 8*/
     uint16 FluxAngle;               /**< \brief Angle calculated by flux estimator 9*/
-    uint16 StoredAngle;             /**< \brief Stored Angle 10*/
+    //uint16 StoredAngle;             < \brief Stored Angle 10
 
     TMat_Lp_Simple RealFluxLp;      /**< \brief Real flux low pass 16*/
     TMat_Lp_Simple ImagFluxLp;      /**< \brief Imaginary flux low pass 20*/
-    uint16 CountStart;              /**< \brief Counter for Start with angle=0 24*/
+    uint8 CountStart;              /**< \brief Counter for Start with angle=0 24*/
     sint16 StartCurrent;            /**< \brief Start Current 26*/
 
-    //uint16 CsaGain;                 
+    //uint16 CsaGain;                 < \brief CsaGain Faktor 32
    
     uint16 Dcfactor1;               /**< \brief 327670/Dc Link Voltage 34*/
     sint16 StartSpeedSlope;         /**< \brief Start Speed Slope 35*/
@@ -154,10 +154,10 @@ typedef struct
     TComplex StartVoltage;          /**< \brief Startvoltage for Startmode 1*/
     uint16 StartAngle;              /**< \brief Start angle for Mode 0 and 1 */
     TComplex RotVoltCurrentcontrol;
-    uint16 StartVoltAmpDivUz;       /**< \brief Voltage offset for start with mode 1 14*/
+    //uint16 StartVoltAmpDivUz;       < \brief Voltage offset for start with mode 1 14
     uint16 Dcfactor2;               /**< \brief Kfactor2*Dc Link Voltage 34*/
 
-    //uint16 Kdcfactor2;        
+    //uint16 Kdcfactor2;              < \brief Factor for K*Uz 34
 
     uint16 StatVoltAmpM;            /**< \brief Amplitude for Stat. Voltage FM 34*/
 
@@ -202,18 +202,18 @@ typedef struct
     sint16 RefSpeed;                /**< \brief Reference speed 0*/
     sint16 ActSpeed;                /**< \brief Actual speed 1*/
     sint16 RefCurr;                 /**< \brief Reference current (imaginary) 2*/
-    //sint16 ActSpeeddisplay;    
+    sint16 ActSpeeddisplay;         /**< \brief Actuel speed display3*/
       
     TMat_Pi SpeedPi;                /**< \brief Speed PI control */
     TMat_Pi RealCurrPi;             /**< \brief Real current PI control */
     TMat_Pi ImagCurrPi;             /**< \brief Imaginary current PI control */
     TMat_Lp_Simple SpeedLp;         /**< \brief Speed low pass */
-    uint16 AngleBuffer[32];         /**< \brief buffer for angle */
+    uint16 AngleBuffer[16];         /**< \brief buffer for angle */
     uint16 PtrAngle;                /**< \brief pointer for anglebuffer */
-    //sint16 MaxRefCurrent;     
-    //sint16 MinRefCurrent;       
-    //sint16 MaxRefStartCurrent; 
-    //sint16 MinRefStartCurrent;  
+    sint16 MaxRefCurrent;           /*  69  */
+    sint16 MinRefCurrent;           /*  70  */
+    sint16 MaxRefStartCurrent;      /*  71  */
+    sint16 MinRefStartCurrent;      /*  72  */
 
     TMat_Lp_Simple SpeedLpdisplay;  /**< \brief Speed low pass 76*/
     TMat_Lp_Simple FluxbtrLp;       /* 82 */
@@ -244,7 +244,7 @@ typedef struct
     uint32 MaxAmpQuadrat;           /**< \brief Maximum amplitude Quadrat 16*/
     uint16 CompT13ValueUp;
     uint16 CompT13ValueDown;
-    uint16 T13Trigger;
+    //uint16 T13Trigger;
     uint16 comp60down;               /**< \brief Caomparecc60_down 21*/
     uint16 comp61down;               /**< \brief Caomparecc61_down 22*/
     uint16 comp62down;               /**< \brief Caomparecc62_down 23*/
@@ -269,14 +269,13 @@ extern TEmo_Foc Emo_Foc;
 
 
 extern TEmo_Svm Emo_Svm;
-
+extern uint16 Emo_AdcResult[4u];
 extern sint16 FluxAbsValueTemp;
 /*******************************************************************************
 **                      Global Function Declarations                          **
 *******************************************************************************/
 
 extern uint16 speeduserreferenz;
-
 extern void Emo_HandleCCU6ShadowTrans(void);
 extern void Emo_HandleAdc1(void);
 extern void Emo_HandleFoc(void);
@@ -287,8 +286,7 @@ extern void Emo_ExeSvmTest(TEmo_Svm *pSvm);
 extern void Emo_EstFluxTest(void);
 extern uint16 Emo_CalcAngleAmpTest(TComplex Stat, uint16 *pAmp);
 extern void Emo_CalcAngleAmpSvmTest(void);
-//extern void Emo_setspeedreferenz(uint16 speedreferenz);
-
+extern void Emo_setspeedreferenz(uint16 speedreferenz);
 
 __STATIC_INLINE TComplex Limitsvektor(const TComplex *inp, const TEmo_Svm *par);
 //__STATIC_INLINE TComplex Limitsvektorphase(TComplex *inp, TEmo_Svm *par);
@@ -312,78 +310,40 @@ __STATIC_INLINE TComplex Limitsvektor(const TComplex *inp, const TEmo_Svm *par);
  */
 __STATIC_INLINE TComplex Limitsvektor(const TComplex *inp, const TEmo_Svm *par)
 {
+    TComplex outp;
+    sint32 re = (sint32)inp->Real;
+    sint32 im = (sint32)inp->Imag;
     uint32 btrqu;
-    TComplex outp = {0, 0};
-    uint16 inpa;
-    sint32 abs_inp;
-    btrqu = ((uint32)inp->Real * (uint32)inp->Real) + ((uint32)inp->Imag * (uint32)inp->Imag);
+	  sint32 abs_re;
+	  sint32 max_90;
+	  uint32 inpa;
+	  uint32 lim_im;
+
+    btrqu = (((uint32)re * (uint32)re) + ((uint32)im * (uint32)im));
+
+    outp.Real = (sint16)re;
+    outp.Imag = (sint16)im;
 
     if (btrqu > par->MaxAmpQuadrat)
     {
-        if(inp->Real < 0)
+        abs_re = (re < 0) ? -re : re;
+        max_90 = (sint32)par->MaxAmp9091pr;
+
+        if (abs_re > max_90)
         {
-            abs_inp = (sint32)inp->Real * -1;
+            outp.Real = (re < 0) ? -(sint16)max_90 : (sint16)max_90;
+            outp.Imag = (im < 0) ? -(sint16)par->MaxAmp4164pr : (sint16)par->MaxAmp4164pr;
         }
         else
         {
-            abs_inp = (sint32)inp->Real;
-        }     
-        if (abs_inp > (sint32)par->MaxAmp9091pr)
-        {
-            if (inp->Real < 0)
-            {
-                outp.Real = -(sint16)par->MaxAmp9091pr;
-            }
-            else
-            {
-                outp.Real = (sint16)par->MaxAmp9091pr;
-            }
+            inpa = ((uint32)abs_re * (uint32)par->Kfact256) >> MAT_FIX_SHIFT;
+            
+            if (inpa > 256u) { inpa = 256u; }
 
-            if (inp->Imag < 0)
-            {
-                outp.Imag = -(sint16)par->MaxAmp4164pr;
-            }
-            else
-            {
-                outp.Imag = (sint16)par->MaxAmp4164pr;
-            }
+            lim_im = ((uint32)Table_sqrtmqu[inpa] * (uint32)par->MaxAmp) >> 8u;
+
+            outp.Imag = (im < 0) ? -(sint16)lim_im : (sint16)lim_im;
         }
-        else
-        {
-            if(inp->Real < 0)
-            {
-                abs_inp = (sint32)inp->Real * -1;
-            }
-            else
-            {
-                abs_inp = (sint32)inp->Real;
-            }
-            inpa = (uint16)(abs_inp);
-            inpa = (inpa * par->Kfact256) >> MAT_FIX_SHIFT;
-
-            if (inpa > 256u)
-            {
-                inpa = 256u;
-            }
-
-            inpa = Table_sqrtmqu[inpa];
-            inpa = (inpa * par->MaxAmp) >> 8;
-            outp.Real = inp->Real;
-
-            if (inp->Imag < 0)
-            {
-                outp.Imag = -(sint16)inpa;
-            }
-            else
-            {
-                outp.Imag = (sint16)inpa;
-            }
-        }
-    }
-    else
-    {
-        outp.Real = inp->Real;
-        outp.Imag = inp->Imag;
     }
 
     return outp;

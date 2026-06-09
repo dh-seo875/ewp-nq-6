@@ -122,7 +122,7 @@ created on:? 9 14 11:16:17 2018
 
 /*PORT_P1_1_ALT: 3*/
 #ifndef PORT_P1_1_ALT
-  #define PORT_P1_1_ALT (0x0u)
+  #define PORT_P1_1_ALT (0x3u)
 #endif
 
 /*PORT_P1_1_PUD: 0*/

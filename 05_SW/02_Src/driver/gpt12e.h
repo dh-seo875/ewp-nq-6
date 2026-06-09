@@ -129,7 +129,8 @@ typedef enum
 
 /* T2 Input Parameter Selection */
 //#define GPT12E_T2_Mode_Timer_Clk_Prescaler_Sel(t2i)      (GPT12E->T2CON.bit.T2I = (uint16)(t2i & 7u))
-
+//#define GPT12E_T2_Mode_Gated_Timer_Clk_Prescaler_Sel(t2i) \
+                                                         (GPT12E->T2CON.bit.T2I = (uint16)(t2i & 7u))
 //#define GPT12E_T2_Mode_Counter_Input_T2In_Sel()          (GPT12E->T2CON.reg &= (uint16)~(1u << 2u))
 //#define GPT12E_T2_Mode_Counter_Input_Rising_T2In_En()    (GPT12E->T2CON.reg |= (uint16) (1u << 0u))
 //#define GPT12E_T2_Mode_Counter_Input_Rising_T2In_Dis()   (GPT12E->T2CON.reg &= (uint16)~(1u << 0u))
@@ -223,7 +224,8 @@ typedef enum
 
 /* T3 Input Parameter Selection */
 //#define GPT12E_T3_Mode_Timer_Clk_Prescaler_Sel(t3i)      (GPT12E->T3CON.bit.T3I = (uint16)(t3i & 7u))
-
+//#define GPT12E_T3_Mode_Gated_Timer_Clk_Prescaler_Sel(t3i) \
+                                                         (GPT12E->T3CON.bit.T3I = (uint16)(t3i & 7u))
 //#define GPT12E_T3_Mode_Counter_Input_Rising_T3In_En()    (GPT12E->T3CON.reg |= (uint16) (1u << 0u))
 //#define GPT12E_T3_Mode_Counter_Input_Rising_T3In_Dis()   (GPT12E->T3CON.reg &= (uint16)~(1u << 0u))
 //#define GPT12E_T3_Mode_Counter_Input_Falling_T3In_En()   (GPT12E->T3CON.reg |= (uint16) (1u << 1u))
@@ -297,7 +299,8 @@ typedef enum
 
 /* T4 Input Parameter Selection */
 //#define GPT12E_T4_Mode_Timer_Clk_Prescaler_Sel(t4i)      (GPT12E->T4CON.bit.T4I = (uint16)(t4i & 7u))
-
+//#define GPT12E_T4_Mode_Gated_Timer_Clk_Prescaler_Sel(t4i) \
+                                                         (GPT12E->T4CON.bit.T4I = (uint16)(t4i & 7u))
 //#define GPT12E_T4_Mode_Counter_Input_T4In_Sel()          (GPT12E->T4CON.reg &= (uint16)~(1u << 2u))
 //#define GPT12E_T4_Mode_Counter_Input_Rising_T4In_En()    (GPT12E->T4CON.reg |= (uint16) (1u << 0u))
 //#define GPT12E_T4_Mode_Counter_Input_Rising_T4In_Dis()   (GPT12E->T4CON.reg &= (uint16)~(1u << 0u))
@@ -407,7 +410,8 @@ typedef enum
 
 /* T5 Input Parameter Selection */
 //#define GPT12E_T5_Mode_Timer_Clk_Prescaler_Sel(t5i)      (GPT12E->T5CON.bit.T5I = (uint16)(t5i & 7u))
-
+//#define GPT12E_T5_Mode_Gated_Timer_Clk_Prescaler_Sel(t5i) \
+                                                         (GPT12E->T5CON.bit.T5I = (uint16)(t5i & 7u))
 //#define GPT12E_T5_Mode_Counter_Input_T5In_Sel()          (GPT12E->T5CON.reg &= (uint16)~(1u << 2u))
 //#define GPT12E_T5_Mode_Counter_Input_Rising_T5In_Sel()   (GPT12E->T5CON.reg |= (uint16) (1u << 0u))
 //#define GPT12E_T5_Mode_Counter_Input_Falling_T5In_Sel()  (GPT12E->T5CON.reg |= (uint16) (1u << 1u))
@@ -478,7 +482,8 @@ typedef enum
 
 /* T6 Input Parameter Selection */
 //#define GPT12E_T6_Mode_Timer_Clk_Prescaler_Sel(t6i)      (GPT12E->T6CON.bit.T6I = (uint16)(t6i & 7u))
-
+//#define GPT12E_T6_Mode_Gated_Timer_Clk_Prescaler_Sel(t6i) \
+                                                         (GPT12E->T6CON.bit.T6I = (uint16)(t6i & 7u))
 //#define GPT12E_T6_Mode_Counter_Input_T6IN_Sel()          (GPT12E->T6CON.reg &= (uint16)~(1u << 2u))
 //#define GPT12E_T6_Mode_Counter_Input_Rising_T6IN_Sel()   (GPT12E->T6CON.reg |= (uint16) (1u << 0u))
 //#define GPT12E_T6_Mode_Counter_Input_Falling_T6IN_Sel()  (GPT12E->T6CON.reg |= (uint16) (1u << 1u))

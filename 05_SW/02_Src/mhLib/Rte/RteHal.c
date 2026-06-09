@@ -141,6 +141,33 @@ Std_ReturnType GetSpeedRef (sint16_t* data)
     return retVal;
 }
 
+Std_ReturnType GetMotorState (uint8_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = Emo_GetMotorState();
+    return retVal;
+}
+
+Std_ReturnType GetPhaseCurrA (sint16_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = Emo_GetPhaseCurrA();
+    return retVal;
+}
+
+Std_ReturnType GetPhaseCurrB (sint16_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = Emo_GetPhaseCurrB();
+    return retVal;
+}
+
+Std_ReturnType GetPhaseCurrC (sint16_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = Emo_GetPhaseCurrC();
+    return retVal;
+}
 Std_ReturnType SetSpeedRef (sint16_t data)
 {
     Std_ReturnType retVal = RTE_E_OK;
@@ -311,12 +338,12 @@ Std_ReturnType SetSleepMode (void)
 }
 
 
-Std_ReturnType GetOpenPhase (uint8_t* data)
-{
-    Std_ReturnType retVal = RTE_E_OK;
-    *data = (uint8_t)Emo_OpenPhaseStatus();
-    return retVal;
-}
+//Std_ReturnType GetOpenPhase (uint8_t* data)
+//{
+//    Std_ReturnType retVal = RTE_E_OK;
+//    *data = (uint8_t)Emo_OpenPhaseStatus();
+//    return retVal;
+//}
 
 
 Std_ReturnType ClearVddExtShortCircuitStatus (void)

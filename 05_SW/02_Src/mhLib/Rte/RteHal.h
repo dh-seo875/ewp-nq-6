@@ -93,7 +93,7 @@ Std_ReturnType SetSleepMode (void);
     value 0: No Open Phase
     value 1: Open Phase
 */
-Std_ReturnType GetOpenPhase (uint8_t* data);
+//Std_ReturnType GetOpenPhase (uint8_t* data);
 
 Std_ReturnType ClearVddExtShortCircuitStatus (void);
 
@@ -105,7 +105,10 @@ Std_ReturnType SetErrorCode (uint8_t data);
 Std_ReturnType SetErrorCodeIndex (uint8_t data);
 
 //Std_ReturnType GetPowerLimitState (uint8_t* data);
-
+Std_ReturnType GetMotorState (uint8_t* data);
+Std_ReturnType GetPhaseCurrA (sint16_t* data);
+Std_ReturnType GetPhaseCurrB (sint16_t* data);
+Std_ReturnType GetPhaseCurrC (sint16_t* data);
 
 
 

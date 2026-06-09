@@ -260,63 +260,51 @@ void LIN_LLD_Service(void)
     static l_irqmask lin_irqState;
 	static volatile unsigned char timer_1ms;
 
-    timer_1ms = timer_1ms + 1u;
+
 
     /* cyclic communication task has to be called once every byte */
     /* location is changed in accordance with IHR poring guid. */
-    l_cyclic_com_task();
+//    l_cyclic_com_task();
     LIN_TransportLayerMain();
 
     /* myunghwa code for using Nvm.c */
 	LIN_LLD_Service_Successful_chk();
     
     /* 1ms cyclic task */
-    if (timer_1ms >= 4u)
-    {
-		timer_1ms = 0u;
-		BusIdleTimeOutCounter++;
-		
-		/* Every interrupt that contains either signal read (incl.
-		 * status flag management), signal write, driver status management,
-		 * driver tasks (incl. ld_task, cyclic_com_task, l_ifc_rx) should be
-		 * protected against interruption from other.
-		 */
-		lin_irqState = l_sys_irq_disable();
-		/* Call the cyclic task according to the configured value
-		 * (field "LIN Task Cycletime" in the LDC-Tool) */
-		ld_task_Cal();
-		  
-		/* for more detailed information */
-		//tmpStatus = l_ifc_read_status();
-		l_sys_irq_restore(lin_irqState);
-		
-		/* get status of lin driver from status word, see LIN specification 
-		for more detailed information */
-		tmpStatus = l_ifc_read_status();
-		
-		/* If one of the statusflags is set then there was something on the bus
-		reset counter and wake up */
-		BusIdleTimeOutCounter = ((tmpStatus & 0x00FFu) != 0u) ? 0u : BusIdleTimeOutCounter;
-		
-		/* After 4 seconds no communcation or other disturbtion - go to sleep */
-		BusIdleTimeOutCounter = (BusIdleTimeOutCounter >= 4000u) ? 4000u : BusIdleTimeOutCounter;
-    	LIN_LLD_Service_1ms();
+    BusIdleTimeOutCounter++;
+    /* Every interrupt that contains either signal read (incl.
+     * status flag management), signal write, driver status management,
+     * driver tasks (incl. ld_task, cyclic_com_task, l_ifc_rx) should be
+     * protected against interruption from other.
+     */
+    lin_irqState = l_sys_irq_disable();
+    /* Call the cyclic task according to the configured value
+     * (field "LIN Task Cycletime" in the LDC-Tool) */
+    //ld_task_Cal();
+      
+    /* for more detailed information */
+    //tmpStatus = l_ifc_read_status();
+    l_sys_irq_restore(lin_irqState);
 
-
-    }
-}
-
-
-static void LIN_LLD_Service_1ms(void)
-{
-	/* cyclic task of driver (timeout and diagnostic control */
-	//		  ld_task_Cal();
+    /* get status of lin driver from status word, see LIN specification 
+    for more detailed information */
+    tmpStatus = l_ifc_read_status();
+    
+    /* If one of the statusflags is set then there was something on the bus
+    reset counter and wake up */
+	BusIdleTimeOutCounter = ((tmpStatus & 0x00FFu) != 0u) ? 0u : BusIdleTimeOutCounter;
+	
+    /* After 4 seconds no communcation or other disturbtion - go to sleep */
+	BusIdleTimeOutCounter = (BusIdleTimeOutCounter >= 4000u) ? 4000u : BusIdleTimeOutCounter;
+    
+    /* cyclic task of driver (timeout and diagnostic control */
+    ld_task_Cal();
 	LIN_LLD_Service_Timeout();
-	LIN_CoolantDiagFlag();	//needs 20ms task
-	LIN_LLD_Service_InitialFlag(); //needs 20ms task
-	LIN_LLD_Service_RefSpdCal(); //needs 20ms task
-	timer_100ms = timer_100ms + 1u;
-	LIN_LLD_Service_TX_Cal();  // //needs 20ms task
+    LIN_CoolantDiagFlag();
+	LIN_LLD_Service_RefSpdCal();
+    LIN_LLD_Service_InitialFlag();
+	LIN_LLD_Service_TX_Cal();
+
 }
 
 static void ld_task_Cal(void)
@@ -339,8 +327,7 @@ static void LIN_LLD_Service_Successful_chk(void)
 	else
 	{
 		successful_timer_1ms = successful_timer_1ms + 1u;
-		successful_timer_1ms = (successful_timer_1ms > 4u) ? 0u : successful_timer_1ms;
-		linSuccessfulFlag = (successful_timer_1ms >= 4u) ? 0u : linSuccessfulFlag;
+		linSuccessfulFlag = (successful_timer_1ms >= 1u) ? 0u : linSuccessfulFlag;
 	}
 }
 static void LIN_LLD_Service_Timeout(void)
@@ -432,6 +419,7 @@ static void LIN_LLD_Service_TX_Cal(void)
 {
     uint8_t uint8_temp =0;
 	sint16_t sint16_temp =0;
+	timer_100ms = timer_100ms + 1u;
     if (timer_100ms > 100u )
     {
         timer_100ms = 0;
@@ -555,6 +543,7 @@ void LIN_COM_Handler(void)
     {
         l_ifc_rx();
         UART1->SCONCLR.bit.RICLR = 1u;
+		l_cyclic_com_task();
     }
 }
 

@@ -90,14 +90,14 @@ __STATIC_INLINE sint32_t Emo_GetIdcDecimalPoint(void)
     sint32 Idc_imag = 0;
     sint32 Idc_real = 0;
     
-	    /* 83.333 A = 83333 / multifly 1000 */
-    Iq_imag_float = ((sint32)Emo_Foc.RotCurr.Imag * 83333) / 32767;
-    Iq_real_float = ((sint32)Emo_Foc.RotCurr.Real * 83333) / 32767;        
+	    /* 166.666 A = 166666 / multifly 1000 */
+    Iq_imag_float = ((sint32)Emo_Foc.RotCurr.Imag *166666) / 32767;
+    Iq_real_float = ((sint32)Emo_Foc.RotCurr.Real *166666) / 32767;        
     Idc_imag = (Iq_imag_float * (sint32)Emo_Foc.RotVolt.Imag) / Emo_Ctrl.ImagCurrPi.PiMax;
     Idc_real = (Iq_real_float * (sint32)Emo_Foc.RotVolt.Real) / Emo_Ctrl.RealCurrPi.PiMax;
     
     /* Idc = ((Iq * Vq) + (Id * Vd)) * (efficient * coffcient) */
-    Idc = (((Idc_imag) + (Idc_real)) * 85) / 100;	
+    Idc = (((Idc_imag) + (Idc_real)) * 86) / 100;	
     
     return ((sint16_t)Idc);
 }
@@ -137,6 +137,26 @@ __STATIC_INLINE uint8_t Emo_GetPowereLimitStatePoint(void)
     return (Power_Limit_Flag);
 }
 
+
+__STATIC_INLINE uint8_t Emo_GetMotorState(void)
+{
+    return (uint8_t)Emo_Status.MotorState;
+}
+
+__STATIC_INLINE sint16_t Emo_GetPhaseCurrA(void)
+{
+    return (sint16_t)Emo_Svm.PhaseCurr.A;
+}
+
+__STATIC_INLINE sint16_t Emo_GetPhaseCurrB(void)
+{
+    return (sint16_t)Emo_Svm.PhaseCurr.B;
+}
+
+__STATIC_INLINE sint16_t Emo_GetPhaseCurrC(void)
+{
+    return (sint16_t)Emo_Svm.PhaseCurr.C;
+}
 
 #endif    /* EMO_INTERFACE_H */
 

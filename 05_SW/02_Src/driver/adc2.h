@@ -203,7 +203,7 @@ __STATIC_INLINE uint16 ADC2_MON_Result_mV(void);
 __STATIC_INLINE uint16 ADC2_GetChResult(uint8 channel)
 {
 //  volatile uint32 *pBaseAddr;
-  volatile uint16 Var = 0;
+  volatile uint16 Var;
   if(channel == 1u)
   {
       Var = (uint16)(ADC2->FILT_OUT1.reg & 0x000003FFu);

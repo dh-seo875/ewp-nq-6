@@ -69,7 +69,7 @@ static MsgDataType MsgData;
 static boolean_t RxDataIndication = FALSE;
 static boolean_t TxDataIndication = FALSE;
 static Diag_SID_Type CurrentSrvId = 0;
-
+static const uint8_t* EEPROM_Address = NULL_PTR;
 /*
 ************************************************************************************************************************
 *                                                 Local function prototypes
@@ -82,8 +82,11 @@ static void DiagManager_ServiceControl (DiagGlobalType* ctrlInfo, MsgDataType* d
 static void DiagManager_DataRxIndication (ProtocolAddrType addrType, uint16_t length, const uint8_t* txConfirmation);
 static boolean_t DiagManager_SendResponse (uint16_t txDataLength);
 static void DiagManager_SendNrc (Diag_NegativeResponseCodeType responseCode);
-
-
+//void DiagManager_AddEEPROMaddressData(uint8_t* mAddress);
+//void DiagManager_Buffer_Updata_Sector0(uint8_t buffercnt);
+//void DiagManager_Buffer_Updata_Sector1(uint8_t buffercnt);
+//void DiagManager_Buffer_Updata_Sector2(uint8_t buffercnt);
+//void DiagManager_Buffer_Updata_Sector3(uint8_t buffercnt);
 /*
 ************************************************************************************************************************
 *                                                    Exported functions
@@ -397,5 +400,35 @@ static boolean_t DiagManager_SendResponse (uint16_t txDataLength)
     TxDataIndication = TRUE;
 
     return retValue;
+}
+
+void DiagManager_AddEEPROMaddressData(const uint8_t* mAddress)
+{
+	EEPROM_Address = mAddress;
+}
+	
+void DiagManager_Buffer_Updata_Sector0(uint8_t buffercnt)
+{
+	//MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = ErrorCodePageA[buffercnt];
+	//MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = *(EEPROM_Address + buffercnt);
+	MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = EEPROM_Address[buffercnt];
+}
+void DiagManager_Buffer_Updata_Sector1(uint8_t buffercnt)
+{
+	//MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = ErrorCodePageA[buffercnt+38];
+	//MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = *(EEPROM_Address + 38 + buffercnt);
+	  MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = EEPROM_Address[38u + buffercnt];
+}
+void DiagManager_Buffer_Updata_Sector2(uint8_t buffercnt)
+{
+	//MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = ErrorCodePageA[buffercnt+74];
+  //MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = *(EEPROM_Address + 74 + buffercnt);
+	  MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = EEPROM_Address[74u + buffercnt];
+}
+void DiagManager_Buffer_Updata_Sector3(uint8_t buffercnt)
+{
+	//MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = ErrorCodePageA[buffercnt+110];
+  //MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = *(EEPROM_Address + 110 + buffercnt);
+	  MsgData.pduTxData.SduDataPtr[buffercnt + 3u] = EEPROM_Address[110u + buffercnt];
 }
 
