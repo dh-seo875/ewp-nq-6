@@ -104,6 +104,7 @@ void SensorSWComponentPack(void)
 	    CheckOpenPhase();
 	    MeasSpeed();
 		ConvertRpmToDuty();
+		SensorTask_Cnt++;
 	}
 	else if(SensorTask_Cnt == 1u) //17us
 	{

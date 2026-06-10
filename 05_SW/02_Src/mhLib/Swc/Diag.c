@@ -92,7 +92,7 @@ static uint8_t UV_faultflag                  = 0;
 
 /* via Rte */
 static DiagState_t diag_hwOpenPhaseState      = NORMAL;
- sint16_t diag_vdcFiltered              = 0;
+static sint16_t diag_vdcFiltered              = 0;
 static sint16_t diag_speedRef                 = 0;
 static sint16_t diag_iqFiltered               = 0;
 
