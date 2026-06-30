@@ -791,7 +791,7 @@ void lin_hal_set_resp_error (void)
          }
 #endif /* end #ifdef GM_SPEC_ADAPTION */
 #if ((defined LIN_PROTOCOL_VERSION_2_0) || (defined LIN_PROTOCOL_VERSION_2_1))
-         l_Set_Response_Error_Flag();
+         //l_Set_Response_Error_Flag();
 #endif /* end #if defined LIN_PROTOCOL_VERSION_2_0 || defined LIN_PROTOCOL_VERSION_2_1 */
       }
       if (g_lin_status_word.flag.last_pid != 0x0u)

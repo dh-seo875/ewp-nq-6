@@ -89,7 +89,7 @@ void lin_slave_task_tx_data(void)
    if(g_lin_active_pid == LIN_Response_Error_Frame_PID) /* PID of status frame */
    {
       /* Reset Response Error Flag */
-      l_Reset_Response_Error_Flag();
+      //l_Reset_Response_Error_Flag();
    }
 #endif /* end #if defined LIN_PROTOCOL_VERSION_2_0 || defined LIN_PROTOCOL_VERSION_2_1 */
 #endif /* #if ((defined LIN_SLAVE)||(defined J2602_SLAVE)) */
