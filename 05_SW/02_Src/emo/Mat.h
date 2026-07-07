@@ -105,7 +105,7 @@ __STATIC_INLINE TComplex Mat_InvPark(TComplex RotVolt, uint16 Angle);
 __STATIC_INLINE TComplex Mat_PolarKartesisch(uint16 Amp, uint16 Angle);
 
 __STATIC_INLINE sint16 Mat_ExeLp_without_min_max(TMat_Lp_Simple *pLp, sint16 Input);
-//__STATIC_INLINE uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp);
+__STATIC_INLINE uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp);
 
 
 __STATIC_INLINE sint16 Mat_Ramp(sint16 Input, sint32 Slewrate, sint32 *Output);
@@ -480,6 +480,97 @@ __STATIC_INLINE sint32 Mat_FixMul_singed(sint32 Factor1,sint32 Factor2)
 
 	return result;
 }
+
+__STATIC_INLINE uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp)
+{
+  sint32 AbsReal;
+  sint32 AbsImag;
+  uint32 Index;
+  uint32 Angle;
+  uint32 TableValue;
+
+  /* Get absolute values */
+  AbsReal = Stat.Real;
+  if(AbsReal < 0)
+  {
+    AbsReal = -AbsReal;
+  }
+  AbsImag = Stat.Imag;
+  if(AbsImag < 0)
+  {
+    AbsImag = -AbsImag;
+  }
+
+  if(AbsImag <= AbsReal)
+  {
+    /* Get basic angle from table */
+    Index = (((uint32)AbsImag) * 1024u) / ((uint32)AbsReal);
+    TableValue = Table_ArcTan[Index];
+
+    /* Get amplitude from table */
+    *pAmp = (uint16)((((uint32)AbsReal) * Table_Amp[Index]) >> 15u);
+    
+    /* Get final angle depending on quadrant */
+    if(Stat.Real > 0)
+    {
+      if(Stat.Imag >= 0)
+      {
+        Angle = TableValue;
+      }
+      else /* (Stat.Imag < 0) */
+      {
+        Angle = 0x10000u - TableValue;
+      }
+    }
+    else /* (Stat.Real < 0) */
+    {
+      if(Stat.Imag >= 0)
+      {
+        Angle = 0x8000u - TableValue;
+      }
+      else /* (Stat.Imag < 0) */
+      {
+        Angle = 0x8000u + TableValue;
+      }
+    }
+  }
+  else /* (AbsReal < AbsImag) */
+  {
+    /* Get basic angle from table */
+    Index = (((uint32)AbsReal) * 1024u) / ((uint32)AbsImag);
+
+    TableValue = Table_ArcTan[Index];
+
+    /* Get amplitude from table */
+    *pAmp = (uint16)((((uint32)AbsImag) * Table_Amp[Index]) >> 15u);
+    
+    /* Get final angle depending on quadrant */
+    if(Stat.Real >= 0)
+    {
+      if(Stat.Imag > 0)
+      {
+        Angle = 0x4000u - TableValue;
+      }
+      else /* (Stat.Imag < 0) */
+      {
+        Angle = 0xC000u + TableValue;
+      }
+    }
+    else /* (Stat.Real < 0) */
+    {
+      if(Stat.Imag > 0)
+      {
+        Angle = 0x4000u + TableValue;
+      }
+      else /* (Stat.Imag < 0) */
+      {
+        Angle = 0xC000u - TableValue;
+      }
+    }
+  }
+  return (uint16)Angle;
+  
+} /* End of Mat_CalcAngleAmp */
 
 
 

@@ -56,7 +56,7 @@ static void Emo_HandleT2Overflow_Run(void);
 static void Emo_lInitFocVar(void);
 static void Emo_lInitFocPar(void);
 static uint32 Emo_StartMotor(void);
-uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp);
+
 
 void Task_Emo_MotorControl(void)
 {
@@ -531,97 +531,6 @@ static void Emo_HandleT2Overflow_Start(void)
 		 //Emo_Ctrl.EnableStartVoltage = 1;
 }
 
-
-uint16 Mat_CalcAngleAmp(TComplex Stat, uint16 *pAmp)
-{
-  sint32 AbsReal;
-  sint32 AbsImag;
-  uint32 Index;
-  uint32 Angle;
-  uint32 TableValue;
-
-  /* Get absolute values */
-  AbsReal = Stat.Real;
-  if(AbsReal < 0)
-  {
-    AbsReal = -AbsReal;
-  }
-  AbsImag = Stat.Imag;
-  if(AbsImag < 0)
-  {
-    AbsImag = -AbsImag;
-  }
-
-  if(AbsImag <= AbsReal)
-  {
-    /* Get basic angle from table */
-    Index = (((uint32)AbsImag) << 10u) / ((uint32)AbsReal);
-    TableValue = Table_ArcTan[Index];
-
-    /* Get amplitude from table */
-    *pAmp = (uint16)((((uint32)AbsReal) * Table_Amp[Index]) >> 15u);
-    
-    /* Get final angle depending on quadrant */
-    if(Stat.Real > 0)
-    {
-      if(Stat.Imag >= 0)
-      {
-        Angle = TableValue;
-      }
-      else /* (Stat.Imag < 0) */
-      {
-        Angle = 0x10000u - TableValue;
-      }
-    }
-    else /* (Stat.Real < 0) */
-    {
-      if(Stat.Imag >= 0)
-      {
-        Angle = 0x8000u - TableValue;
-      }
-      else /* (Stat.Imag < 0) */
-      {
-        Angle = 0x8000u + TableValue;
-      }
-    }
-  }
-  else /* (AbsReal < AbsImag) */
-  {
-    /* Get basic angle from table */
-    Index = (((uint32)AbsReal) << 10u) / ((uint32)AbsImag);
-
-    TableValue = Table_ArcTan[Index];
-
-    /* Get amplitude from table */
-    *pAmp = (uint16)((((uint32)AbsImag) * Table_Amp[Index]) >> 15u);
-    
-    /* Get final angle depending on quadrant */
-    if(Stat.Real >= 0)
-    {
-      if(Stat.Imag > 0)
-      {
-        Angle = 0x4000u - TableValue;
-      }
-      else /* (Stat.Imag < 0) */
-      {
-        Angle = 0xC000u + TableValue;
-      }
-    }
-    else /* (Stat.Real < 0) */
-    {
-      if(Stat.Imag > 0)
-      {
-        Angle = 0x4000u + TableValue;
-      }
-      else /* (Stat.Imag < 0) */
-      {
-        Angle = 0xC000u - TableValue;
-      }
-    }
-  }
-  return (uint16)Angle;
-  
-}
 
 
 static void Emo_HandleT2Overflow_Run(void)
