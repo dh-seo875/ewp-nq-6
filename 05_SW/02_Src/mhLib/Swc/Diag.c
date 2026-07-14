@@ -1396,7 +1396,7 @@ static void DiagStallErrorNormal(void)
 	static const sint16_t CAL_ST_FaultCntMax		     = ST_FAULT_CNT_MAX;
 	static const sint16_t CAL_ST_AttemptCLRCntMax	= ST_AttemptCLR_CNT_MAX;
 	sint16_t diag_fluxAbsValueMeasured	  = 0;
-    (void)ReadFluxAbsValueMeasured(&diag_fluxAbsValueMeasured);
+	(void)GetFluxAbsValue(&diag_fluxAbsValueMeasured);
 
 	if ((diag_fluxAbsValueMeasured <= CAL_ST_FluxAbsFaultUprTh) && ((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u)
 		&& ((uint16_t)diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL))

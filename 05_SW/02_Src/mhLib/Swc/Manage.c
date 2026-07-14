@@ -269,6 +269,10 @@ static void ManageSystemOnOff(void)
 		    {
     			manage_IRV_SpeedRef = manage_speedCmd;
 			}
+			if(manage_InitialFlag == 1u)
+			{
+                manage_IRV_SpeedRef = 0;
+			}			
             break;
 
         case SLEEP:

@@ -80,7 +80,7 @@ static void MeasIq (void);
 static void MeasId (void);
 static void MeasSpeed (void);
 static void MeasTemperature(void);
-static void MeasFluxAbsValue(void);
+//static void MeasFluxAbsValue(void);
 static void CheckLinError (void);
 static void CheckIgn (void);
 static void CheckOpenPhase (void);
@@ -124,7 +124,7 @@ void SensorSWComponentPack(void)
 	    CheckShortCircuit();
 	    CheckGateDrvError();
 	    MeasTemperature();
-	  	MeasFluxAbsValue();
+//	  	MeasFluxAbsValue();
 //	  	CheckErrorCodeIndex();
 //		CheckPowerLimit();
 		SensorTask_Cnt = 0u;
@@ -525,14 +525,14 @@ static void CheckOpenPhase(void)
     (void)WriteHwOpenPhaseState(sensor_hwOpenPhaseState);
 }
 
-static void MeasFluxAbsValue (void)
-{    
-	sint16_t    sensor_fluxAbsValueMeasured = 0;
+//static void MeasFluxAbsValue (void)
+//{    
+//	sint16_t    sensor_fluxAbsValueMeasured = 0;
 
-    (void)GetFluxAbsValue(&sensor_fluxAbsValueMeasured);
+//    (void)GetFluxAbsValue(&sensor_fluxAbsValueMeasured);
 
-    (void)WriteFluxAbsValueMeasured(sensor_fluxAbsValueMeasured);
-}
+//    (void)WriteFluxAbsValueMeasured(sensor_fluxAbsValueMeasured);
+//}
 
 //static void CheckErrorCodeIndex (void)
 //{    
