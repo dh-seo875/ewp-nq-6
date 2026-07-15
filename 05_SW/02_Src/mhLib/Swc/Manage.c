@@ -194,12 +194,13 @@ static void ManageSystemOnOff(void)
 	static sint16_t LimphomeCnt = 0;
 	static uint16_t initialSleepCnt = 0;
 	static uint8_t error_done = 0;
+	uint8_t manage_LIVCheck = 0;
     (void)ReadIgnFlag(&manage_ignState);
     (void)ReadLinTimeOutErrorState(&manage_linErrorState);
     (void)ReadSpeedCmd(&manage_speedCmd);
     (void)ReadSpeedFiltered(&manage_SpeedFiltered);
 	(void)ReadInitialFlag(&manage_InitialFlag);
-	
+    (void)ReadWarningStateMerged(&manage_LIVCheck); //LIV Check	
     switch (manageSystemOnOffState)
     {
         case WAKE_UP:
@@ -220,6 +221,11 @@ static void ManageSystemOnOff(void)
 
         case DRIVE:            
 			manageSystemOnOffState = (manage_ignState == IGN_OFF) ? POWER_LATCH : manageSystemOnOffState;
+			if(((manage_LIVCheck >> 6U) & 0x01) == 1U)
+			{
+    			manage_IRV_SpeedRef = SPEED_MAX_RUN;
+			}
+
 			if((manage_ignState == IGN_ON) && (manage_linErrorState == FAULT)) // limp home
 			{
 			    LimphomeCnt = (LimphomeCnt >= 12000) ? 12000 : (LimphomeCnt+1);			

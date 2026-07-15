@@ -134,26 +134,29 @@ static void ConvertDutyToRpm(void)
 {
 	uint16_t rpm = 0U;
 	uint8_t sensor_LinRequireDuty = 0U;
+	uint32_t tmp;
 
 	(void)ReadLinRequireDuty(&sensor_LinRequireDuty);
 
-	if (sensor_LinRequireDuty < LOWER_DUTY)
+	if (sensor_LinRequireDuty < LOWER_DUTY) // 0-9 duty
 	{
 	    rpm = 0U;
 	}
-	else if (sensor_LinRequireDuty >= UPPER_DUTY)
+	else if ((sensor_LinRequireDuty >= LOWER_DUTY) && (sensor_LinRequireDuty <= UPPER_DUTY)) //10-90 duty
 	{
-	    rpm = MAX_RPM;
-	}
-	else
-	{
-	    uint32_t tmp;
-
 	    /* tmp = (duty - 10) * 5000 */
 	    tmp = (uint32_t)((uint32_t)sensor_LinRequireDuty - (uint32_t)LOWER_DUTY) * (uint32_t)RPM_RANGE;
 
 	    /* rpm = 1000 + tmp / 80 */
 	    rpm = (uint16_t)((uint32_t)MIN_RPM + (tmp / (uint32_t)DUTY_RANGE));
+	}
+	else if((sensor_LinRequireDuty > UPPER_DUTY) && (sensor_LinRequireDuty <= 100U)) //91-100
+	{
+    	rpm = MAX_RPM;
+	}
+	else // 101-255
+	{
+        /* no action */
 	}
 
 	(void)WriteConvertRPM((sint16_t)rpm);
@@ -446,9 +449,9 @@ static void CheckOpenPhase(void)
     static sint16_t ErrCnt_Phs_C = 0;
 	uint8_t sensor_MotorState = 0;
 	uint8_t sensor_Confirm_OPflag_sum = 0;
-	uint8_t Confirm_OPflag_A = 0;
-	uint8_t Confirm_OPflag_B = 0;
-	uint8_t Confirm_OPflag_C = 0;
+	static uint8_t Confirm_OPflag_A = 0;
+	static uint8_t Confirm_OPflag_B = 0;
+	static uint8_t Confirm_OPflag_C = 0;
 	
 	(void)GetPhaseCurrA(&sensor_Phas_A);
 	(void)GetPhaseCurrB(&sensor_Phas_B);	

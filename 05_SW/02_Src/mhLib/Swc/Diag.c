@@ -160,7 +160,7 @@ static uint8_t WC_normalCnt = 0;
 /************************ Over Current **************************/
 static uint8_t OC_faultCnt 				  = 0;
 static uint8_t OC_retryAttempt 			  = 0;
-static uint8_t OC_AttemptCLRCnt              = 0;
+static sint16_t OC_AttemptCLRCnt              = 0;
 static uint8_t OC_retryCnt 				  = 0;
 
 /************************ Low Current **************************/
@@ -178,6 +178,7 @@ static uint8_t ST_retryAttempt 			  = 0;
 
 /************************ LIN Invalid Value **************************/
 static uint16_t LIV_faultCnt = 0;
+static sint8_t diag_ignState = IGN_ON;
 
 
 /************************ Speed Error **************************/
@@ -974,7 +975,7 @@ static void DiagGateDrvOVUV(void)
 static void DiagLINError(void)
 {
 	static DiagState_t diag_linTimeOutErrorState   = NORMAL;
-	static sint8_t diag_ignState = IGN_ON;
+
 
     (void)ReadLinTimeOutErrorState(&diag_linTimeOutErrorState);
     (void)ReadIgnFlag(&diag_ignState);
@@ -1527,8 +1528,10 @@ static void DiagLINInvalidValue(void)
 	uint8_t diag_linRequireDuty = 0;
 
 	(void)ReadLinRequireDuty(&diag_linRequireDuty);
+    (void)ReadIgnFlag(&diag_ignState);
 
-    if (((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u))
+
+    if (((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u) && (diag_ignState == IGN_ON))
     {
         LIV_entryCondition = ENABLE;
     }
@@ -1796,7 +1799,7 @@ static void MergeDiagState(void)
     GE_faultflag = (((uint8_t)IRV_GE_diagState >> 2u) & 0x01u) << 7u; // bit 7
 	/************************* diag warningStateMerged **********************/
     WT_warningCheck = ((uint8_t)IRV_OT_diagState & 0x01u) << 2u;
-	OC_warningCheck = ((uint8_t)IRV_OC_diagState & 0x01u) << 4u;
+	OC_warningCheck = ((uint8_t)IRV_WC_diagState & 0x01u) << 4u;
     LE_warningCheck = ((uint8_t)IRV_LE_diagState & 0x01u) << 5u;
 	LIV_warningCheck = ((uint8_t)IRV_LIV_diagState & 0x01u) << 6u;
     SE_warningCheck = ((uint8_t)IRV_SE_diagState & 0x01u) << 7u;
