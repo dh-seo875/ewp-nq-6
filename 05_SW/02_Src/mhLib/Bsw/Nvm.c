@@ -143,7 +143,7 @@ static void NVM_Watchdog_Fault(void)
 	if(((PMU_Reset_Flag >> 5u) & 0x01u) == 1u) //WDT1 Reset
 	{
         Nvm_WDT_Cnt = PMU->GPUDATA00.reg;	
-        if(Nvm_WDT_Cnt >= 3u)   // Check if WDT1 fail occur 3 time
+        if(Nvm_WDT_Cnt >= 2u)   // Check if WDT1 fail occur 3 time
         {
             Nvm_Watchdog_Fault_FLAG = 1;
             PMU->GPUDATA00.reg = 0;

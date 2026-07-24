@@ -262,12 +262,12 @@ __STATIC_INLINE uint16 ADC2_VS_Result_mV(void)
   if (ADC2_VS_Attenuator_Range_Get() == ADC2_VS_Attenuator_Range_3_28V)
   {
     /* attenuator 0.039 (39/1000) */
-    value = (uint16)(((value * (uint16)(ADC2_VREF) / 1023u) * 1000u) / 39u);
+    value = (uint16)(((uint32)value * (uint16)(ADC2_VREF) * 125u) / 4987u);
   }
   else
   {
     /* attenuator 0.055 (11/200) */
-    value = (uint16)(((value * (uint16)(ADC2_VREF) / 1023u) * 200u) / 11u);
+    value = (uint16)(((uint32)value * (uint16)(ADC2_VREF) * 200u) / 11253u);
   }
   return(value);
 }
@@ -319,7 +319,7 @@ __STATIC_INLINE uint16 ADC2_MON_Result_mV(void)
   uint16 value;
   value = ADC2_GetChResult(ADC2_RESULT_MON);
   /* attenuator 0.039 (39/1000) */
-  value = (uint16)(((value * (uint16)(ADC2_VREF) / 1023u) * 1000u) / 39u);
+  value = (uint16)(((uint32)value * (uint16)(ADC2_VREF) * 125u) / 4987u);
   return(value);
 }
 

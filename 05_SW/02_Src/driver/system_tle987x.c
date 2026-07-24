@@ -11,7 +11,7 @@
  *
  * @par
  * Infineon Technologies AG (Infineon) is supplying this software for use with 
- * Infineon’s microcontrollers.
+ * Infineon?s microcontrollers.
  *   
  * This file can be freely distributed within development tools that are 
  * supporting such microcontrollers.

@@ -456,78 +456,69 @@ static void ManageStepControlOff(void)
 
 }
 
-sint16_t Manage_ActSpeed = 0;
+
 static void ManageStepControlOn(void)
 {
     static sint16_t CAL_SPEED_STEP       = SPEED_STEP_60;
-
-    //static uint16_t manage_step_control_size_ = 0;
-    //uint16_t CAL_SPEED_STEP_MIDDLE  = SPEED_STEP_MIDDLE;
-    //manage_step_control_size_ = ((manage_Prev_SpeedRef < 984u) || (manage_IRV_SpeedRef < 984u)) ? CAL_SPEED_STEP : CAL_SPEED_STEP_MIDDLE;
-     
-    ReadSpeedFiltered(&Manage_ActSpeed);
-
-    /* STEP size decide*/
-    if(manage_Prev_SpeedRef == 0) //soft Start
-    {
-        CAL_SPEED_STEP = SPEED_STEP_15;
-    }
-    else if(manage_IRV_SpeedRef > manage_IRV_Step_SpeedRef) //increased rpm step
-    {
-        CAL_SPEED_STEP       = SPEED_STEP_60;
-    }
-    else if(manage_IRV_SpeedRef < manage_IRV_Step_SpeedRef) //decreased rpm step
-    {
-        if (manage_IRV_SpeedRef < 1000)  // soft Stop step
-        { 
+    static sint16_t Manage_ActSpeed = 0;
+  
+		(void)ReadSpeedFiltered(&Manage_ActSpeed);
+	
+	  /* STEP size decide*/
+	  if(manage_Prev_SpeedRef == 0)
+	  {
+		    CAL_SPEED_STEP = SPEED_STEP_15;
+	  }
+	  else if(manage_IRV_SpeedRef > manage_IRV_Step_SpeedRef)
+	  {
+		    CAL_SPEED_STEP       = SPEED_STEP_300;
+	  }
+	  else if(manage_IRV_SpeedRef < manage_IRV_Step_SpeedRef)
+	  {
+		    if (manage_IRV_SpeedRef < 1000)
+            { 
             CAL_SPEED_STEP = SPEED_STEP_15;
-        }
-        else if (Manage_ActSpeed < 1500) // slow decrease area 
-        {
+            }
+		    else if (Manage_ActSpeed < 1500)
+            {
             CAL_SPEED_STEP = SPEED_STEP_15;
-        }
-        else                             // fast decrease area
-        {
-            CAL_SPEED_STEP = SPEED_STEP_60;
-        }
-    }
-	else
+            }
+		    else
+		    {
+		        CAL_SPEED_STEP = SPEED_STEP_120;
+		    }
+	  }
+    else
     {
-		/* no action */
-	}
-
-	/* increased RPM */
+			/* do nothing */
+		}			
     if((manage_IRV_SpeedRef > manage_IRV_Step_SpeedRef))
     {
         if(manage_IRV_Step_SpeedRef < 15)
         {
             manage_IRV_Step_SpeedRef = 1000;
         }
-        if (Emo_Status.MotorState == 2)
-		{				
-
+        if (Emo_Status.MotorState == 2u)
+				{				
+        
+				}
+				else
+				{
+					manage_IRV_Step_SpeedRef = (((manage_IRV_Step_SpeedRef + CAL_SPEED_STEP) <= manage_IRV_SpeedRef)) ? (manage_IRV_Step_SpeedRef + CAL_SPEED_STEP) : manage_IRV_SpeedRef; // increase by 10 RPM
+				}
 		}
-		else /* motor Closed Loop */
-		{
-			manage_IRV_Step_SpeedRef = (((manage_IRV_Step_SpeedRef + CAL_SPEED_STEP) <= manage_IRV_SpeedRef)) ? (manage_IRV_Step_SpeedRef + CAL_SPEED_STEP) : manage_IRV_SpeedRef; // increase by 10 RPM
+   	else if(manage_IRV_SpeedRef < manage_IRV_Step_SpeedRef)
+    {
+			  manage_IRV_Step_SpeedRef = (((manage_IRV_Step_SpeedRef - CAL_SPEED_STEP) >= manage_IRV_SpeedRef)) ? (manage_IRV_Step_SpeedRef - CAL_SPEED_STEP) : manage_IRV_SpeedRef; // Decrease by 10 RPM   
 		}
-		//Manage_ActSpeed = manage_IRV_Step_SpeedRef;
-    }
-	/* Decreased RPM */
-    else if(manage_IRV_SpeedRef < manage_IRV_Step_SpeedRef)
-    {
-        manage_IRV_Step_SpeedRef = (((manage_IRV_Step_SpeedRef - CAL_SPEED_STEP) >= manage_IRV_SpeedRef)) ? (manage_IRV_Step_SpeedRef - CAL_SPEED_STEP) : manage_IRV_SpeedRef; // Decrease by 10 RPM
-        //Manage_ActSpeed = manage_IRV_Step_SpeedRef;    
-    }
-    else
-    {
-        manage_IRV_Step_SpeedRef = manage_IRV_SpeedRef;
-    }
+	  else
+	  {
+		    manage_IRV_Step_SpeedRef = manage_IRV_SpeedRef;
+	  }
     if(manage_IRV_Step_SpeedRef == manage_IRV_SpeedRef)
     {
         manage_RPMStepControlState = STEPCONTROLOFF;
         manage_Prev_SpeedRef = manage_IRV_SpeedRef;
-        //Soft_Startcompleteflag = 1u;
     }
 }
 

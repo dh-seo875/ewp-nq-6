@@ -49,8 +49,8 @@
 /*******************************************************************************
 **                      Includes                                              **
 *******************************************************************************/
-#ifndef _BOOTROM_H
-#define _BOOTROM_H
+#ifndef BOOTROM_H
+#define BOOTROM_H
 
 #include <Types.h>
 #include <RTE_Components.h>
@@ -97,112 +97,95 @@
 /*******************************************************************************
 ** Customer ID struct                                                         **
 *******************************************************************************/
-typedef union
-{
-  uint32 reg;
-  struct
-  {
-    uint32           :8;   /*!< [0..7]   rfu                                  */
-    uint32 Step      :8;   /*!< [15..8]  design step major/minor number [HEX] */
-    uint32 Clock     :2;   /*!< [17..16] clock frequency                      */
-    uint32 Package   :2;   /*!< [19..18] package code                         */
-    uint32 SalesCode :4;   /*!< [23..20] device sales code [DEC]              */
-    uint32 Family    :8;   /*!< [31..24] family code                          */
-  } bit;                   /*!< [32] BitSize                                  */
-} TCustomerID;
+
 
 /*******************************************************************************
 ** Function USER_PROG: type definition of the parameter PROG_FLAG             **
 *******************************************************************************/
-typedef enum
-{
-  RAM_Branch,
-  CorrAct,
-} TProgFlag;
 
 /*******************************************************************************
 ** Function USER_PROG: return value decoding                                  **
 *******************************************************************************/
-typedef union {
-	uint8   reg;	
-	struct {
-		uint8 GlobFail   :  1;
-		uint8            :  3;
-		uint8 VerifyFail :  1;
-		uint8 EmergExit  :  1;
-		uint8 SparePgFail:  1;
-		uint8 ExecFail   :  1;
-	} bit;                           
-} TUser_Prog;
+//typedef union {
+//	uint8   reg;	
+//	struct {
+//		uint8 GlobFail   :  1;
+//		uint8            :  3;
+//		uint8 VerifyFail :  1;
+//		uint8 EmergExit  :  1;
+//		uint8 SparePgFail:  1;
+//		uint8 ExecFail   :  1;
+//	} bit;                           
+//} TUser_Prog;
 
 /*******************************************************************************
 ** Function USER_OpenAB: return value decoding                                **
 *******************************************************************************/
-typedef union {
-	uint8   reg;	
-	struct {
-		uint8 ABFail   :  1;
-		uint8          :  6;
-		uint8 ExecFail :  1;
-	} bit;                           
-} TUser_OpenAB;
+//typedef union {
+//	uint8   reg;	
+//	struct {
+//		uint8 ABFail   :  1;
+//		uint8          :  6;
+//		uint8 ExecFail :  1;
+//	} bit;                           
+//} TUser_OpenAB;
 
 /*******************************************************************************
 ** Function USER_MAPRAM_INIT: return value decoding                           **
 *******************************************************************************/
-typedef union {
-	uint8   reg;	
-	struct {
-		uint8 GlobFail      :  1;
-		uint8               :  4;
-		uint8 DoubleMapping :  1;
-		uint8 FaultyPage    :  1;
-		uint8 ExecFail      :  1;
-	} bit;                           
-} TUser_MAPRAM_Init;
+//typedef union {
+//	uint8   reg;	
+//	struct {
+//		uint8 GlobFail      :  1;
+//		uint8               :  4;
+//		uint8 DoubleMapping :  1;
+//		uint8 FaultyPage    :  1;
+//		uint8 ExecFail      :  1;
+//	} bit;                           
+//} TUser_MAPRAM_Init;
 
 #ifdef RTE_DEVICE_BF_STEP
 /*******************************************************************************
 ** Function USER_ERASE_SECTOR_VERIFY: return value decoding                   **
 *******************************************************************************/
-typedef union {
-	uint8   reg;	
-	struct {
-		uint8 GlobFail      :  1;
-		uint8 VerifyFail    :  1;
-		uint8               :  4;
-		uint8 MapRAMFail    :  1;
-		uint8 ExecFail      :  1;
-	} bit;                           
-} TUser_ERASE_SECTOR_VERIFY;
+//typedef union {
+//	uint8   reg;	
+//	struct {
+//		uint8 GlobFail      :  1;
+//		uint8 VerifyFail    :  1;
+//		uint8               :  4;
+//		uint8 MapRAMFail    :  1;
+//		uint8 ExecFail      :  1;
+//	} bit;                           
+//} TUser_ERASE_SECTOR_VERIFY;
 
 /*******************************************************************************
 ** Function USER_ERASEPG_VERIFY: return value decoding                        **
 *******************************************************************************/
-typedef union {
-	uint8   reg;	
-	struct {
-		uint8 GlobFail      :  1;
-		uint8 VerifyFail    :  1;
-		uint8               :  4;
-		uint8 MapRAMFail    :  1;
-		uint8 ExecFail      :  1;
-	} bit;                           
-} TUser_ERASEPG_VERIFY;
+//typedef union {
+//	uint8   reg;	
+//	struct {
+//		uint8 GlobFail      :  1;
+//		uint8 VerifyFail    :  1;
+//		uint8               :  4;
+//		uint8 MapRAMFail    :  1;
+//		uint8 ExecFail      :  1;
+//	} bit;                           
+//} TUser_ERASEPG_VERIFY;
 
 /*******************************************************************************
 ** Function USER_VERIFY_PAGE: return value decoding                           **
 *******************************************************************************/
-typedef union {
-	uint8   reg;	
-	struct {
-		uint8 GlobFail       :  1;
-		uint8 VerifyEraseFail:  1;
-		uint8 VerifyProgFail :  1;
-		uint8                :  4;
-		uint8 ExecFail       :  1;
-	} bit;                           
-} TUser_VERIFY_PAGE;
+//typedef union {
+//	uint8   reg;	
+//	struct {
+//		uint8 GlobFail       :  1;
+//		uint8 VerifyEraseFail:  1;
+//		uint8 VerifyProgFail :  1;
+//		uint8                :  4;
+//		uint8 ExecFail       :  1;
+//	} bit;                           
+//} TUser_VERIFY_PAGE;
 #endif
 
 /********************************************************************************

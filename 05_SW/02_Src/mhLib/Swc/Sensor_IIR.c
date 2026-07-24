@@ -27,15 +27,31 @@ sint16_t iirVdc(sint16_t NewSample) {
     static sint32_t y1 = 0; // y[n-1] 
     
     sint32_t y0;
+	  sint16_t result;
 
-    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+    y0 = (4018L * (sint32_t)NewSample) + (4018L * x1) + (2087L * y1);
 
-    y0 = (y0 + 16384L) / 32768L;
+    if (y0 >= 0) 
+		{
+        y0 = (y0 + 2048L) / 4096L;
+    } 
+		else 
+		{
+        y0 = (y0 - 2047L) / 4096L;
+    }
 
     x1 = (sint32_t)NewSample;
     y1 = y0;
 
-    return (sint16_t)((y0 + 2L) / 4L);
+		if (y0 >= 0)
+		{
+        result = (sint16_t)((y0 + 2L) / 4L);
+    } 
+		else 
+		{
+        result = (sint16_t)((y0 - 1L) / 4L);
+    }
+		return result;
 }
 
 sint16_t iirIdc(sint16_t NewSample) {
@@ -44,15 +60,31 @@ sint16_t iirIdc(sint16_t NewSample) {
     static sint32_t y1 = 0; // y[n-1] 
     
     sint32_t y0;
+	  sint16_t result;
 
-    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+    y0 = (4018L * (sint32_t)NewSample) + (4018L * x1) + (2087L * y1);
 
-    y0 = (y0 + 16384L) / 32768L;
+    if (y0 >= 0) 
+		{
+        y0 = (y0 + 2048L) / 4096L;
+    } 
+		else 
+		{
+        y0 = (y0 - 2047L) / 4096L;
+    }
 
     x1 = (sint32_t)NewSample;
     y1 = y0;
 
-    return (sint16_t)((y0 + 2L) / 4L);
+		if (y0 >= 0)
+		{
+        result = (sint16_t)((y0 + 2L) / 4L);
+    } 
+		else 
+		{
+        result = (sint16_t)((y0 - 1L) / 4L);
+    }
+		return result;
 }
 
 sint16_t iirIq(sint16_t NewSample) {
@@ -61,15 +93,31 @@ sint16_t iirIq(sint16_t NewSample) {
     static sint32_t y1 = 0; // y[n-1] 
     
     sint32_t y0;
+	  sint16_t result;
 
-    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+    y0 = (4018L * (sint32_t)NewSample) + (4018L * x1) + (2087L * y1);
 
-    y0 = (y0 + 16384L) / 32768L;
+    if (y0 >= 0) 
+		{
+        y0 = (y0 + 2048L) / 4096L;
+    } 
+		else 
+		{
+        y0 = (y0 - 2047L) / 4096L;
+    }
 
     x1 = (sint32_t)NewSample;
     y1 = y0;
 
-    return (sint16_t)((y0 + 2L) / 4L);
+		if (y0 >= 0)
+		{
+        result = (sint16_t)((y0 + 2L) / 4L);
+    } 
+		else 
+		{
+        result = (sint16_t)((y0 - 1L) / 4L);
+    }
+		return result;
 }
 
 sint16_t iirSpeed(sint16_t NewSample) {
@@ -78,15 +126,31 @@ sint16_t iirSpeed(sint16_t NewSample) {
     static sint32_t y1 = 0; // y[n-1] 
     
     sint32_t y0;
+	  sint16_t result;
 
-    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+    y0 = (4018L * (sint32_t)NewSample) + (4018L * x1) + (2087L * y1);
 
-    y0 = (y0 + 16384L) / 32768L;
+    if (y0 >= 0) 
+		{
+        y0 = (y0 + 2048L) / 4096L;
+    } 
+		else 
+		{
+        y0 = (y0 - 2047L) / 4096L;
+    }
 
     x1 = (sint32_t)NewSample;
     y1 = y0;
 
-    return (sint16_t)((y0 + 2L) / 4L);
+		if (y0 >= 0)
+		{
+        result = (sint16_t)((y0 + 2L) / 4L);
+    } 
+		else 
+		{
+        result = (sint16_t)((y0 - 1L) / 4L);
+    }
+		return result;
 }
 
 sint16_t iirTemperature(sint16_t NewSample) {
@@ -95,15 +159,31 @@ sint16_t iirTemperature(sint16_t NewSample) {
     static sint32_t y1 = 0; // y[n-1] 
     
     sint32_t y0;
+	  sint16_t result;
 
-    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+    y0 = (4018L * (sint32_t)NewSample) + (4018L * x1) + (2087L * y1);
 
-    y0 = (y0 + 16384L) / 32768L;
+    if (y0 >= 0) 
+		{
+        y0 = (y0 + 2048L) / 4096L;
+    } 
+		else 
+		{
+        y0 = (y0 - 2047L) / 4096L;
+    }
 
     x1 = (sint32_t)NewSample;
     y1 = y0;
 
-    return (sint16_t)((y0 + 2L) / 4L);
+		if (y0 >= 0)
+		{
+        result = (sint16_t)((y0 + 2L) / 4L);
+    } 
+		else 
+		{
+        result = (sint16_t)((y0 - 1L) / 4L);
+    }
+		return result;
 }
 
 sint16_t iirIgn(sint16_t NewSample) {
@@ -112,15 +192,31 @@ sint16_t iirIgn(sint16_t NewSample) {
     static sint32_t y1 = 0; // y[n-1] 
     
     sint32_t y0;
+	  sint16_t result;
 
-    y0 = (32143L * (sint32_t)NewSample) + (32143L * x1) + (16696L * y1);
+    y0 = (4018L * (sint32_t)NewSample) + (4018L * x1) + (2087L * y1);
 
-    y0 = (y0 + 16384L) / 32768L;
+    if (y0 >= 0) 
+		{
+        y0 = (y0 + 2048L) / 4096L;
+    } 
+		else 
+		{
+        y0 = (y0 - 2047L) / 4096L;
+    }
 
     x1 = (sint32_t)NewSample;
     y1 = y0;
 
-    return (sint16_t)((y0 + 2L) / 4L);
+		if (y0 >= 0)
+		{
+        result = (sint16_t)((y0 + 2L) / 4L);
+    } 
+		else 
+		{
+        result = (sint16_t)((y0 - 1L) / 4L);
+    }
+		return result;
 }
 
 

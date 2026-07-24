@@ -92,8 +92,8 @@
 #endif
 
 #define SPEED_MAX_DEGRADE      (sint16_t)( 3000) /*  3000 RPM */
-#define DIAG_COOLANT_KP        (sint16_t)( 2000) /*   P Gain  */
-#define DIAG_COOLANT_KI        (sint16_t)(30000) /*   I Gain  */
+#define DIAG_COOLANT_KP        (sint16_t)( 1000) /*   P Gain  */
+#define DIAG_COOLANT_KI        (sint16_t)(10000) /*   I Gain  */
 #define DIAG_COOLANT_SPEED_MAX (sint16_t)( 6000) /*  SpeedMax */
 //#define STAY_STOP_CNT_MAX      (sint16_t)(   50) 
 

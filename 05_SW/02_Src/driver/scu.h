@@ -83,17 +83,17 @@
 /** \brief SCU configuration
  */
 
-typedef enum
-{
-  Mod_ADC1 = 0x00,
-  Mod_SSC1 = 0x01,
-  Mod_CCU6 = 0x02,
-  Mod_Timer2 = 0x03,
-  Mod_GPT12 = 0x04,
-  Mod_SSC2 = 0x11,
-  Mod_Timer21 = 0x13,
-  MOd_Timer3 = 0x15
-} TScu_Mod;
+//typedef enum
+//{
+//  Mod_ADC1 = 0x00,
+//  Mod_SSC1 = 0x01,
+//  Mod_CCU6 = 0x02,
+//  Mod_Timer2 = 0x03,
+//  Mod_GPT12 = 0x04,
+//  Mod_SSC2 = 0x11,
+//  Mod_Timer21 = 0x13,
+//  MOd_Timer3 = 0x15
+//} TScu_Mod;
 
 /*******************************************************************************
 **                      Global Variable Declarations                          **
@@ -117,8 +117,8 @@ __STATIC_INLINE void SCU_WDT_Start(void);
 __STATIC_INLINE void SCU_WDT_Stop(void);
 __STATIC_INLINE void SCU_WDT_Service(void);
 __STATIC_INLINE void SCU_ChangeNVMProtection(uint8 Protection, uint8 Action);
-__STATIC_INLINE void SCU_Disable_Module(TScu_Mod Module);
-__STATIC_INLINE void SCU_Enable_Module(TScu_Mod Module);
+//__STATIC_INLINE void SCU_Disable_Module(TScu_Mod Module);
+//__STATIC_INLINE void SCU_Enable_Module(TScu_Mod Module);
 __STATIC_INLINE void SCU_OpenPASSWD(void);
 __STATIC_INLINE void SCU_ClosePASSWD(void);
 
@@ -232,18 +232,7 @@ __STATIC_INLINE void SCU_ChangeNVMProtection(uint8 Protection, uint8 Action)
  *
  * \ingroup scu_api
  */
-__STATIC_INLINE void SCU_Disable_Module(TScu_Mod Module)
-{
-  volatile uint8 *pSfr;
 
-//   pSfr will be assigned to PMCON1 or PMCON2 depending on *
-//   * bit4 in the parameter Module                           
-  pSfr = (uint8 *) (&SCU->PMCON1.reg) + ((Module & 0x10) >> 2);
-
-//   sets the corresponding bit given by the lower nibble in*
-//   * the parameter Module                                   
-  *pSfr |= (uint8) (1 << (Module & 0x07));
-}
 
 /** \brief Enables a given peripheral module
  *
@@ -253,18 +242,7 @@ __STATIC_INLINE void SCU_Disable_Module(TScu_Mod Module)
  *
  * \ingroup scu_api
  */
-__STATIC_INLINE void SCU_Enable_Module(TScu_Mod Module)
-{
-  volatile uint8 *pSfr;
 
-//   pSfr will be assigned to PMCON1 or PMCON2 depending on *
-//   * bit4 in the parameter Module                           
-  pSfr = (uint8 *) (&SCU->PMCON1.reg) + ((Module & 0x10) >> 2);
-
-//   sets the corresponding bit given by the lower nibble in*
-//   * the parameter Module                                   
-  *pSfr &= (uint8) ~ (1 << (Module & 0x07));
-}
 
 /** \brief Opens the PASSWD Register protection scheme for 32 tCLK
  *

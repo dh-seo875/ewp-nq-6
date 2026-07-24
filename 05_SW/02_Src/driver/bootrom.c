@@ -86,93 +86,93 @@
 /*lint -e19 Supressing MISRA 2012 Error 19: Useless Declaration */
 /*lint -e970 Supressing MISRA 2012 MISRA 2012 Directive 4.6 */
 int (*const USER_CFLASH_WR_PROT_EN)
-  (const uint16 cflash_pw) = (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_WR_PROT_EN;
+  (const uint16 cflash_pw) = (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_WR_PROT_EN
 
 int (*const USER_CFLASH_WR_PROT_DIS)
   (const uint16 cflash_pw) =
-  (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_WR_PROT_DIS;
+  (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_WR_PROT_DIS
 
 int (*const USER_CFLASH_RD_PROT_EN)
-  (const uint16 cflash_pw) = (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_RD_PROT_EN;
+  (const uint16 cflash_pw) = (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_RD_PROT_EN
 
 int (*const USER_CFLASH_RD_PROT_DIS)
   (const uint16 cflash_pw) =
-  (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_RD_PROT_DIS;
+  (int (*)(const uint16 cflash_pw)) addr_USER_CFLASH_RD_PROT_DIS
 
 int (*const USER_DFLASH_WR_PROT_EN)
-  (const uint16 dflash_pw) = (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_WR_PROT_EN;
+  (const uint16 dflash_pw) = (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_WR_PROT_EN
 
 int (*const USER_DFLASH_WR_PROT_DIS)
   (const uint16 dflash_pw) =
-  (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_WR_PROT_DIS;
+  (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_WR_PROT_DIS
 
 int (*const USER_DFLASH_RD_PROT_EN)
-  (const uint16 dflash_pw) = (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_RD_PROT_EN;
+  (const uint16 dflash_pw) = (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_RD_PROT_EN
 
 int (*const USER_DFLASH_RD_PROT_DIS)
   (const uint16 dflash_pw) =
-  (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_RD_PROT_DIS;
+  (int (*)(const uint16 dflash_pw)) addr_USER_DFLASH_RD_PROT_DIS
 
 static int (*const USER_OPENAB)
-  (const uint32 * address) = (int (*)(const uint32 *address)) addr_USER_OPENAB;
+  (const uint32 * address) = (int (*)(const uint32 *address)) addr_USER_OPENAB
 
 static int (*const USER_PROG)
-  (const uint8 PROG_FLAG) = (int (*)(const uint8 PROG_FLAG)) addr_USER_PROG;
+  (const uint8 PROG_FLAG) = (int (*)(const uint8 PROG_FLAG)) addr_USER_PROG
 
 int (*const USER_ERASEPG)
   (const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG) =
-  (int (*)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG)) addr_USER_ERASEPG;
+  (int (*)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG)) addr_USER_ERASEPG
 
-int (*const USER_ABORTPROG) (void) = (int (*)(void )) addr_USER_ABORTPROG;
+int (*const USER_ABORTPROG) (void) = (int (*)(void )) addr_USER_ABORTPROG
 
-int (*const USER_NVMRDY) (void) = (int (*)(void )) addr_USER_NVMRDY;
+int (*const USER_NVMRDY) (void) = (int (*)(void )) addr_USER_NVMRDY
 
 int (*const USER_READ_CAL)
   (const uint8 NumOfBytes, const uint8 CSAddr, const uint16 RAMAddr) =
-  (int (*)(const uint8 NumOfBytes, const uint8 CSAddr, const uint16 RAMAddr)) addr_USER_READ_CAL;
+  (int (*)(const uint8 NumOfBytes, const uint8 CSAddr, const uint16 RAMAddr)) addr_USER_READ_CAL
 
 int (*const USER_NVM_CONFIG)
   (const uint8 * NVMSize, const uint8 * MapRAMSize) =
-  (int (*)(const uint8 * NVMSize, const uint8 * MapRAMSize)) addr_USER_NVM_CONFIG;
+  (int (*)(const uint8 * NVMSize, const uint8 * MapRAMSize)) addr_USER_NVM_CONFIG
 
 int (*const USER_NVM_ECC2ADDR)
-  (const uint16 * ECC2Addr) = (int (*)(const uint16 *ECC2Addr)) addr_USER_NVM_ECC2ADDR;
+  (const uint16 * ECC2Addr) = (int (*)(const uint16 *ECC2Addr)) addr_USER_NVM_ECC2ADDR
 
-uint8 (*const USER_MAPRAM_INIT) (void) = (uint8 (*)(void )) addr_USER_MAPRAM_INIT;
+uint8 (*const USER_MAPRAM_INIT) (void) = (uint8 (*)(void )) addr_USER_MAPRAM_INIT
 
 static int (*const USER_READ_100TP)
   (const uint8 OTP_Page_Sel,
   const uint8 DataOffset,
   const uint32 * HundredTPData) =
-  (int (*)(const uint8 OTP_Page_Sel, const uint8 DataOffset, const uint32 * HundredTPData)) addr_USER_READ_100TP;
+  (int (*)(const uint8 OTP_Page_Sel, const uint8 DataOffset, const uint32 * HundredTPData)) addr_USER_READ_100TP
 
 int (*const USER_100TP_PROG)
-  (const uint8 OTP_Page_Sel) = (int (*)(const uint8 OTP_Page_Sel)) addr_USER_100TP_PROG;
+  (const uint8 OTP_Page_Sel) = (int (*)(const uint8 OTP_Page_Sel)) addr_USER_100TP_PROG
 
 int (*const USER_ERASE_SECTOR)
-  (const uint32 NVMSectorAddr) = (int (*)(const uint32 NVMSectorAddr)) addr_USER_ERASE_SECTOR;
+  (const uint32 NVMSectorAddr) = (int (*)(const uint32 NVMSectorAddr)) addr_USER_ERASE_SECTOR
 
 uint8(*const USER_RAM_MBIST_START)
   (const uint16 RAM_MBIST_Stop_Addr,
   const uint16 RAM_MBIST_Start_addr) =
-  (uint8(*)(const uint16 RAM_MBIST_Stop_Addr, const uint16 RAM_MBIST_Start_addr)) addr_USER_RAM_MBIST_START;
+  (uint8(*)(const uint16 RAM_MBIST_Stop_Addr, const uint16 RAM_MBIST_Start_addr)) addr_USER_RAM_MBIST_START
 
 uint8(*const USER_NVM_ECC_CHECK)
-  (void) = (uint8(*)(void)) addr_USER_NVM_ECC_CHECK;
+  (void) = (uint8(*)(void)) addr_USER_NVM_ECC_CHECK
 
 uint8(*const USER_ECC_CHECK) (const uint32* ECC2Addr) = 
-  (uint8(*)(const uint32* ECC2Addr)) addr_USER_ECC_CHECK;
+  (uint8(*)(const uint32* ECC2Addr)) addr_USER_ECC_CHECK
   
 /* BF-Step BootROM API extension */
 #ifdef RTE_DEVICE_BF_STEP
 uint8 (*const USER_ERASE_SECTOR_VERIFY) (const uint32 sector_addr) = 
-  (uint8 (*)(const uint32)) addr_USER_ERASE_SECTOR_VERIFY;
+  (uint8 (*)(const uint32)) addr_USER_ERASE_SECTOR_VERIFY
   
 uint8 (*const USER_ERASEPG_VERIFY) (const uint32 page_addr) = 
-  (uint8 (*)(const uint32)) addr_USER_ERASEPG_VERIFY;
+  (uint8 (*)(const uint32)) addr_USER_ERASEPG_VERIFY
   
 uint8 (*const USER_VERIFY_PAGE) (const uint32 page_addr) = 
-  (uint8 (*)(const uint32)) addr_USER_VERIFY_PAGE;
+  (uint8 (*)(const uint32)) addr_USER_VERIFY_PAGE
 #endif /* RTE_DEVICE_BF_STEP */
 
 /*lin +e19 */
@@ -237,44 +237,3 @@ int ProgramPage(uint32 addr,
   return (res);
 }
 
-/** \brief Reads the Customer ID out of the 100TP NVM
- *
- * \param uint32 *CustID - pointer to the variable where the Customer ID
- *        shall be stored
- * \return 0 = pass, 1 = fail
- *
- * \ingroup bootrom_api
- */
-/*int GetCustomerID(uint32 * CustID)
-{
-  int res;
-  uint32 buf[128 / 4];
-
-lint -e9029 Supressing MISRA 2012 Rule 10.4 
-  buf[0] = 0u;
-lint +e9029 
-	
-   suspend and remember all enabled interrupts 
-  (void)__disable_irq();
-   trigger Short-Open-Window 
-  WDT1_SOW_Service((uint8)1);
-   read customer ID out of 100TP page 1, offset 0 
-lint -e9029 Supressing MISRA 2012 Rule 10.4 
-  res = USER_READ_100TP((uint8)0x11, (uint8)0, &buf[0]);
-lint +e9029 
-   trigger regular WDT1, close SOW 
-lint -e534 Supressing MISRA 2012 MISRA 2012 Directive 4.7 
-  (void)WDT1_Service();
-lint +e534 
-   reenable suspended interrupts 
-  __enable_irq();
-   check if Read_100TP returned a PASS (== 0) 
-  if (res == 0)
-  {
-    /* return customer ID to caller 
-lint -e9029 Supressing MISRA 2012 Rule 10.4 
-    *CustID = buf[0];
-lint +e9029 
-  }
-  return (res);
-}*/

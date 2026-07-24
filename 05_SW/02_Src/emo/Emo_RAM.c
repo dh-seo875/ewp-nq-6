@@ -231,7 +231,7 @@ void Emo_HandleFoc(void)
     sint16 Speed;
     sint32 jj;
 		uint16 ampl;
-	if(Emo_Svm.CounterOffsetAdw >= 128){	
+	if(Emo_Svm.CounterOffsetAdw >= 128u){	
     Emo_AdcResult[2u] = Emo_AdcResult[0u];
     /* Enable ADC Interrupt */
     ADC1->ICLR.bit.ESM_ICLR = 1;
