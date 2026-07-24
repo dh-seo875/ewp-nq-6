@@ -1017,7 +1017,14 @@ static void DiagSpeedError(void)
     (void)ReadVdcFiltered(&diag_vdcFiltered);
     (void)ReadSpeedRef(&diag_speedRef);
     (void)ReadSpeedFiltered(&diag_speedAct);
-    diag_speedError = diag_speedRef - diag_speedAct;
+	if(diag_speedRef>=diag_speedAct)
+	{
+    	diag_speedError = diag_speedRef - diag_speedAct;
+	}
+    else
+    {
+    	diag_speedError = diag_speedAct - diag_speedRef;
+	}
      
     switch (IRV_SE_diagState)
     {
@@ -1715,17 +1722,19 @@ static void DiagEwpInital(void)
 	    /**** Speed Error Clear ****/				
 		SE_faultCnt = 0; SE_retryCnt = 0; SE_WarningCnt = 0; SE_normalCnt = 0; SE_retryAttempt = 0; IRV_SE_diagState = NORMAL; IRV_SE_Warningflag = 0; IRV_SE_Faultflag = 0;
 	    /**** Over Current Clear ****/		
-		OC_faultCnt = 0; OC_retryCnt = 0; OC_retryAttempt = 0;  IRV_OC_diagState = NORMAL; IRV_WC_Warningflag = 0; IRV_OC_Faultflag = 0;
+		OC_faultCnt = 0; OC_retryCnt = 0; OC_retryAttempt = 0;  IRV_OC_diagState = NORMAL; IRV_OC_Faultflag = 0; 
+	    /**** Warning Current Clear ****/		
+		WC_WarningCnt = 0; WC_normalCnt = 0; IRV_WC_Warningflag = 0;  IRV_WC_diagState = 0;
 	    /**** Low Current Clear ****/		
 		LC_faultCnt = 0; LC_retryCnt = 0; LC_retryAttempt = 0; LC_normalCnt = 0; IRV_LC_diagState = NORMAL; IRV_LC_Faultflag = 0; 
-		/**** Lin Timeout Clear ****/				
-		LIV_faultCnt = 0; IRV_LIV_diagState = NORMAL;
+		/**** Lin Invalid Value Clear ****/				
+		LIV_faultCnt = 0; IRV_LIV_diagState = NORMAL; IRV_LIV_Warningflag = 0;
 		/**** Lin Timeout Clear ****/				
 		IRV_LE_diagState = NORMAL; 
 	    /**** Phase Open  Clear ****/			
 		PO_faultCnt = 0; PO_retryCnt = 0; PO_retryAttempt = 0; PO_normalCnt = 0; IRV_PO_diagState = NORMAL;
+	    /**** Stall Error Clear ****/			
         ST_FaultCnt = 0; ST_NormalCnt = 0; ST_retryCnt  = 0; ST_retryAttempt = 0; IRV_ST_diagState = NORMAL;
-		WC_WarningCnt = 0; WC_normalCnt = 0;
 	}
 
 }

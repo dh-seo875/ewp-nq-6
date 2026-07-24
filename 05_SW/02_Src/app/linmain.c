@@ -313,22 +313,18 @@ static void ld_task_Cal(void)
 }
 static void LIN_LLD_Service_Successful_chk(void)
 {
-	static volatile unsigned char successful_timer_1ms;
-
-	/* myunghwa code for using Nvm.c */
 	if (linSuccessfulFlag == 0u)
 	{
         if(g_lin_status_word.flag.successful_transfer == 1u)
         {
-            successful_timer_1ms = successful_timer_1ms + 1u;
 			linSuccessfulFlag = 1u;
 		}
 	}
 	else
 	{
-		successful_timer_1ms = successful_timer_1ms + 1u;
-		linSuccessfulFlag = (successful_timer_1ms >= 1u) ? 0u : linSuccessfulFlag;
+		linSuccessfulFlag = 0u;
 	}
+
 }
 static void LIN_LLD_Service_Timeout(void)
 {

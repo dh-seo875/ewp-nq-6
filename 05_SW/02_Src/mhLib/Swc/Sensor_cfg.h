@@ -43,7 +43,7 @@
 #define IGN_ON_TH                (sint16_t)(700) /*       7  V  */
 #define IGN_OFF_TH               (sint16_t)(300) /*     3.0  V  */
 #define IGN_FAULT_CNT_MAX        (sint16_t)(100) /*       1 sec */
-#define IGN_NORMAL_CNT_MAX       (sint16_t)( 20) /*     0.1 sec */
+#define IGN_NORMAL_CNT_MAX       (sint16_t)( 20) /*     0.2 sec */
 
 
 /* OpenPhase */

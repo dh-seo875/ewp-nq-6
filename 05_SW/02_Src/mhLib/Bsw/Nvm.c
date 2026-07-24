@@ -131,21 +131,14 @@ static void VAREF_Claer(void);
 
 static void NVM_Watchdog_Fault(void)
 {
-//	uint8_t nvmStatusPageC = 0;
-//	uint8_t Nvm_MCUFaultIndex = 0;
-//	uint8_t PMU_Watchdog_Flag = 0;
 	uint8_t Nvm_WDT_Cnt = 0;
 	uint8_t PMU_Reset_Flag = 0;
     uint8_t	Nvm_Watchdog_Fault_FLAG = 0;
-//	uint8_t PMU_Wake_Status =0;
-//	static uint8_t* IRV_ptrMCUFaultCodePage;
 
 	/* Get PMU Reset Flag */
 	PMU_Reset_Flag = PMU_Get_Reset_Status();
+	/* Clear PMU Reset Flag */
     PMU_Clear_Reset_Status();	
-//	PMU_Wake_Status = PMU->WAKE_STATUS.reg;
-	
-    	//PMU_Clear_Reset_Status();
 
 	if(((PMU_Reset_Flag >> 5u) & 0x01u) == 1u) //WDT1 Reset
 	{
@@ -153,47 +146,32 @@ static void NVM_Watchdog_Fault(void)
         if(Nvm_WDT_Cnt >= 3u)   // Check if WDT1 fail occur 3 time
         {
             Nvm_Watchdog_Fault_FLAG = 1;
-            //SCUPM->SYS_SUPPLY_IRQ_CLR.reg = (uint32) 0x00FF00FF; // supply interrupt status all clear
-            //SCUPM->SYS_ISCLR.reg = (uint32)0x3F3FFFC7;        //  system interrupt status all clear
             PMU->GPUDATA00.reg = 0;
-//			EraseMCUFault();
-//			IRV_ptrMCUFaultCodePage[0] = 0;
-//			(void)writeNvm(IRV_ptrMCUFaultCodePage, errorCodeAddressPageC);
 			(void)WriteMCUFault(Nvm_Watchdog_Fault_FLAG); 					 
 			SCU_EnterSleepMode(); // Go to MCU Sleep Mode
-		}
-				
+		}				
 		else
 		{
-//			  PMU->GPUDATA00.reg = PMU->GPUDATA00.reg + 1;
-//			  PMU_GPU = PMU->GPUDATA00.reg;
 			PMU->GPUDATA00.reg = PMU->GPUDATA00.reg + 1u;
-//			EraseMCUFault();
-//			IRV_ptrMCUFaultCodePage[0] = Nvm_WDT_Cnt;
-//		    (void)writeNvm(IRV_ptrMCUFaultCodePage, errorCodeAddressPageC);
 		}
-
-
 	}
 	else if((PMU_Reset_Flag >> 7u) == 1u) //Power On Reset
     {
-//        Nvm_POR_FLAG = 1;
-//        Nvm_Watchdog_Fault_FLAG = 0;
-//        (void)WriteMCUFault(Nvm_Watchdog_Fault_FLAG);
-//        EraseMCUFault();
-          PMU->GPUDATA00.reg = 0;
-
-			
-//		PORT->P1_DATA.reg = 0x0;
+          PMU->GPUDATA00.reg = 0;	
 	}
-	else
+	else if((PMU->PMU_SUPPLY_STS.bit.PMU_1V5_OVERVOLT == 1 ) || (PMU->PMU_SUPPLY_STS.bit.PMU_5V_OVERVOLT == 1))
+    {
+        Nvm_Watchdog_Fault_FLAG = 1;
+        PMU->GPUDATA00.reg = 0;
+        (void)WriteMCUFault(Nvm_Watchdog_Fault_FLAG); 					 
+        SCU_EnterSleepMode(); // Go to MCU Sleep Mode
+	}
+    else
     {
         /* no action */ 
 	}
    
 }
-
-
 
 
 
@@ -221,6 +199,8 @@ uint8_t* Nvm_Init (void)
     else
     {
         EraseNvm();
+		/* EraseNvm() recreates the RAM image; keep all later users on it. */
+		IRV_ptrErrorCodePage = ErrorCodePageA;
 	}
 
     checkDrivingCycle();
@@ -243,22 +223,6 @@ void ManageNvm (void)
 
             /* PORT_ChangePin(0x11, PORT_ACTION_TOGGLE); */						
             (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
-            /*if (nvmWriteResult == 1u)
-            {
-                nvmWriteResult = writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
-            }
-            else
-            {
-            }*/
-
-//            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
-            /*if (nvmWriteResult == 1u)
-            {
-                nvmWriteResult = writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
-            }
-            else
-            {
-            }*/
             Nvm_errorCode = 0;
             /* PORT_ChangePin(0x11, PORT_ACTION_CLEAR); */
         }
@@ -266,22 +230,6 @@ void ManageNvm (void)
         {
         
             (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
-            /*if (nvmWriteResult == 1u)
-            {
-                nvmWriteResult = writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
-            }
-            else
-            {
-            }*/
-
-//            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
-            /*if (nvmWriteResult == 1u)
-            {
-                nvmWriteResult = writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageB);
-            }
-            else
-            {
-            }*/
             Nvm_errorCode = 0;
         }
         else
@@ -650,7 +598,7 @@ static void ManageNVMEWP(uint16_t Nvm_convert_errorCode)
 
 	if (Nvm_errorCodeIndex >= errorCodeIndexMax)
 	{
-		for (nvmRepeatCnt = 0; nvmRepeatCnt < FlashPageSize; nvmRepeatCnt++)
+		for (nvmRepeatCnt = 0; nvmRepeatCnt < (FlashPageSize - 1u); nvmRepeatCnt++)
 		{
 			IRV_ptrErrorCodePage[nvmRepeatCnt] = IRV_ptrErrorCodePage[nvmRepeatCnt + 1u];
 		}
