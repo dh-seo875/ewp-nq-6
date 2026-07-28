@@ -135,13 +135,13 @@ Diag_NegativeResponseCodeType DiagService_UdsReadDataByIdentifier(const PduInfoT
                 pduTxData->SduDataPtr[i+3u] = mDidNode.DataPtr[i];
             }
     
-            if(mDidNode.DidCallBack != NULL_PTR)
-            {
-                if (mDidNode.DidCallBack(&mPduRxData->SduDataPtr[3], (mPduRxData->SduLength-3u)) == FALSE)
-                {
-                    retValueNrc = NRC_E_INCORRECTMESSAGELENGTHORINVALIDFORMAT;
-                }
-            }
+            // if(mDidNode.DidCallBack != NULL_PTR)
+            // {
+            //     if (mDidNode.DidCallBack(&mPduRxData->SduDataPtr[3], (mPduRxData->SduLength-3u)) == FALSE)
+            //     {
+            //         retValueNrc = NRC_E_INCORRECTMESSAGELENGTHORINVALIDFORMAT;
+            //     }
+            // }
         }
     }
 

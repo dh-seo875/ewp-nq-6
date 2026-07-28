@@ -142,7 +142,7 @@ static void ConvertDutyToRpm(void)
 	{
 	    rpm = 0U;
 	}
-	else if ((sensor_LinRequireDuty >= LOWER_DUTY) && (sensor_LinRequireDuty <= UPPER_DUTY)) //10-90 duty
+	else if ((sensor_LinRequireDuty <= UPPER_DUTY)) //10-90 duty
 	{
 	    /* tmp = (duty - 10) * 5000 */
 	    tmp = (uint32_t)((uint32_t)sensor_LinRequireDuty - (uint32_t)LOWER_DUTY) * (uint32_t)RPM_RANGE;
@@ -150,7 +150,7 @@ static void ConvertDutyToRpm(void)
 	    /* rpm = 1000 + tmp / 80 */
 	    rpm = (uint16_t)((uint32_t)MIN_RPM + (tmp / (uint32_t)DUTY_RANGE));
 	}
-	else if((sensor_LinRequireDuty > UPPER_DUTY) && (sensor_LinRequireDuty <= 100U)) //91-100
+	else if((sensor_LinRequireDuty <= 100U)) //91-100
 	{
     	rpm = MAX_RPM;
 	}
@@ -172,17 +172,17 @@ static void ConvertRpmToDuty(void)
 	
 	if (sensor_ActRPM <= 0)
 	{
-		/* 0 RPM ¡æ 0% duty */
+		/* 0 RPM ï¿½ï¿½ 0% duty */
 		duty = 0U;
 	}
 	else if (sensor_ActRPM < (sint16_t)MIN_RPM)  // 0 - 10 Duty area
 	{
-		/* Below mapping range ¡æ lower bound */
+		/* Below mapping range ï¿½ï¿½ lower bound */
 		duty = (uint8_t)((uint16_t)sensor_ActRPM/100u);
 	}
 	else if (sensor_ActRPM >= (sint16_t)MAX_RPM) // 90 - 100 Duty area
 	{
-		/* Above mapping range ¡æ upper bound */
+		/* Above mapping range ï¿½ï¿½ upper bound */
 		duty = UPPER_DUTY;
 	}
 	else // 10 - 89 Duty area

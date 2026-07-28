@@ -79,56 +79,67 @@ void put_int(unsigned int a)
 /** ==========================================================================
 
 ========================================================================== */
-void put_int_dec(uint16_t a)				
-{							
-	unsigned char c[5],z=0;
-	uint16_t k,p;
+void put_int_dec(uint16_t a)
+{
+    uint8_t c[5];
+    boolean_t digitStarted = FALSE;
+    uint16_t k = a;
+    uint16_t p;
 
-	k=a;
+    p = k / 10000u;
+    if (p != 0u)
+    {
+        c[4] = (uint8_t)(p + (uint16_t)'0');
+        digitStarted = TRUE;
+    }
+    else
+    {
+        c[4] = (uint8_t)' ';
+    }
+    k %= 10000u;
 
-	p=k/10000;
-	if(p)	{
-		c[4]=p+'0';
-		z++;
-	}	else { c[4]=' '; }
-	k=k%10000;	
+    p = k / 1000u;
+    if ((p == 0u) && (digitStarted == FALSE))
+    {
+        c[3] = (uint8_t)' ';
+    }
+    else
+    {
+        c[3] = (uint8_t)(p + (uint16_t)'0');
+        digitStarted = TRUE;
+    }
+    k %= 1000u;
 
+    p = k / 100u;
+    if ((p == 0u) && (digitStarted == FALSE))
+    {
+        c[2] = (uint8_t)' ';
+    }
+    else
+    {
+        c[2] = (uint8_t)(p + (uint16_t)'0');
+        digitStarted = TRUE;
+    }
+    k %= 100u;
 
-	p=k/1000;
-	if(!p && !z)	{
-		c[3]=' '; 
-	} else {
-		c[3]=p+'0';
-		z++;
-	}	
-	k=k%1000;	
+    p = k / 10u;
+    if ((p == 0u) && (digitStarted == FALSE))
+    {
+        c[1] = (uint8_t)' ';
+    }
+    else
+    {
+        c[1] = (uint8_t)(p + (uint16_t)'0');
+    }
 
-	p=k/100;
-	if(!p && !z)	{
-		c[2]=' '; 
-	} else {
-		c[2]=p+'0';
-		z++;
-	}	
-	k=k%100;	
+    c[0] = (uint8_t)((k % 10u) + (uint16_t)'0');
 
-	p=k/10;
-	if(!p && !z)	{
-		c[1]=' '; 
-	} else {
-		c[1]=p+'0';
-		z++;
-	}	
-	k=k%10;	
-	c[0]=k+'0';
-
-
-	OutDev0(c[4]);	
-	OutDev0(c[3]);	
-	OutDev0(c[2]);	
-	OutDev0(c[1]);	
-	OutDev0(c[0]);	
-	OutDev0(',');	
+    OutDev0(c[4]);
+    OutDev0(c[3]);
+    OutDev0(c[2]);
+    OutDev0(c[1]);
+    OutDev0(c[0]);
+    OutDev0((uint8_t)',');
 }
 
 void put_cr(void)				
@@ -147,36 +158,43 @@ void put_char(unsigned char a)
 /** ==========================================================================
 
 ========================================================================== */
-void put_char_dec(uint8_t a)				
-{							
-	unsigned char c[5],z=0;
-	uint16_t k,p;
+void put_char_dec(uint8_t a)
+{
+    uint8_t c[3];
+    boolean_t digitStarted = FALSE;
+    uint16_t k = (uint16_t)a;
+    uint16_t p;
 
-	k=a;
+    p = k / 100u;
 
-	p=k/100;
-	if(!p && !z)	{
-		c[2]=' '; 
-	} else {
-		c[2]=p+'0';
-		z++;
-	}	
-	k=k%100;	
+    if ((p == 0u))
+    {
+        c[2] = (uint8_t)' ';
+    }
+    else
+    {
+        c[2] = (uint8_t)(p + (uint16_t)'0');
+        digitStarted = TRUE;
+    }
 
-	p=k/10;
-	if(!p && !z)	{
-		c[1]=' '; 
-	} else {
-		c[1]=p+'0';
-		z++;
-	}	
-	k=k%10;	
-	c[0]=k+'0';
+    k %= 100u;
+    p = k / 10u;
 
-	OutDev0(c[2]);	
-	OutDev0(c[1]);	
-	OutDev0(c[0]);	
-	OutDev0(',');	
+    if ((p == 0u) && (digitStarted == FALSE))
+    {
+        c[1] = (uint8_t)' ';
+    }
+    else
+    {
+        c[1] = (uint8_t)(p + (uint16_t)'0');
+    }
+
+    c[0] = (uint8_t)((k % 10u) + (uint16_t)'0');
+
+    OutDev0(c[2]);
+    OutDev0(c[1]);
+    OutDev0(c[0]);
+    OutDev0((uint8_t)',');
 }
 
 void put_long(uint32_t w) 

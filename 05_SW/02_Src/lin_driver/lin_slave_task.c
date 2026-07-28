@@ -7,7 +7,7 @@
 *                                                                             *
 *    ihr GmbH                                                                 *
 *    Airport Boulevard B210                                                   *
-*    77836 Rheinmünster - Germany                                             *
+*    77836 Rheinmï¿½nster - Germany                                             *
 *    http://www.ihr.de                                                        *
 *    Phone +49(0) 7229-18475-0                                                *
 *    Fax   +49(0) 7229-18475-11                                               *
@@ -86,11 +86,11 @@ void lin_slave_task_tx_data(void)
    g_lin_status_word.flag.successful_transfer = L_SET;
 #if ((defined LIN_SLAVE)||(defined J2602_SLAVE))
 #if ((defined LIN_PROTOCOL_VERSION_2_0) || (defined LIN_PROTOCOL_VERSION_2_1))
-   if(g_lin_active_pid == LIN_Response_Error_Frame_PID) /* PID of status frame */
-   {
+   // if(g_lin_active_pid == LIN_Response_Error_Frame_PID)  PID of status frame 
+   // {
       /* Reset Response Error Flag */
       //l_Reset_Response_Error_Flag();
-   }
+   // }
 #endif /* end #if defined LIN_PROTOCOL_VERSION_2_0 || defined LIN_PROTOCOL_VERSION_2_1 */
 #endif /* #if ((defined LIN_SLAVE)||(defined J2602_SLAVE)) */
    /* check if tp has another frame to transmit */
