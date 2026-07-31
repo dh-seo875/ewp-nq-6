@@ -98,6 +98,9 @@ TEmo_Svm Emo_Svm;
 /*******************************************************************************
 **                      Global Function Definitions                           **
 *******************************************************************************/
+static void Emo_LoadShadowRegisters_Clarke_Park(void);
+static void Emo_Current_Regulator(void);
+
 
 /* FOC functions *************************************************************/
 
@@ -221,7 +224,31 @@ void Emo_HandleCCU6ShadowTrans(void)
     /*disable Timer12 PM Interrupt*/
     CCU6->IEN.bit.ENT12PM = 0;
 }
+
+static void Emo_LoadShadowRegisters_Clarke_Park(void)
+{
+    CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60down);
+    CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61down);
+    CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
+    CCU6_EnableST_T12();
+    Emo_CurrAdc1();
+        /* Perform Clarke transformation to stationary 2-phase system */
+    Emo_Foc.StatCurr = Mat_Clarke(Emo_Svm.PhaseCurr);
     
+    /* Perform Park transformation to rotating 2-phase system */
+    Emo_Foc.RotCurr = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
+}
+
+static void Emo_Current_Regulator(void)
+{
+    /* Current Regulator: Execute PI algorithm for rotating voltage */
+    /* id */ 
+    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, -(Emo_Foc.RotCurr.Real));
+
+    /* iq */
+    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
+}
+
 void Emo_HandleFoc(void)
 {
     uint16 angle;
@@ -239,16 +266,8 @@ void Emo_HandleFoc(void)
     /*get 2nd ADC measurement from previous period*/
     Emo_AdcResult[1u] = (uint16)(ADC1->RES_OUT1.reg);
     /*set PWM compare values for T12 down-counting part*/
-    CCU6_LoadShadowRegister_CC60(Emo_Svm.comp60down);
-    CCU6_LoadShadowRegister_CC61(Emo_Svm.comp61down);
-    CCU6_LoadShadowRegister_CC62(Emo_Svm.comp62down);
-    CCU6_EnableST_T12();
-    Emo_CurrAdc1();
-    /* Perform Clarke transformation to stationary 2-phase system */
-    Emo_Foc.StatCurr = Mat_Clarke(Emo_Svm.PhaseCurr);
-    
-    /* Perform Park transformation to rotating 2-phase system */
-    Emo_Foc.RotCurr = Mat_Park(Emo_Foc.StatCurr, Emo_Foc.Angle);
+    Emo_LoadShadowRegisters_Clarke_Park();
+
 		
     /* Estimate flux and calculate rotor angle */
     Emo_lEstFlux();
@@ -293,13 +312,8 @@ void Emo_HandleFoc(void)
         Emo_Foc.RotVolt = Emo_CurrentDecoupling();
 #endif
     }
-				
     /* Current Regulator: Execute PI algorithm for rotating voltage */
-    /* id */ 
-    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, -(Emo_Foc.RotCurr.Real));
-
-    /* iq */
-    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
+    Emo_Current_Regulator();
 
     /* DC-link voltage correction */
     Vect1.Real = (sint16)__ssat((((sint32)Emo_Foc.RotVolt.Real *  (sint32)Emo_Foc.Dcfactor1) / 16384), MAT_FIX_SAT);
@@ -329,6 +343,7 @@ void Emo_HandleFoc(void)
     Emo_lExeSvm(&Emo_Svm);
     /* Filter for Iq  */
     //Emo_Ctrl.RotCurrImagdisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.RotCurrImagLpdisplay, Emo_Foc.RotCurr.Imag);
+
 	}
 } /* End of Emo_HandleFoc */
 

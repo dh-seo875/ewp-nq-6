@@ -63,18 +63,18 @@ static DiagState_t IRV_LIV_diagState = NORMAL;
 static DiagState_t IRV_PO_diagState = NORMAL;
 
 
-static uint8_t IRV_LC_Faultflag = 0;
-static uint8_t IRV_OC_Faultflag = 0;
-static uint8_t IRV_ST_Faultflag = 0;
-static uint8_t IRV_OV_Faultflag = 0;
-static uint8_t IRV_UV_Faultflag = 0;
-static uint8_t IRV_OT_Faultflag = 0;
-static uint8_t IRV_SE_Faultflag = 0;
+static uint8_t IRV_LC_Faultflag = 0U;
+static uint8_t IRV_OC_Faultflag = 0U;
+static uint8_t IRV_ST_Faultflag = 0U;
+static uint8_t IRV_OV_Faultflag = 0U;
+static uint8_t IRV_UV_Faultflag = 0U;
+static uint8_t IRV_OT_Faultflag = 0U;
+static uint8_t IRV_SE_Faultflag = 0U;
 
-static uint8_t IRV_WC_Warningflag = 0;
-static uint8_t IRV_OT_Warningflag = 0;
-static uint8_t IRV_SE_Warningflag = 0;
-static uint8_t IRV_LIV_Warningflag = 0;
+static uint8_t IRV_WC_Warningflag = 0U;
+static uint8_t IRV_OT_Warningflag = 0U;
+static uint8_t IRV_SE_Warningflag = 0U;
+static uint8_t IRV_LIV_Warningflag = 0U;
 
 //static uint8_t SE_faultflag                  = 0;
 //static uint8_t OT_faultflag                  = 0;
@@ -104,80 +104,80 @@ static sint16_t diag_iqFiltered               = 0;
 //static uint8_t SE_warningCheck				  = 0;
 //static uint8_t WC_warningCheck				  = 0;
 
-static uint8_t SC_failureCheck                = 0;
-static uint8_t GE_failureCheck                = 0;
-static uint8_t OC_failureCheck				  = 0;
-static uint8_t LC_failureCheck				  = 0;
+static uint8_t SC_failureCheck                = 0U;
+static uint8_t GE_failureCheck                = 0U;
+static uint8_t OC_failureCheck				  = 0U;
+static uint8_t LC_failureCheck				  = 0U;
 //static uint8_t OT_failureCheck				  = 0;
-static uint8_t UV_failureCheck				  = 0;
-static uint8_t OV_failureCheck				  = 0;
-static uint8_t SE_failureCheck				  = 0;
-static uint8_t PO_failureCheck				  = 0;
-static uint8_t ST_failureCheck				  = 0;
+static uint8_t UV_failureCheck				  = 0U;
+static uint8_t OV_failureCheck				  = 0U;
+static uint8_t SE_failureCheck				  = 0U;
+static uint8_t PO_failureCheck				  = 0U;
+static uint8_t ST_failureCheck				  = 0U;
 
 
 /************************ Under Voltage **************************/
-static uint8_t UV_normalCnt				  = 0;
-static uint8_t UV_faultCnt 				  = 0;
-static uint8_t UV_retryAttempt 			  = 0;
+static uint8_t UV_normalCnt				  = 0U;
+static uint8_t UV_faultCnt 				  = 0U;
+static uint8_t UV_retryAttempt 			  = 0U;
 /************************ Over Voltage **************************/
-static uint8_t OV_normalCnt				  = 0;
-static uint8_t OV_faultCnt 				  = 0;
-static uint8_t OV_retryAttempt 			  = 0;
+static uint8_t OV_normalCnt				  = 0U;
+static uint8_t OV_faultCnt 				  = 0U;
+static uint8_t OV_retryAttempt 			  = 0U;
 /************************ Over Temperature **************************/
 static sint16_t diag_temperatureFiltered	  = 0;
-static uint8_t OT_normalCnt				  = 0;
-static uint8_t OT_warningCnt				  = 0;
-static uint8_t OT_faultCnt 				  = 0;
+static uint8_t OT_normalCnt				  = 0U;
+static uint8_t OT_warningCnt				  = 0U;
+static uint8_t OT_faultCnt 				  = 0U;
 static const sint16_t CAL_OT_FaultUprTh 		= OT_FAULT_UPR_TH;
 //static sint16_t OT_retryAttempt 			  = 0;
 //static sint16_t OT_AttemptCLRCnt              = 0;
 static const sint16_t CAL_OT_NormalLwrTh 		= OT_NORMAL_LWR_TH;
 
-static const sint16_t CAL_OT_NormalCntMax		= OT_NORMAL_CNT_MAX;
-static const sint16_t CAL_OT_WarningCntMax		= OT_WARNING_CNT_MAX;
+static const uint8_t CAL_OT_NormalCntMax		= OT_NORMAL_CNT_MAX;
+static const uint8_t CAL_OT_WarningCntMax		= OT_WARNING_CNT_MAX;
 //sint16_t CAL_OT_RetryCLRCntMax		= OT_RETRYCLR_CNT_MAX;
 //static const sint16_t CAL_OT_AttemptCLRCntMax	= OT_AttemptCLR_CNT_MAX;
 
 /************************ Short Circuit **************************/
-static uint8_t SC_normalCnt				  = 0;
-static uint8_t SC_faultCnt 				  = 0;
-static uint8_t SC_retryCnt 				  = 0;
-static uint8_t SC_retryAttempt 			  = 0;
+static uint8_t SC_normalCnt				  = 0U;
+static uint8_t SC_faultCnt 				  = 0U;
+static uint8_t SC_retryCnt 				  = 0U;
+static uint8_t SC_retryAttempt 			  = 0U;
 /************************ GateDrv Error **************************/
-static uint8_t GE_normalCnt				  = 0;
-static uint8_t GE_faultCnt 				  = 0;
-static uint8_t GE_retryCnt 				  = 0;
-static uint8_t GE_retryAttempt 			  = 0;
+static uint8_t GE_normalCnt				  = 0U;
+static uint8_t GE_faultCnt 				  = 0U;
+static uint8_t GE_retryCnt 				  = 0U;
+static uint8_t GE_retryAttempt 			  = 0U;
 
 /************************ Warning Current **************************/
-static const uint16_t CAL_SpeedMin = SPEED_MIN;
-static uint8_t WC_WarningCnt = 0;
-static uint8_t WC_normalCnt = 0;
+static const sint16_t CAL_SpeedMin = SPEED_MIN;
+static uint8_t WC_WarningCnt = 0U;
+static uint8_t WC_normalCnt = 0U;
 
 
 
 /************************ Over Current **************************/
-static uint8_t OC_faultCnt 				  = 0;
-static uint8_t OC_retryAttempt 			  = 0;
-static sint16_t OC_AttemptCLRCnt              = 0;
-static uint8_t OC_retryCnt 				  = 0;
+static uint8_t OC_faultCnt 				  = 0U;
+static uint8_t OC_retryAttempt 			  = 0U;
+
+static uint8_t OC_retryCnt 				  = 0U;
 
 /************************ Low Current **************************/
 static sint16_t LC_normalCnt				  = 0;
 static sint16_t LC_faultCnt 				  = 0;
 static sint16_t LC_retryCnt 				  = 0;
-static uint8_t LC_retryAttempt 			  = 0;
+static uint8_t LC_retryAttempt 			  = 0U;
 
 
 /************************ Stall Error **************************/
-static uint8_t ST_FaultCnt 			  = 0;
-static uint8_t ST_NormalCnt			  = 0;
-static uint8_t ST_retryCnt 				  = 0;
-static uint8_t ST_retryAttempt 			  = 0;
+static uint8_t ST_FaultCnt 			  = 0U;
+static uint8_t ST_NormalCnt			  = 0U;
+static uint8_t ST_retryCnt 				  = 0U;
+static uint8_t ST_retryAttempt 			  = 0U;
 
 /************************ LIN Invalid Value **************************/
-static uint16_t LIV_faultCnt = 0;
+static uint16_t LIV_faultCnt = 0U;
 static sint8_t diag_ignState = IGN_ON;
 
 
@@ -185,8 +185,8 @@ static sint8_t diag_ignState = IGN_ON;
 static sint16_t diag_speedError 			  = 0;
 static sint16_t SE_normalCnt				  = 0;
 static sint16_t SE_faultCnt 				  = 0;
-static uint8_t SE_retryAttempt 			  = 0;
-static uint8_t SE_retryCnt 				  = 0;
+static uint8_t SE_retryAttempt 			  = 0U;
+static uint8_t SE_retryCnt 				  = 0U;
 static sint16_t SE_WarningCnt				  = 0;
 
 static const sint16_t CAL_SE_WarningLwrTh		 = SE_WARNING_LWR_TH;
@@ -199,8 +199,8 @@ static const sint16_t CAL_SE_FaultCntMax 		= SE_FAULT_CNT_MAX;
 
 static sint16_t PO_normalCnt				  = 0;
 static sint16_t PO_faultCnt 				  = 0;
-static uint8_t PO_retryCnt 				  = 0;
-static uint8_t PO_retryAttempt 			  = 0;
+static uint8_t PO_retryCnt 				  = 0U;
+static uint8_t PO_retryAttempt 			  = 0U;
 
 
 /* 	
@@ -246,7 +246,10 @@ static void SetDiagFlagState (void);
 static void DiagPhaseOpen (void);
 static void DiagEwpInital(void);
 
-
+static void DiagSWComponent1(void);
+static void DiagSWComponent2(void);
+static void DiagSWComponent3(void);
+static void DiagSWComponent4(void);
 /*
 ************************************************************************************************************************
 *                                                    Exported functions
@@ -254,42 +257,60 @@ static void DiagEwpInital(void);
 */
 void DiagSWComponentPack(void)
 {
-    static uint8_t DiagTask_Cnt = 0;
+    static uint8_t DiagTask_Cnt = 0U;
 	if(DiagTask_Cnt == 0u) // 26us
 	{			
-		DiagOverVoltage();
-		DiagUnderVoltage();
-		DiagWarningCurrent();
-		DiagOverCurrent();		
+        DiagSWComponent1();
 		DiagTask_Cnt++;
 	}
 	else if(DiagTask_Cnt == 1u) //26us
 	{		
-		DiagStallError();	
-		DiagShortCircuit();
-		DiagGateDrvOVUV();
-		DiagPhaseOpen(); 		
-//		DiagPowerLimit();
+		DiagSWComponent2();	
 		DiagTask_Cnt++;
 	}
 	else if(DiagTask_Cnt == 2u) // 26us
 	{ 			
-		DiagLINError();
-		DiagLINInvalidValue();
-		DiagSpeedError();
-		DiagOverTemperature();
+		DiagSWComponent3();
 		DiagTask_Cnt++; 	
 	}
 	else //27us
 	{ 	
-		DiagLowCurrent();	
-    	DiagEwpInital();
-		MergeDiagState();
-		SetDiagFlagState();
+		DiagSWComponent4();
 		DiagTask_Cnt = 0u; 	
 	}
 }
 
+static void DiagSWComponent1(void)
+{
+	DiagOverVoltage();
+	DiagUnderVoltage();
+	DiagWarningCurrent();
+	DiagOverCurrent();	
+}
+
+static void DiagSWComponent2(void)
+{
+	DiagStallError();	
+	DiagShortCircuit();
+	DiagGateDrvOVUV();
+	DiagPhaseOpen(); 	
+}
+
+static void DiagSWComponent3(void)
+{
+	DiagLINError();
+	DiagLINInvalidValue();
+	DiagSpeedError();
+	DiagOverTemperature();
+}
+
+static void DiagSWComponent4(void)
+{
+	DiagLowCurrent();	
+	DiagEwpInital();
+	MergeDiagState();
+	SetDiagFlagState();	
+}
 
 static void DiagOverVoltage(void)
 {
@@ -298,10 +319,10 @@ static void DiagOverVoltage(void)
 	sint16_t CAL_OV_NormalLwrTh 	    = OV_NORMAL_LWR_TH;
 	sint16_t CAL_OV_FaultUprTh		    = OV_FAULT_UPR_TH;
 
-	sint16_t CAL_OV_NormalCntMax	    = OV_NORMAL_CNT_MAX;
-	sint16_t CAL_OV_FaultCntMax 	    = OV_FAULT_CNT_MAX;
-	sint16_t CAL_OV_AttemptCLRCntMax 	= OV_AttemptCLR_CNT_MAX;
-	sint16_t CAL_OV_RetryAttemptMax     = OV_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_OV_NormalCntMax	    = OV_NORMAL_CNT_MAX;
+	uint8_t CAL_OV_FaultCntMax 	    = OV_FAULT_CNT_MAX;
+	uint8_t CAL_OV_AttemptCLRCntMax 	= OV_AttemptCLR_CNT_MAX;
+	uint8_t CAL_OV_RetryAttemptMax     = OV_RETRY_ATTEMPT_MAX;
 
 
     (void)ReadVdcFiltered(&diag_vdcFiltered);
@@ -314,29 +335,29 @@ static void DiagOverVoltage(void)
             if(diag_vdcFiltered >= CAL_OV_FaultUprTh) 
             {
                 OV_faultCnt++;
-       			OV_normalCnt = (OV_normalCnt <= 0) ? 0 : (OV_normalCnt - 1);  				
+                OV_normalCnt = (OV_normalCnt <= 0U) ? 0U : (OV_normalCnt - 1U);
             }
             else
             {
-       			OV_faultCnt = (OV_faultCnt <= 0) ? 0 : (OV_faultCnt - 1);
+                OV_faultCnt = (OV_faultCnt <= 0U) ? 0U : (OV_faultCnt - 1U);
 				if(diag_vdcFiltered <= CAL_OV_NormalLwrTh)
 				{
-				    OV_normalCnt = (OV_retryAttempt > 0) ? (OV_normalCnt + 1) : (0);		
+				    OV_normalCnt = (OV_retryAttempt > 0U) ? (OV_normalCnt + 1U) : (0U);
 				}
        			
             }
 
 			if(OV_normalCnt > CAL_OV_AttemptCLRCntMax)
 			{
-				OV_normalCnt = 0;
-				OV_retryAttempt = 0;
+				OV_normalCnt = 0U;
+				OV_retryAttempt = 0U;
 			}
 
 			
             if (OV_faultCnt >= CAL_OV_FaultCntMax)
             {
-                OV_faultCnt = 0;
-				OV_normalCnt = 0;
+                OV_faultCnt = 0U;
+				OV_normalCnt = 0U;
 				OV_retryAttempt++;
                 IRV_OV_diagState = FAULT;
 				IRV_OV_Faultflag = 1u;
@@ -355,12 +376,12 @@ static void DiagOverVoltage(void)
             }
             else
             {
-       			OV_normalCnt = (OV_normalCnt <= 0) ? 0 : (OV_normalCnt - 1);  	          
+                OV_normalCnt = (OV_normalCnt <= 0U) ? 0U : (OV_normalCnt - 1U);
             }      
                       
             if (OV_normalCnt >= CAL_OV_NormalCntMax)
             {
-                OV_normalCnt = 0;
+                OV_normalCnt = 0U;
                 IRV_OV_diagState = NORMAL;
 				IRV_OV_Faultflag = 0u;
             }
@@ -390,10 +411,10 @@ static void DiagUnderVoltage(void)
 	//static DiagEntryConditionState_t UV_entryCondition;
 	sint16_t CAL_UV_NormalUprTh 	  = UV_NORMAL_UPR_TH;
 	sint16_t CAL_UV_FaultLwrTh		  = UV_FAULT_LWR_TH;
-	sint16_t CAL_UV_NormalCntMax	  = UV_NORMAL_CNT_MAX;
-	sint16_t CAL_UV_FaultCntMax 	  = UV_FAULT_CNT_MAX;
-	sint16_t CAL_UV_AttemptCLRCntMax 	= UV_AttemptCLR_CNT_MAX;
-	sint16_t CAL_UV_RetryAttemptMax   = UV_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_UV_NormalCntMax	  = UV_NORMAL_CNT_MAX;
+	uint8_t CAL_UV_FaultCntMax 	  = UV_FAULT_CNT_MAX;
+	uint8_t CAL_UV_AttemptCLRCntMax 	= UV_AttemptCLR_CNT_MAX;
+	uint8_t CAL_UV_RetryAttemptMax   = UV_RETRY_ATTEMPT_MAX;
 
     (void)ReadVdcFiltered(&diag_vdcFiltered);
 
@@ -405,29 +426,29 @@ static void DiagUnderVoltage(void)
             if(diag_vdcFiltered < CAL_UV_FaultLwrTh)
             {
                 UV_faultCnt++;
-       			UV_normalCnt = (UV_normalCnt <= 0) ? 0 : (UV_normalCnt - 1);  					
+       			UV_normalCnt = (UV_normalCnt <= 0U) ? 0U : (UV_normalCnt - 1U);  					
             }
 			/* 8V <= Vdc  */
             else
             {
-       			UV_faultCnt = (UV_faultCnt <= 0) ? 0 : (UV_faultCnt - 1);
+       			UV_faultCnt = (UV_faultCnt <= 0U) ? 0U : (UV_faultCnt - 1U);
 				/* 9V <= Vdc  */
        			if(diag_vdcFiltered >= CAL_UV_NormalUprTh)
 				{
-				    UV_normalCnt = (UV_retryAttempt > 0) ? (UV_normalCnt + 1) : (0);  					            
+				    UV_normalCnt = (UV_retryAttempt > 0U) ? (UV_normalCnt + 1U) : (0U);  					            
        			}
             }
 
 			if(UV_normalCnt > CAL_UV_AttemptCLRCntMax)
 			{
-				UV_normalCnt = 0;
-				UV_retryAttempt = 0;
+				UV_normalCnt = 0U;
+				UV_retryAttempt = 0U;
 			}
 			
             if (UV_faultCnt >= CAL_UV_FaultCntMax)
             {
-                UV_faultCnt = 0;
-				UV_normalCnt = 0;
+                UV_faultCnt = 0U;
+				UV_normalCnt = 0U;
 				UV_retryAttempt++;				
                 IRV_UV_diagState = FAULT;
 				IRV_UV_Faultflag = 1u;
@@ -445,14 +466,14 @@ static void DiagUnderVoltage(void)
             }
             else
             {
-       			UV_normalCnt = (UV_normalCnt <= 0) ? 0 : (UV_normalCnt - 1);               
+       			UV_normalCnt = (UV_normalCnt <= 0U) ? 0U : (UV_normalCnt - 1U);               
             }            
                         
             if (UV_normalCnt >= CAL_UV_NormalCntMax)
             {
-                UV_normalCnt = 0;
+                UV_normalCnt = 0U;
                 IRV_UV_diagState = NORMAL;
-				IRV_UV_Faultflag = 0;
+				IRV_UV_Faultflag = 0U;
             }
             else
             {
@@ -462,7 +483,7 @@ static void DiagUnderVoltage(void)
 			if(UV_retryAttempt >= CAL_UV_RetryAttemptMax)
 			{
 				IRV_UV_diagState = FAILURE;
-				IRV_UV_Faultflag = 1;
+				IRV_UV_Faultflag = 1U;
 			}
             break;
 		case FAILURE:
@@ -478,7 +499,7 @@ static void DiagLowCurrent(void)
 {
 	static DiagEntryConditionState_t LC_entryCondition;
 
-	static uint8_t	diag_coolantFlag			  = 0;
+	static uint8_t	diag_coolantFlag			  = 0U;
 	
 	sint16_t CAL_LC_NormalUprTh		    = LC_NORMAL_UPR_TH;
 	sint16_t CAL_LC_FaultLwrTh		    = LC_FAULT_LWR_TH;
@@ -486,7 +507,7 @@ static void DiagLowCurrent(void)
 	sint16_t CAL_LC_RetryCntMax 	    = LC_RETRY_CNT_MAX;
 	sint16_t CAL_LC_AttemptCLRCntMax 	= LC_AttemptCLR_CNT_MAX;
 	sint16_t CAL_LC_SpeedMin		    = LC_SPEED_MIN;
-	sint16_t CAL_LC_RetryAttemptMax     = LC_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_LC_RetryAttemptMax     = LC_RETRY_ATTEMPT_MAX;
 
     (void)ReadIqFiltered(&diag_iqFiltered);
     (void)ReadSpeedRef(&diag_speedRef);
@@ -514,7 +535,7 @@ static void DiagLowCurrent(void)
 			}
 			if((diag_iqFiltered >= CAL_LC_NormalUprTh) && (diag_speedRef >= CAL_SpeedMin))
 			{
-    			LC_normalCnt = (LC_retryAttempt > 0) ? (LC_normalCnt + 1) : (0);
+    			LC_normalCnt = (LC_retryAttempt > 0U) ? (LC_normalCnt + 1) : (0);
 			}
 			else
 			{
@@ -524,8 +545,8 @@ static void DiagLowCurrent(void)
 			if(LC_normalCnt > CAL_LC_AttemptCLRCntMax)
 			{
 				LC_normalCnt = 0;
-				LC_retryAttempt = 0;
-				IRV_LC_Faultflag = 0;
+				LC_retryAttempt = 0U;
+				IRV_LC_Faultflag = 0U;
 			}
 			else
 			{
@@ -595,7 +616,7 @@ static void DiagWarningCurrent(void)
 static void DiagWarningCurrentNormal(void)
 {
 	sint16_t CAL_WC_IqWarningUprTh		= WC_IQ_WARNING_UPR_TH;
-	sint16_t CAL_WC_WarningCntMax		= WC_WARNING_CNT_MAX;
+	uint8_t CAL_WC_WarningCntMax		= WC_WARNING_CNT_MAX;
 	if (((diag_iqFiltered > CAL_WC_IqWarningUprTh)) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
 		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
@@ -603,12 +624,12 @@ static void DiagWarningCurrentNormal(void)
 	}
 	else                                                                     //  iq 14A, WC Flag Clear Period
 	{
-    	WC_WarningCnt = (WC_WarningCnt <= 0) ? 0 : (WC_WarningCnt - 1);
+    	WC_WarningCnt = (WC_WarningCnt <= 0U) ? 0U : (WC_WarningCnt - 1U);
 	}
 	
 	if (WC_WarningCnt >= CAL_WC_WarningCntMax)                                    //WC transition
 	{
-		WC_WarningCnt = 0;
+		WC_WarningCnt = 0U;
 		IRV_WC_diagState = WARNING;
 		IRV_WC_Warningflag = 1u;
 
@@ -618,7 +639,7 @@ static void DiagWarningCurrentNormal(void)
 
 static void DiagWarningCurrentWarning(void)
 {
-	sint16_t CAL_WC_NormalCntMax		= WC_NORMAL_CNT_MAX;
+	uint8_t CAL_WC_NormalCntMax		= WC_NORMAL_CNT_MAX;
 	sint16_t CAL_WC_IqWarningLwrTh		= WC_IQ_WARNING_LWR_TH;
 
 	if ((diag_iqFiltered <= CAL_WC_IqWarningLwrTh) 
@@ -629,7 +650,7 @@ static void DiagWarningCurrentWarning(void)
 	else if((diag_iqFiltered > CAL_WC_IqWarningLwrTh) 
 		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
-		WC_normalCnt = (WC_normalCnt <= 0) ? 0 : (WC_normalCnt - 1);							
+		WC_normalCnt = (WC_normalCnt <= 0U) ? 0U : (WC_normalCnt - 1U);							
 	}
 	else
 	{
@@ -638,7 +659,7 @@ static void DiagWarningCurrentWarning(void)
 
 	if (WC_normalCnt >= CAL_WC_NormalCntMax)
 	{
-		WC_normalCnt = 0;
+		WC_normalCnt = 0U;
 		IRV_WC_Warningflag = 0u;
 		IRV_WC_diagState = NORMAL;
 	}
@@ -671,9 +692,10 @@ static void DiagOverCurrent(void)
 
 static void DiagOverCurrentNormal(void)
 {
-	static const sint16_t CAL_OC_FaultCntMax 		= OC_FAULT_CNT_MAX;
+    static sint16_t OC_AttemptCLRCnt              = 0;
+    static const uint8_t CAL_OC_FaultCntMax 		= OC_FAULT_CNT_MAX;
     static const sint16_t CAL_OC_IqFaultUprTh		= OC_IQ_FAULT_UPR_TH;	
-	static const sint16_t CAL_OC_AttemptCLRCntMax	= OC_AttemptCLR_CNT_MAX;
+    static const sint16_t CAL_OC_AttemptCLRCntMax	= OC_AttemptCLR_CNT_MAX;
     if((diag_iqFiltered >= CAL_OC_IqFaultUprTh) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
 		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
@@ -681,12 +703,12 @@ static void DiagOverCurrentNormal(void)
 	}
     else
     {
-    	OC_faultCnt = (OC_faultCnt <= 0) ? (0) : (OC_faultCnt - 1);
+    	OC_faultCnt = (OC_faultCnt <= 0U) ? (0U) : (OC_faultCnt - 1U);
 	}
 	if((diag_iqFiltered < CAL_OC_IqFaultUprTh)
 		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
-        OC_AttemptCLRCnt = (OC_retryAttempt > 0) ? (OC_AttemptCLRCnt + 1) : (0);
+        OC_AttemptCLRCnt = (OC_retryAttempt > 0U) ? (OC_AttemptCLRCnt + 1) : (0);
 	}
 	else
 	{
@@ -696,15 +718,15 @@ static void DiagOverCurrentNormal(void)
 	if (OC_AttemptCLRCnt >= CAL_OC_AttemptCLRCntMax)
 	{
 		OC_AttemptCLRCnt = 0;
-		OC_retryAttempt = 0;
-		IRV_OC_Faultflag = 0;
+		OC_retryAttempt = 0U;
+		IRV_OC_Faultflag = 0U;
 		IRV_OC_diagState = NORMAL;
 	}
 
 	
 	if (OC_faultCnt >= CAL_OC_FaultCntMax)
 	{
-		OC_faultCnt = 0;
+		OC_faultCnt = 0U;
 		OC_AttemptCLRCnt = 0;
 		IRV_OC_Faultflag = 1u;
 		OC_retryAttempt++;
@@ -715,20 +737,20 @@ static void DiagOverCurrentNormal(void)
 
 static void DiagOverCurrentFault(void)
 {
-	sint16_t CAL_OC_RetryAttemptMax	= OC_RETRY_ATTEMPT_MAX;
-	sint16_t CAL_OC_RetryCntMax		= OC_RETRY_CNT_MAX;
+	uint8_t CAL_OC_RetryAttemptMax	= OC_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_OC_RetryCntMax		= OC_RETRY_CNT_MAX;
 
 	OC_retryCnt++;
 	
 	if (OC_retryCnt >= CAL_OC_RetryCntMax)
 	{
-		OC_retryCnt = 0;
+		OC_retryCnt = 0U;
 		IRV_OC_diagState = NORMAL;
 	}
 
 	if (OC_retryAttempt >= CAL_OC_RetryAttemptMax)
 	{
-		IRV_OC_diagState = FAILURE; /* OC_Faultflag == 1 */
+		IRV_OC_diagState = FAILURE; /* OC_Faultflag == 1U */
 	}	  
 
 }
@@ -738,10 +760,10 @@ static void DiagShortCircuit (void)
 {
 	static DiagState_t diag_hwShortCircuitState   = NORMAL;
 
-	sint16_t CAL_SC_NormalCntMax	  = SC_NORMAL_CNT_MAX;
-	sint16_t CAL_SC_FaultCntMax 	  = SC_FAULT_CNT_MAX;
-	sint16_t CAL_SC_RetryCntMax 	  = SC_RETRY_CNT_MAX;
-	sint16_t CAL_SC_RetryAttemptMax   = SC_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_SC_NormalCntMax	  = SC_NORMAL_CNT_MAX;
+	uint8_t CAL_SC_FaultCntMax 	  = SC_FAULT_CNT_MAX;
+	uint8_t CAL_SC_RetryCntMax 	  = SC_RETRY_CNT_MAX;
+	uint8_t CAL_SC_RetryAttemptMax   = SC_RETRY_ATTEMPT_MAX;
 
     (void)ReadHwShortCircuitState(&diag_hwShortCircuitState);
     (void)ReadSpeedRef(&diag_speedRef);
@@ -759,7 +781,7 @@ static void DiagShortCircuit (void)
              else if ((diag_hwShortCircuitState == NORMAL) 
 			 	|| (diag_speedRef < CAL_SpeedMin) || (diag_vdcFiltered < 900) || (diag_vdcFiltered > 1600))
              {
-                 SC_faultCnt = (SC_faultCnt <= 0) ? 0 : (SC_faultCnt - 1); 
+                 SC_faultCnt = (SC_faultCnt <= 0U) ? 0U : (SC_faultCnt - 1U); 
              }
              else
              {
@@ -768,7 +790,7 @@ static void DiagShortCircuit (void)
         
              if (SC_faultCnt >= CAL_SC_FaultCntMax)
              {
-                 SC_faultCnt = 0;
+                 SC_faultCnt = 0U;
                  IRV_SC_diagState = FAULT;
              }
              else
@@ -791,7 +813,7 @@ static void DiagShortCircuit (void)
         
              if (SC_retryCnt >= CAL_SC_RetryCntMax)
              {
-                 SC_retryCnt = 0;
+                 SC_retryCnt = 0U;
                  SC_retryAttempt++;
                  IRV_SC_diagState = RETRY;
              }
@@ -810,13 +832,13 @@ static void DiagShortCircuit (void)
 			 	&& (diag_speedRef >= CAL_SpeedMin) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600))
              {
                  SC_faultCnt++;
-				 SC_normalCnt = (SC_normalCnt <= 0) ? 0 : (SC_normalCnt - 1);                  
+				 SC_normalCnt = (SC_normalCnt <= 0U) ? 0U : (SC_normalCnt - 1U);                  
              }
              else if ((diag_hwShortCircuitState == NORMAL)
 			 	|| (diag_speedRef < CAL_SpeedMin) || (diag_vdcFiltered < 900) || (diag_vdcFiltered > 1600))
              {
                  SC_normalCnt++;
-				 SC_faultCnt = (SC_faultCnt <= 0) ? 0 : (SC_faultCnt - 1);
+				 SC_faultCnt = (SC_faultCnt <= 0U) ? 0U : (SC_faultCnt - 1U);
              }
              else
              {
@@ -825,8 +847,8 @@ static void DiagShortCircuit (void)
 
              if(SC_faultCnt >= CAL_SC_FaultCntMax)
              {
-                 SC_faultCnt = 0;
-                 SC_normalCnt = 0;
+                 SC_faultCnt = 0U;
+                 SC_normalCnt = 0U;
                  IRV_SC_diagState = FAULT;
              }
              else
@@ -836,9 +858,9 @@ static void DiagShortCircuit (void)
 
              if (SC_normalCnt >= CAL_SC_NormalCntMax)
              {
-                 SC_faultCnt = 0;
-                 SC_normalCnt = 0;
-                 SC_retryAttempt = 0;
+                 SC_faultCnt = 0U;
+                 SC_normalCnt = 0U;
+                 SC_retryAttempt = 0U;
                  IRV_SC_diagState = NORMAL;
              }
              else
@@ -856,10 +878,10 @@ static void DiagShortCircuit (void)
 static void DiagGateDrvOVUV(void)
 {
 	static DiagState_t diag_hwGateDrvErrorState   = NORMAL;
-	sint16_t CAL_GE_NormalCntMax	  = GE_NORMAL_CNT_MAX;
-	sint16_t CAL_GE_FaultCntMax 	  = GE_FAULT_CNT_MAX;
-	sint16_t CAL_GE_RetryCntMax 	  = GE_RETRY_CNT_MAX;
-	sint16_t CAL_GE_RetryAttemptMax   = GE_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_GE_NormalCntMax	  = GE_NORMAL_CNT_MAX;
+	uint8_t CAL_GE_FaultCntMax 	  = GE_FAULT_CNT_MAX;
+	uint8_t CAL_GE_RetryCntMax 	  = GE_RETRY_CNT_MAX;
+	uint8_t CAL_GE_RetryAttemptMax   = GE_RETRY_ATTEMPT_MAX;
 
     (void)ReadHwGateDrvErrorState(&diag_hwGateDrvErrorState);
     (void)ReadSpeedRef(&diag_speedRef);
@@ -875,7 +897,7 @@ static void DiagGateDrvOVUV(void)
             else if ((diag_hwGateDrvErrorState == NORMAL) 
 				|| (diag_speedRef < CAL_SpeedMin) || (IRV_SC_diagState != NORMAL) || (IRV_PO_diagState != NORMAL) || (diag_vdcFiltered < 900) || (diag_vdcFiltered > 1600))
             {
-                GE_faultCnt = (GE_faultCnt <= 0) ? 0 : (GE_faultCnt - 1);
+                GE_faultCnt = (GE_faultCnt <= 0U) ? 0U : (GE_faultCnt - 1U);
             }
             else
             {
@@ -885,7 +907,7 @@ static void DiagGateDrvOVUV(void)
 
             if (GE_faultCnt >= CAL_GE_FaultCntMax)
             {
-                GE_faultCnt = 0;
+                GE_faultCnt = 0U;
                 IRV_GE_diagState = FAULT;
             }
             else
@@ -909,7 +931,7 @@ static void DiagGateDrvOVUV(void)
              
              if (GE_retryCnt >= CAL_GE_RetryCntMax)
              {
-                 GE_retryCnt = 0;
+                 GE_retryCnt = 0U;
                  GE_retryAttempt++;
                  IRV_GE_diagState = RETRY;
              }
@@ -928,14 +950,14 @@ static void DiagGateDrvOVUV(void)
 				&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_PO_diagState == NORMAL) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600))
             {
                 GE_faultCnt++;
-                GE_normalCnt = (GE_normalCnt <= 0) ? 0 : (GE_normalCnt - 1);
+                GE_normalCnt = (GE_normalCnt <= 0U) ? 0U : (GE_normalCnt - 1U);
 
             }
             else if ((diag_hwGateDrvErrorState == NORMAL)
 				|| (diag_speedRef < CAL_SpeedMin) || (IRV_SC_diagState != NORMAL) || (IRV_PO_diagState != NORMAL) || (diag_vdcFiltered < 900) || (diag_vdcFiltered > 1600))
             {
                 GE_normalCnt++;
-                GE_faultCnt = (GE_faultCnt <= 0) ? 0 : (GE_faultCnt - 1);
+                GE_faultCnt = (GE_faultCnt <= 0U) ? 0U : (GE_faultCnt - 1U);
 
             }
             else
@@ -945,8 +967,8 @@ static void DiagGateDrvOVUV(void)
 
             if (GE_faultCnt >= CAL_GE_FaultCntMax)
             {
-                GE_faultCnt = 0;
-                GE_normalCnt = 0;
+                GE_faultCnt = 0U;
+                GE_normalCnt = 0U;
                 IRV_GE_diagState = FAULT;
             }
             else
@@ -956,9 +978,9 @@ static void DiagGateDrvOVUV(void)
         
             if (GE_normalCnt >= CAL_GE_NormalCntMax)
             {
-                GE_faultCnt = 0;
-                GE_normalCnt = 0;
-                GE_retryAttempt = 0;
+                GE_faultCnt = 0U;
+                GE_normalCnt = 0U;
+                GE_retryAttempt = 0U;
                 IRV_GE_diagState = NORMAL;
             }
             else
@@ -1070,7 +1092,7 @@ static void DiagSpeedErrorNormal(void)
 	  else if((diag_speedError <= CAL_SE_WarningLwrTh) 
 	  	&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_OC_diagState == NORMAL))
 	  {
-		  SE_normalCnt = (SE_retryAttempt > 0) ? (SE_normalCnt + 1) : (0);
+		  SE_normalCnt = (SE_retryAttempt > 0U) ? (SE_normalCnt + 1) : (0);
 		  SE_faultCnt = 0;
 		  SE_WarningCnt = 0;
 	  }
@@ -1105,8 +1127,8 @@ static void DiagSpeedErrorNormal(void)
 	if (SE_normalCnt >= CAL_SE_AttemptCLRCntMax)
 	{
 		SE_normalCnt = 0;
-		SE_retryAttempt = 0;
-		IRV_SE_Faultflag = 0;
+		SE_retryAttempt = 0U;
+		IRV_SE_Faultflag = 0U;
 	}
 	else
 	{
@@ -1141,7 +1163,7 @@ static void DiagSpeedErrorWarning(void)
 	if(SE_normalCnt >= CAL_SE_NormalCntMax)
 	{
 		SE_normalCnt = 0;
-		IRV_SE_Warningflag = 0;
+		IRV_SE_Warningflag = 0U;
 		IRV_SE_diagState = NORMAL;
 	}
 	else
@@ -1156,7 +1178,7 @@ static void DiagSpeedErrorWarning(void)
 		SE_retryAttempt++;
 		IRV_SE_diagState = FAULT;
 		IRV_SE_Faultflag = 1u;
-		IRV_SE_Warningflag = 0;
+		IRV_SE_Warningflag = 0U;
 	}
 	else
 	{
@@ -1167,14 +1189,14 @@ static void DiagSpeedErrorWarning(void)
 
 static void DiagSpeedErrorFault(void)
 {
-	sint16_t CAL_SE_RetryCntMax		= SE_RETRY_CNT_MAX;
-	sint16_t CAL_SE_RetryAttemptMax	= SE_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_SE_RetryCntMax		= SE_RETRY_CNT_MAX;
+	uint8_t CAL_SE_RetryAttemptMax	= SE_RETRY_ATTEMPT_MAX;
 
 	SE_retryCnt++;
 	
 	if (SE_retryCnt >= CAL_SE_RetryCntMax)
 	{
-		SE_retryCnt = 0;
+		SE_retryCnt = 0U;
 		IRV_SE_diagState = NORMAL;
 	}
 	else
@@ -1219,7 +1241,7 @@ static void DiagOverTemperature (void)
 static void DiagOverTemperatureNormal(void)
 {
 	static const sint16_t CAL_OT_WarningUprTh		= OT_WARNING_UPR_TH;
-	static const sint16_t CAL_OT_FaultCntMax 		= OT_FAULT_CNT_MAX;
+	static const uint8_t CAL_OT_FaultCntMax 		= OT_FAULT_CNT_MAX;
 
     /* 140 <=  Temp < 150 , Warning State */
 	if ((diag_temperatureFiltered >= CAL_OT_WarningUprTh) && (diag_temperatureFiltered < CAL_OT_FaultUprTh) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
@@ -1229,7 +1251,7 @@ static void DiagOverTemperatureNormal(void)
 	}
 	else
 	{
-    	OT_warningCnt = (OT_warningCnt <= 0) ? 0 : (OT_warningCnt - 1);
+    	OT_warningCnt = (OT_warningCnt <= 0U) ? 0U : (OT_warningCnt - 1U);
 	}
 	/*  Temp >= 150, Fault */
 	if((diag_temperatureFiltered >= CAL_OT_FaultUprTh) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
@@ -1239,12 +1261,12 @@ static void DiagOverTemperatureNormal(void)
 	}
 	else
 	{
-    	OT_faultCnt = (OT_faultCnt <= 0) ? 0 : (OT_faultCnt - 1);
+    	OT_faultCnt = (OT_faultCnt <= 0U) ? 0U : (OT_faultCnt - 1U);
 	}
 	
 	if (OT_warningCnt >= CAL_OT_WarningCntMax)                                             // WT Transition
 	{
-		OT_warningCnt = 0;
+		OT_warningCnt = 0U;
 		IRV_OT_diagState = WARNING;
 		IRV_OT_Warningflag = 1u;
 	}
@@ -1255,11 +1277,11 @@ static void DiagOverTemperatureNormal(void)
 	
     if (OT_faultCnt >= CAL_OT_FaultCntMax)
 	{
-		OT_faultCnt = 0;
-		OT_normalCnt = 0;
+		OT_faultCnt = 0U;
+		OT_normalCnt = 0U;
 		IRV_OT_diagState = FAULT;
 		IRV_OT_Faultflag = 1u;
-		IRV_OT_Warningflag = 0;
+		IRV_OT_Warningflag = 0U;
 	}
 	else
 	{
@@ -1269,26 +1291,26 @@ static void DiagOverTemperatureNormal(void)
 }
 static void DiagOverTemperatureWarning(void)
 {
-	static const sint16_t CAL_OT_FaultCntMax 		= OT_FAULT_CNT_MAX;
+	static const uint8_t CAL_OT_FaultCntMax 		= OT_FAULT_CNT_MAX;
 
     /*  Temp >= 150, Fault */
 	if ((diag_temperatureFiltered >= CAL_OT_FaultUprTh)  && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
 		&& (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_PO_diagState == NORMAL))
 	{
-    	OT_normalCnt = (OT_normalCnt <= 0) ? 0 : (OT_normalCnt - 1);
+    	OT_normalCnt = (OT_normalCnt <= 0U) ? 0U : (OT_normalCnt - 1U);
     	OT_faultCnt++;
 	}
 	/* 140 <=  Temp < 150 , Warning State */	
 	else if((diag_temperatureFiltered > CAL_OT_NormalLwrTh) && (diag_temperatureFiltered < CAL_OT_FaultUprTh))
 	{
-    	OT_normalCnt = (OT_normalCnt <= 0) ? 0 : (OT_normalCnt - 1);
-    	OT_faultCnt = (OT_faultCnt <= 0) ? 0 : (OT_faultCnt - 1);
+    	OT_normalCnt = (OT_normalCnt <= 0U) ? 0U : (OT_normalCnt - 1U);
+    	OT_faultCnt = (OT_faultCnt <= 0U) ? 0U : (OT_faultCnt - 1U);
 	}
     /*  Temp <= 130, Normal State */
 	else if(diag_temperatureFiltered <= CAL_OT_NormalLwrTh)
 	{
     	OT_normalCnt++;
-    	OT_faultCnt = (OT_faultCnt <= 0) ? 0 : (OT_faultCnt - 1);
+    	OT_faultCnt = (OT_faultCnt <= 0U) ? 0U : (OT_faultCnt - 1U);
 
 	}
 	else
@@ -1298,8 +1320,8 @@ static void DiagOverTemperatureWarning(void)
 	
 	if (OT_normalCnt >= CAL_OT_NormalCntMax)
 	{
-		OT_faultCnt = 0;
-		OT_normalCnt = 0;
+		OT_faultCnt = 0U;
+		OT_normalCnt = 0U;
 		IRV_OT_diagState = NORMAL;
 		IRV_OT_Warningflag = 0u;
 	}
@@ -1310,11 +1332,11 @@ static void DiagOverTemperatureWarning(void)
 		
 	if (OT_faultCnt >= CAL_OT_FaultCntMax)
 	{
-		OT_faultCnt = 0;
-		OT_normalCnt = 0;
+		OT_faultCnt = 0U;
+		OT_normalCnt = 0U;
 		IRV_OT_diagState = FAULT;
 		IRV_OT_Faultflag = 1u;
-		IRV_OT_Warningflag = 0;
+		IRV_OT_Warningflag = 0U;
 	}
 	else
 	{
@@ -1331,25 +1353,25 @@ static void DiagOverTemperatureFault(void)
 	if (diag_temperatureFiltered <= CAL_OT_NormalLwrTh)
 	{
 		OT_normalCnt++;
-		OT_warningCnt = (OT_warningCnt <= 0) ? 0 : (OT_warningCnt - 1); 				
+		OT_warningCnt = (OT_warningCnt <= 0U) ? 0U : (OT_warningCnt - 1U); 				
 	}		
     /* 130 < Temp <= 140, Warning State*/
 	else if (diag_temperatureFiltered <= CAL_OT_WarningLwrTh)
 	{
 		OT_warningCnt++;
-		OT_normalCnt = (OT_normalCnt <= 0) ? 0 : (OT_normalCnt - 1);				
+		OT_normalCnt = (OT_normalCnt <= 0U) ? 0U : (OT_normalCnt - 1U);				
 	}
     /* 140 < Temp, Fault State*/	
 	else
 	{
-		OT_warningCnt = (OT_warningCnt <= 0) ? 0 : (OT_warningCnt - 1); 			
-		OT_normalCnt = (OT_normalCnt <= 0) ? 0 : (OT_normalCnt - 1); 
+		OT_warningCnt = (OT_warningCnt <= 0U) ? 0U : (OT_warningCnt - 1U); 			
+		OT_normalCnt = (OT_normalCnt <= 0U) ? 0U : (OT_normalCnt - 1U); 
 	}											
 	
 	if (OT_normalCnt >= CAL_OT_NormalCntMax)
 	{
-		OT_normalCnt = 0;
-		OT_warningCnt = 0;
+		OT_normalCnt = 0U;
+		OT_warningCnt = 0U;
 		IRV_OT_diagState = NORMAL;
 		IRV_OT_Warningflag = 0u;
 		IRV_OT_Faultflag = 0u;
@@ -1361,8 +1383,8 @@ static void DiagOverTemperatureFault(void)
 			
 	if (OT_warningCnt >= CAL_OT_WarningCntMax)
 	{
-		OT_normalCnt = 0;
-		OT_warningCnt = 0;
+		OT_normalCnt = 0U;
+		OT_warningCnt = 0U;
 		IRV_OT_diagState = WARNING;
 		IRV_OT_Warningflag = 1u;
 		IRV_OT_Faultflag = 0u;
@@ -1401,27 +1423,27 @@ static void DiagStallError(void)
 static void DiagStallErrorNormal(void)
 {
 	static const sint16_t CAL_ST_FluxAbsFaultUprTh = ST_FLUXABS_FAULT_UPR_TH;
-	static const sint16_t CAL_ST_FaultCntMax		     = ST_FAULT_CNT_MAX;
-	static const sint16_t CAL_ST_AttemptCLRCntMax	= ST_AttemptCLR_CNT_MAX;
+	static const uint8_t CAL_ST_FaultCntMax		     = ST_FAULT_CNT_MAX;
+	static const uint8_t CAL_ST_AttemptCLRCntMax	= ST_AttemptCLR_CNT_MAX;
 	sint16_t diag_fluxAbsValueMeasured	  = 0;
 	(void)GetFluxAbsValue(&diag_fluxAbsValueMeasured);
 
 	if ((diag_fluxAbsValueMeasured <= CAL_ST_FluxAbsFaultUprTh) && ((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u)
-		&& ((uint16_t)diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL))
 	{
 		ST_FaultCnt++;
-		ST_NormalCnt = (ST_NormalCnt <= 0) ? 0 : (ST_NormalCnt - 1);	
+		ST_NormalCnt = (ST_NormalCnt <= 0U) ? 0U : (ST_NormalCnt - 1U);	
 	}
 	else                                                                         
 	{
-        ST_FaultCnt = (ST_FaultCnt <= 0) ? 0 : (ST_FaultCnt - 1);	
-		ST_NormalCnt = (ST_retryAttempt > 0) ? (ST_NormalCnt + 1) : (0);
+        ST_FaultCnt = (ST_FaultCnt <= 0U) ? 0U : (ST_FaultCnt - 1U);	
+		ST_NormalCnt = (ST_retryAttempt > 0U) ? (ST_NormalCnt + 1U) : (0U);
 	}
 	
 	if (ST_FaultCnt >= CAL_ST_FaultCntMax)                                    
 	{
-		ST_FaultCnt = 0;
-        ST_NormalCnt = 0;
+		ST_FaultCnt = 0U;
+        ST_NormalCnt = 0U;
 		IRV_ST_diagState = FAULT;
 		ST_retryAttempt = ST_retryAttempt + 1u;
 		IRV_ST_Faultflag = 1u;
@@ -1430,30 +1452,30 @@ static void DiagStallErrorNormal(void)
 	
 	if (ST_NormalCnt >= CAL_ST_AttemptCLRCntMax)                              
 	{
-		ST_NormalCnt = 0;
-		ST_retryAttempt = 0;
-		IRV_ST_Faultflag = 0;
+		ST_NormalCnt = 0U;
+		ST_retryAttempt = 0U;
+		IRV_ST_Faultflag = 0U;
 		
 	}
 }
 
 static void DiagStallErrorFault(void)
 {
-	static const sint16_t CAL_ST_RetryAttemptMax	= ST_RETRY_ATTEMPT_MAX;
-	static const sint16_t CAL_ST_RetryCntMax		= ST_RETRY_CNT_MAX;
+	static const uint8_t CAL_ST_RetryAttemptMax	= ST_RETRY_ATTEMPT_MAX;
+	static const uint8_t CAL_ST_RetryCntMax		= ST_RETRY_CNT_MAX;
 
 	ST_retryCnt++;
 	
 	if (ST_retryCnt >= CAL_ST_RetryCntMax)
 	{
-		ST_retryCnt = 0;
+		ST_retryCnt = 0U;
 		IRV_ST_diagState = NORMAL;
 	}
 
 	if (ST_retryAttempt >= CAL_ST_RetryAttemptMax)
 	{
 		IRV_ST_diagState = FAILURE;
-		IRV_ST_Faultflag = 1;
+		IRV_ST_Faultflag = 1U;
 	}	  
 	
 
@@ -1525,14 +1547,14 @@ static void DiagStallErrorFault(void)
 //			
 //            break;
 //     
-//        default: /*no action */
+//        default: 
 //            break;
 //    }
 //}
 static void DiagLINInvalidValue(void)
 {
 	static DiagEntryConditionState_t LIV_entryCondition;
-	uint8_t diag_linRequireDuty = 0;
+	uint8_t diag_linRequireDuty = 0U;
 
 	(void)ReadLinRequireDuty(&diag_linRequireDuty);
     (void)ReadIgnFlag(&diag_ignState);
@@ -1550,13 +1572,13 @@ static void DiagLINInvalidValue(void)
     switch (IRV_LIV_diagState)
     {
         case NORMAL:
-            if (((diag_linRequireDuty >= 101) && (diag_linRequireDuty <= 255)) && (LIV_entryCondition == ENABLE))
+            if ((diag_linRequireDuty >= 101U) && (LIV_entryCondition == ENABLE))
             {
-                LIV_faultCnt = (LIV_faultCnt < 400) ? (LIV_faultCnt + 1u) : 400u;
+                LIV_faultCnt = (LIV_faultCnt < 400U) ? (LIV_faultCnt + 1u) : 400u;
             }
             else
             {
-    			LIV_faultCnt = (LIV_faultCnt < 1) ? 0u : (LIV_faultCnt - 1u);
+    			LIV_faultCnt = (LIV_faultCnt < 1U) ? 0u : (LIV_faultCnt - 1u);
 
             }
 			if(LIV_faultCnt >= 400u)
@@ -1569,7 +1591,7 @@ static void DiagLINInvalidValue(void)
             break;
 
         case WARNING:      
-            if ((diag_linRequireDuty <= 100))
+            if ((diag_linRequireDuty <= 100U))
             {
                 IRV_LIV_diagState = NORMAL;
 							  IRV_LIV_Warningflag = 0u;
@@ -1590,8 +1612,8 @@ static void DiagPhaseOpen(void)
 {
 	sint16_t CAL_PO_NormalCntMax	  = PO_NORMAL_CNT_MAX;
 	sint16_t CAL_PO_FaultCntMax 	  = PO_FAULT_CNT_MAX;
-	sint16_t CAL_PO_RetryCntMax 	  = PO_RETRY_CNT_MAX;
-	sint16_t CAL_PO_RetryAttemptMax   = PO_RETRY_ATTEMPT_MAX;
+	uint8_t CAL_PO_RetryCntMax 	  = PO_RETRY_CNT_MAX;
+	uint8_t CAL_PO_RetryAttemptMax   = PO_RETRY_ATTEMPT_MAX;
 
     (void)ReadHwOpenPhaseState(&diag_hwOpenPhaseState);
     
@@ -1640,7 +1662,7 @@ static void DiagPhaseOpen(void)
              
              if (PO_retryCnt >= CAL_PO_RetryCntMax)
              {
-                 PO_retryCnt = 0;
+                 PO_retryCnt = 0U;
                  PO_retryAttempt++;
                  IRV_PO_diagState = RETRY;
              }
@@ -1687,7 +1709,7 @@ static void DiagPhaseOpen(void)
              {
                  PO_faultCnt = 0;
                  PO_normalCnt = 0;
-                 PO_retryAttempt = 0;
+                 PO_retryAttempt = 0U;
                  IRV_PO_diagState = NORMAL;
              }
              else
@@ -1704,71 +1726,71 @@ static void DiagPhaseOpen(void)
 
 static void DiagEwpInital(void)
 {
-    uint8_t diag_InitialFlag = 0;
+    uint8_t diag_InitialFlag = 0U;
 	(void)ReadInitialFlag(&diag_InitialFlag);
 
 	if((diag_InitialFlag == 1u))
 	{
         /**** Under Voltage Clear ****/
-		UV_faultCnt = 0; UV_retryAttempt = 0; UV_normalCnt = 0; IRV_UV_diagState = NORMAL; IRV_UV_Faultflag = 0;
+		UV_faultCnt = 0U; UV_retryAttempt = 0U; UV_normalCnt = 0U; IRV_UV_diagState = NORMAL; IRV_UV_Faultflag = 0U;
 	    /**** Over Voltage Clear ****/
-		OV_faultCnt = 0; OV_retryAttempt = 0; OV_normalCnt = 0; IRV_OV_diagState = NORMAL; IRV_OV_Faultflag = 0;
+		OV_faultCnt = 0U; OV_retryAttempt = 0U; OV_normalCnt = 0U; IRV_OV_diagState = NORMAL; IRV_OV_Faultflag = 0U;
 	    /**** Over Temperature Clear ****/
-		OT_faultCnt = 0; OT_warningCnt =0; OT_normalCnt = 0; IRV_OT_diagState = NORMAL; IRV_OT_Warningflag = 0; IRV_OT_Faultflag = 0;
+		OT_faultCnt = 0U; OT_warningCnt =0U; OT_normalCnt = 0U; IRV_OT_diagState = NORMAL; IRV_OT_Warningflag = 0U; IRV_OT_Faultflag = 0U;
 	    /**** Short Circuit Clear ****/		
-		SC_faultCnt = 0; SC_retryCnt = 0; SC_normalCnt = 0; SC_retryAttempt = 0; IRV_SC_diagState = NORMAL; 
+		SC_faultCnt = 0U; SC_retryCnt = 0U; SC_normalCnt = 0U; SC_retryAttempt = 0U; IRV_SC_diagState = NORMAL; 
 	    /**** GateDrv Error Clear ****/				
-		GE_faultCnt = 0; GE_retryCnt = 0; GE_normalCnt = 0; GE_retryAttempt = 0; IRV_GE_diagState = NORMAL;
+		GE_faultCnt = 0U; GE_retryCnt = 0U; GE_normalCnt = 0U; GE_retryAttempt = 0U; IRV_GE_diagState = NORMAL;
 	    /**** Speed Error Clear ****/				
-		SE_faultCnt = 0; SE_retryCnt = 0; SE_WarningCnt = 0; SE_normalCnt = 0; SE_retryAttempt = 0; IRV_SE_diagState = NORMAL; IRV_SE_Warningflag = 0; IRV_SE_Faultflag = 0;
+		SE_faultCnt = 0; SE_retryCnt = 0U; SE_WarningCnt = 0; SE_normalCnt = 0; SE_retryAttempt = 0U; IRV_SE_diagState = NORMAL; IRV_SE_Warningflag = 0U; IRV_SE_Faultflag = 0U;
 	    /**** Over Current Clear ****/		
-		OC_faultCnt = 0; OC_retryCnt = 0; OC_retryAttempt = 0;  IRV_OC_diagState = NORMAL; IRV_OC_Faultflag = 0; 
+		OC_faultCnt = 0U; OC_retryCnt = 0U; OC_retryAttempt = 0U;  IRV_OC_diagState = NORMAL; IRV_OC_Faultflag = 0U; 
 	    /**** Warning Current Clear ****/		
-		WC_WarningCnt = 0; WC_normalCnt = 0; IRV_WC_Warningflag = 0;  IRV_WC_diagState = 0;
+		WC_WarningCnt = 0U; WC_normalCnt = 0U; IRV_WC_Warningflag = 0U;  IRV_WC_diagState = NORMAL;
 	    /**** Low Current Clear ****/		
-		LC_faultCnt = 0; LC_retryCnt = 0; LC_retryAttempt = 0; LC_normalCnt = 0; IRV_LC_diagState = NORMAL; IRV_LC_Faultflag = 0; 
+		LC_faultCnt = 0; LC_retryCnt = 0; LC_retryAttempt = 0U; LC_normalCnt = 0; IRV_LC_diagState = NORMAL; IRV_LC_Faultflag = 0U; 
 		/**** Lin Invalid Value Clear ****/				
-		LIV_faultCnt = 0; IRV_LIV_diagState = NORMAL; IRV_LIV_Warningflag = 0;
+		LIV_faultCnt = 0U; IRV_LIV_diagState = NORMAL; IRV_LIV_Warningflag = 0U;
 		/**** Lin Timeout Clear ****/				
 		IRV_LE_diagState = NORMAL; 
 	    /**** Phase Open  Clear ****/			
-		PO_faultCnt = 0; PO_retryCnt = 0; PO_retryAttempt = 0; PO_normalCnt = 0; IRV_PO_diagState = NORMAL;
+		PO_faultCnt = 0; PO_retryCnt = 0U; PO_retryAttempt = 0U; PO_normalCnt = 0; IRV_PO_diagState = NORMAL;
 	    /**** Stall Error Clear ****/			
-        ST_FaultCnt = 0; ST_NormalCnt = 0; ST_retryCnt  = 0; ST_retryAttempt = 0; IRV_ST_diagState = NORMAL;
+        ST_FaultCnt = 0U; ST_NormalCnt = 0U; ST_retryCnt  = 0U; ST_retryAttempt = 0U; IRV_ST_diagState = NORMAL;
 	}
 
 }
 
 static void MergeDiagState(void)
 {
-	uint8_t diag_failureStateMerged		  = 0;
-	uint8_t diag_warningStateMerged        = 0;
-    uint8_t diag_faultStateMerged_Byte1	  = 0;
-	uint8_t diag_faultStateMerged_Byte2	  = 0;
-	uint8_t diag_faultStateflag_Byte1 = 0;
-    uint8_t diag_faultStateflag_Byte2 = 0;
+	uint8_t diag_failureStateMerged		  = 0U;
+	uint8_t diag_warningStateMerged        = 0U;
+    uint8_t diag_faultStateMerged_Byte1	  = 0U;
+	uint8_t diag_faultStateMerged_Byte2	  = 0U;
+	uint8_t diag_faultStateflag_Byte1 = 0U;
+    uint8_t diag_faultStateflag_Byte2 = 0U;
 
-	uint8_t LE_warningCheck				  = 0;				
-	uint8_t diag_failureCheck              = 0;
-	uint8_t abnormalfailureCheck           = 0;
-	uint8_t SC_faultflag 				 = 0;
-	uint8_t PO_faultflag 				 = 0;
-	uint8_t GE_faultflag 				 = 0;
-	uint8_t OT_faultCheck				  = 0;
-	uint8_t OC_faultCheck				  = 0;
-	uint8_t LC_faultCheck				  = 0;
-	uint8_t ST_faultCheck				  = 0;
+	uint8_t LE_warningCheck				  = 0U;				
+	uint8_t diag_failureCheck              = 0U;
+	uint8_t abnormalfailureCheck           = 0U;
+	uint8_t SC_faultflag 				 = 0U;
+	uint8_t PO_faultflag 				 = 0U;
+	uint8_t GE_faultflag 				 = 0U;
+	uint8_t OT_faultCheck				  = 0U;
+	uint8_t OC_faultCheck				  = 0U;
+	uint8_t LC_faultCheck				  = 0U;
+	uint8_t ST_faultCheck				  = 0U;
 	
-	uint8_t OV_faultCheck				  = 0;
-	uint8_t UV_faultCheck				  = 0;
-	uint8_t SC_faultCheck				  = 0;
-	uint8_t GE_faultCheck				  = 0;
-	uint8_t SE_faultCheck                  = 0;
-    uint8_t PO_faultCheck                  = 0;
+	uint8_t OV_faultCheck				  = 0U;
+	uint8_t UV_faultCheck				  = 0U;
+	uint8_t SC_faultCheck				  = 0U;
+	uint8_t GE_faultCheck				  = 0U;
+	uint8_t SE_faultCheck                  = 0U;
+    uint8_t PO_faultCheck                  = 0U;
 
-	 uint8_t SE_faultflag 				 = 0;uint8_t OT_faultflag 				 = 0;uint8_t OC_faultflag 				 = 0;uint8_t LC_faultflag 				 = 0;uint8_t OV_faultflag 				 = 0;uint8_t UV_faultflag 				 = 0;	uint8_t ST_faultflag 				 = 0;
+	 uint8_t SE_faultflag 				 = 0U;uint8_t OT_faultflag 				 = 0U;uint8_t OC_faultflag 				 = 0U;uint8_t LC_faultflag 				 = 0U;uint8_t OV_faultflag 				 = 0U;uint8_t UV_faultflag 				 = 0U;	uint8_t ST_faultflag 				 = 0U;
 
-	 uint8_t WT_warningCheck				  = 0;  uint8_t LIV_warningCheck				  = 0;  uint8_t SE_warningCheck				  = 0; uint8_t OC_warningCheck				  = 0;
+	 uint8_t WT_warningCheck				  = 0U;  uint8_t LIV_warningCheck				  = 0U;  uint8_t SE_warningCheck				  = 0U; uint8_t OC_warningCheck				  = 0U;
 
 	/************************* diag_faultStateMerged Byte 1 **********************/	
     UV_faultCheck = (((uint8_t)IRV_UV_diagState >> 1u) & 0x01u) ;       // bit 0
@@ -1845,8 +1867,8 @@ static void MergeDiagState(void)
 
 static void SetDiagFlagState (void)
 {
-	static uint8_t diag_faultFlagSet			  = 0;
-	static uint8_t diag_protectionFlagSet		  = 0;
+	static uint8_t diag_faultFlagSet			  = 0U;
+	static uint8_t diag_protectionFlagSet		  = 0U;
 	
 	
     diag_protectionFlagSet = IRV_SE_Faultflag | IRV_OT_Faultflag | IRV_OC_Faultflag | IRV_LC_Faultflag 

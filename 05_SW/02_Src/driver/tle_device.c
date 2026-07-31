@@ -51,6 +51,8 @@
 /*******************************************************************************
 **                      Global Function Definitions                           **
 *******************************************************************************/
+static void TLE_Init1(void);
+static void TLE_Init2(void);
 /** \brief Initializes the TLE modules.
  *
  * \param None
@@ -59,6 +61,13 @@
  * \ingroup tle_api
  */
 void TLE_Init(void)
+{
+    TLE_Init1();
+    TLE_Init2();
+}
+
+
+static void TLE_Init1(void)
 {
 #ifdef RTE_DEVICE_SDK_SCU
   SCU_Init();
@@ -84,6 +93,10 @@ void TLE_Init(void)
 #ifdef RTE_DEVICE_SDK_GPT12E
   GPT12E_Init();
 #endif
+}
+
+static void TLE_Init2(void)
+{
 #ifdef RTE_DEVICE_SDK_LIN
   LIN_Init();
 #endif

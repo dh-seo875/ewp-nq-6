@@ -87,7 +87,10 @@ static void CheckOpenPhase (void);
 static void ConvertDutyToRpm (void);
 static void ConvertRpmToDuty (void);
 
-
+static void SensorSWComponent1(void);
+static void SensorSWComponent2(void);
+static void SensorSWComponent3(void);
+static void SensorSWComponent4(void);
 
 
 /*
@@ -95,38 +98,58 @@ static void ConvertRpmToDuty (void);
 *                                                    Exported functions
 ************************************************************************************************************************
 */
+
+static void SensorSWComponent1(void)
+{
+	ConvertDutyToRpm();
+	CheckOpenPhase();
+	MeasSpeed();
+	ConvertRpmToDuty();
+}
+
+static void SensorSWComponent2(void)
+{
+	MeasVdc();
+	MeasIdc();
+	MeasIq();
+}
+
+static void SensorSWComponent3(void)
+{
+	CheckLinError();	
+	CheckIgn();
+}
+
+static void SensorSWComponent4(void)
+{
+	CheckShortCircuit();
+	CheckGateDrvError();
+	MeasTemperature();
+}
+
+
+
 void SensorSWComponentPack(void)
 {
     static uint8_t SensorTask_Cnt = 0;
 	if(SensorTask_Cnt == 0u)  //16us
 	{
-    	ConvertDutyToRpm();
-	    CheckOpenPhase();
-	    MeasSpeed();
-		ConvertRpmToDuty();
+        SensorSWComponent1();
 		SensorTask_Cnt++;
 	}
 	else if(SensorTask_Cnt == 1u) //17us
 	{
-	    MeasVdc();
-	    MeasIdc();
-	    MeasIq();
+        SensorSWComponent2();
 		SensorTask_Cnt++;
 	}
 	else if(SensorTask_Cnt == 2u) //10us
 	{
-	    CheckLinError();
-	    CheckIgn();
+	    SensorSWComponent3();
 		SensorTask_Cnt++;
 	}
 	else  //13us
 	{
-	    CheckShortCircuit();
-	    CheckGateDrvError();
-	    MeasTemperature();
-//	  	MeasFluxAbsValue();
-//	  	CheckErrorCodeIndex();
-//		CheckPowerLimit();
+	    SensorSWComponent4();
 		SensorTask_Cnt = 0u;
 	}
 }
@@ -282,7 +305,7 @@ static void MeasIdc (void)
 
 static void MeasIq (void)
 {
-	sint16_t    sensor_idMeasured		  = 0;
+//	sint16_t    sensor_idMeasured		  = 0;
 	sint16_t    sensor_iqMeasured		  = 0;
 	sint16_t    sensor_iqFiltered		  = 0;
 
@@ -310,7 +333,7 @@ static void MeasSpeed (void)
 
     if (sensor_hwOpenPhaseCheck == FAULT) /* over 2 phase open */
     {
-        sensor_speedMeasured = 0;
+//        sensor_speedMeasured = 0;
         sensor_speedFiltered = 0;
     }
     else /* less than 1 phase open */

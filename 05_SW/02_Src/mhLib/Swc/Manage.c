@@ -194,7 +194,7 @@ static void ManageSystemOnOff(void)
 	static sint16_t LimphomeCnt = 0;
 	static uint16_t initialSleepCnt = 0;
 	static uint8_t error_done = 0;
-	uint8_t manage_LIVCheck = 0;
+	uint8_t manage_LIVCheck = 0U;
     (void)ReadIgnFlag(&manage_ignState);
     (void)ReadLinTimeOutErrorState(&manage_linErrorState);
     (void)ReadSpeedCmd(&manage_speedCmd);
@@ -221,7 +221,7 @@ static void ManageSystemOnOff(void)
 
         case DRIVE:            
 			manageSystemOnOffState = (manage_ignState == IGN_OFF) ? POWER_LATCH : manageSystemOnOffState;
-			if(((manage_LIVCheck >> 6U) & 0x01) == 1U)
+			if(((manage_LIVCheck >> 6U) & 0x01U) == 1U)
 			{
     			manage_IRV_SpeedRef = SPEED_MAX_RUN;
 			}

@@ -50,7 +50,7 @@
 
 
 
-sint16_t CAL_SpeedMin             = SPEED_MIN;
+//sint16_t CAL_SpeedMin             = SPEED_MIN;
 
 
 

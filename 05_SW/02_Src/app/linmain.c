@@ -84,7 +84,7 @@ static void LIN_COM_Handler_ifc_t2(void);
 static void LIN_LLD_Service_1ms(void);
 static void LIN_LLD_Service_TX_Cal_ReadFunction1(void);
 static void LIN_LLD_Service_TX_Cal_ReadFunction2(void);
-
+static void LIN_LLD_Service_Tx_Rx(void);
 
 
 
@@ -158,6 +158,16 @@ static l_u8  lin_diag_Transmit_flag = 0;
 /*******************************************************************************
 **                      Global Function Definitions                           **
 *******************************************************************************/
+static void LIN_LLD_Service_Tx_Rx(void)
+{
+    LIN_LLD_Service_Timeout();
+    LIN_CoolantDiagFlag();
+	LIN_LLD_Service_RefSpdCal();
+    LIN_LLD_Service_InitialFlag();
+	LIN_LLD_Service_TX_Cal();
+}
+
+
 static void LIN_TransportLayerMain(void)
 {
     /* Diagnostic Handling */
@@ -299,11 +309,7 @@ void LIN_LLD_Service(void)
     
     /* cyclic task of driver (timeout and diagnostic control */
     ld_task_Cal();
-	LIN_LLD_Service_Timeout();
-    LIN_CoolantDiagFlag();
-	LIN_LLD_Service_RefSpdCal();
-    LIN_LLD_Service_InitialFlag();
-	LIN_LLD_Service_TX_Cal();
+    LIN_LLD_Service_Tx_Rx();
 
 }
 
