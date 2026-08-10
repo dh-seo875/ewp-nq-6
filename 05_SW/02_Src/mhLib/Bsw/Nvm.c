@@ -159,7 +159,7 @@ static void NVM_Watchdog_Fault(void)
     {
           PMU->GPUDATA00.reg = 0;	
 	}
-	else if((PMU->PMU_SUPPLY_STS.bit.PMU_1V5_OVERVOLT == 1 ) || (PMU->PMU_SUPPLY_STS.bit.PMU_5V_OVERVOLT == 1))
+	else if((PMU->PMU_SUPPLY_STS.bit.PMU_1V5_OVERVOLT == 1u ) || (PMU->PMU_SUPPLY_STS.bit.PMU_5V_OVERVOLT == 1u))
     {
         Nvm_Watchdog_Fault_FLAG = 1;
         PMU->GPUDATA00.reg = 0;
@@ -265,7 +265,7 @@ static void VAREF_Claer(void)
     sint16_t vdc = 0;
 	(void)ReadVdcFiltered(&vdc);
 	SCUPM->SYS_ISCLR.bit.VREF5V_LOWTH_ICLR = 1;
-    if((vdc>=600) && (SCUPM->SYS_IS.bit.VREF5V_LOWTH_IS == 1))
+    if((vdc>=600) && (SCUPM->SYS_IS.bit.VREF5V_LOWTH_IS == 1u))
     {
         /* 1. LDO Power Down */
 		MF->REF2_CTRL.bit.VREF5V_PD_N = 0;
@@ -351,10 +351,6 @@ static uint8_t writeNvm (const uint8_t*  writeData, uint32_t errorCodeAddress)
 static void EraseNvm (void)
 {
     uint8_t nvmRepeatCnt = 0;
-	int (*USER_ERASEPG)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG);
-	USER_ERASEPG = (int (*)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG)) addr_USER_ERASEPG;
-
-
     for (nvmRepeatCnt = 0; nvmRepeatCnt < FlashPageSize; nvmRepeatCnt++)
     {
     	ErrorCodePageA[nvmRepeatCnt] = 0;

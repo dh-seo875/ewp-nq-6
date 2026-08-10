@@ -382,6 +382,13 @@ void ld_send_message(l_u16 length, const l_u8* const data)
             LIN_DIAG_SEND_FRAME.frame.NAD = g_lin_prod_id.NAD;
 #endif /* #if ((defined LIN_MASTER)||(defined J2602_MASTER)) */
             LIN_DIAG_SEND_FRAME.frame.PCI = (l_u8)(FIRST_FRAME | (l_u8)(local_length>>8u));
+/*
+ * QAC 2982 Deviation:
+ * FF.LEN aliases LIN_DIAG_SEND_FRAME.byte[2] and contains the
+ * lower 8 bits of the LIN First Frame length.
+ * Subsequent payload writes affect only byte[3] through byte[7].
+ * The value is transmitted through the byte[] union member.
+ */
             LIN_DIAG_SEND_FRAME.frame.type.FF.LEN = (l_u8)(local_length & 0x00FFu);
             for(loc_i = 0u; loc_i < LIN_FF_DATA_LEN; loc_i++)
             {

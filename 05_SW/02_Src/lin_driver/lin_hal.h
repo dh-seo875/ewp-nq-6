@@ -183,30 +183,30 @@
  * If not within valid limits, increase timeout timer to cause next call of ld_task to reset UART. 
  */
 
-//#define lin_hal_brreg_calc()  do { lin_synch_time = (l_u16)((l_u16)(lin_synch_time >> 2u) >> BRG_PRE);                    \
-//                                if (BRG_PRE == 0u) { LIN_UART_BCON_FDSEL = (l_u8)(((l_u8)(lin_synch_time & 0x1Fu)) >> 1u); \
-//                                } else { LIN_UART_BCON_FDSEL   = (l_u8)(lin_synch_time & 0x1Fu); }                 \
-//                                lin_synch_time = (l_u16)(lin_synch_time >> 5u);                                           \
-//                                if (lin_synch_time >= MIN_BDREG)                                                   \
-//                                { if (lin_synch_time <= MAX_BDREG)                                                 \
-//                                  { LIN_UART_BCON_BGL = (l_u8)(lin_synch_time & 0x07u);                            \
-//                                    LIN_UART_BCON_BGH = (l_u8)(lin_synch_time >> 3u);                              \
-//                                     LIN_UART_BCON_RUN = 1u;                                                       \
-//                                    lin_slave_state_g = sync_received;                                             \
-//                                  } else {                                                                         \
-//                                    lin_ab_timeout_timer = LIN_AUTOBAUD_TIMEOUT + 1u;                              \
-//                                    lin_ab_t2_state = 7u;}                                                         \
-//                                } else {                                                                           \
-//                                  lin_ab_timeout_timer = LIN_AUTOBAUD_TIMEOUT + 1u;                                \
+//#define lin_hal_brreg_calc()  do { lin_synch_time = (l_u16)((l_u16)(lin_synch_time >> 2u) >> BRG_PRE);
+//                                if (BRG_PRE == 0u) { LIN_UART_BCON_FDSEL = (l_u8)(((l_u8)(lin_synch_time & 0x1Fu)) >> 1u);
+//                                } else { LIN_UART_BCON_FDSEL   = (l_u8)(lin_synch_time & 0x1Fu); }
+//                                lin_synch_time = (l_u16)(lin_synch_time >> 5u);
+//                                if (lin_synch_time >= MIN_BDREG)
+//                                { if (lin_synch_time <= MAX_BDREG)
+//                                  { LIN_UART_BCON_BGL = (l_u8)(lin_synch_time & 0x07u);
+//                                    LIN_UART_BCON_BGH = (l_u8)(lin_synch_time >> 3u);
+//                                     LIN_UART_BCON_RUN = 1u;
+//                                    lin_slave_state_g = sync_received;
+//                                  } else {
+//                                    lin_ab_timeout_timer = LIN_AUTOBAUD_TIMEOUT + 1u;
+//                                    lin_ab_t2_state = 7u;}
+//                                } else {
+//                                  lin_ab_timeout_timer = LIN_AUTOBAUD_TIMEOUT + 1u;
 //                                  lin_ab_t2_state = 7u;} } while(0)
 
 
 
-//#define lin_hal_T2_ISR()      do {  if (lin_ab_t2_state == 5u)        \
-//                              { LIN_TIMER_RUN = 0u;LIN_TIMER_EXT_IR_EN = 0u;                                       \
-//                                LIN_TIMER_EXT_EN = 0u;lin_ab_t2_state = 0u;                                        \
-//                                lin_synch_time = ((l_u16)((l_u16)LIN_TIMER_CAP_H << 8) | (l_u16)LIN_TIMER_CAP_L);  \
-//                                lin_hal_brreg_calc();                                                              \
+//#define lin_hal_T2_ISR()      do {  if (lin_ab_t2_state == 5u)
+//                              { LIN_TIMER_RUN = 0u;LIN_TIMER_EXT_IR_EN = 0u;
+//                                LIN_TIMER_EXT_EN = 0u;lin_ab_t2_state = 0u;
+//                                lin_synch_time = ((l_u16)((l_u16)LIN_TIMER_CAP_H << 8) | (l_u16)LIN_TIMER_CAP_L);
+//                                lin_hal_brreg_calc();
 //                              } else { lin_ab_t2_state++; } } while(0)                                   
 #endif /* ifdef AUTOBAUD_ENABLED */
                                 

@@ -108,7 +108,7 @@ enum {
 };	
 		
 		
-typedef struct	_counter { 
+typedef struct {
 	uint8_t	tempo;
 	uint8_t	X2MS;
 	uint8_t	c_500ms;
@@ -116,7 +116,7 @@ typedef struct	_counter {
 }counter_;
 
 
-typedef struct _T_UDS {	
+typedef struct {
 	uint16_t	ndata;			
 	uint8_t		packet_data[MAX_UDS_DATA_BUF+12u];			// packet_data[2] ºÎÅÍ 32bit aline Àý´ëÀÚ¸®¿Å±âÁö¸»°Í.
 	uint16_t	packet_data_len,p_packet_data;

@@ -189,10 +189,10 @@
 //#define ADC1_Busy_Sts()         ((uint32_t)((ADC1->GLOBSTR.reg & ADC1_MASK_BUSY_STS) >> 0u))
 //#define ADC1_EIM_Active_Sts()   ((uint32_t)((ADC1->SQ_FB.reg & ADC1_MASK_EIM_ACTIVE_STS) >> 9u))
 //#define ADC1_ESM_Active_Sts()   ((uint32_t)((ADC1->SQ_FB.reg & ADC1_MASK_ESM_ACTIVE_STS) >> 10u))
-//#define ADC1_Current_Active_Sequence_Sts() \
-                                ((ADC1->SQ_FB.reg & ADC1_MASK_CURR_ACT_SEQ) >> 11u)
-//#define ADC1_Current_Active_Channel_Sts() \
-                                ((ADC1->SQ_FB.reg & ADC1_MASK_CURR_ACT_CH) >> 16u)
+//#define ADC1_Current_Active_Sequence_Sts()
+//                                ((ADC1->SQ_FB.reg & ADC1_MASK_CURR_ACT_SEQ) >> 11u)
+//#define ADC1_Current_Active_Channel_Sts()
+//                                ((ADC1->SQ_FB.reg & ADC1_MASK_CURR_ACT_CH) >> 16u)
 
 /* ADC1 Sequencer configuration */
 //#define ADC1_Sequence0_Set(mask_ch)    (ADC1->SQ1_4.bit.SQ1 = (uint32)(mask_ch & 0xFFu))

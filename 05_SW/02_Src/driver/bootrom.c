@@ -121,7 +121,7 @@ static int (*const USER_PROG)
 
 int (*const USER_ERASEPG)
   (const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG) =
-  (int (*)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG)) addr_USER_ERASEPG
+  (int (*)(const uint32 * NVMPageAddr, const uint8 XRAM_RTNE_BRNCHNG)) addr_USER_ERASEPG /* PRQA S 0305 */
 
 int (*const USER_ABORTPROG) (void) = (int (*)(void )) addr_USER_ABORTPROG
 

@@ -158,52 +158,52 @@
 //#define CCU6_Hall_Ch0_Sts()        ((CCU6->CMPSTAT.reg >> 3u) & 1u)
 //#define CCU6_Hall_Ch1_Sts()        ((CCU6->CMPSTAT.reg >> 4u) & 1u)
 //#define CCU6_Hall_Ch2_Sts()        ((CCU6->CMPSTAT.reg >> 5u) & 1u)
-//#define CCU6_Ch0t_Passive_State_After_Compare_Sel() \
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 8u)) ;\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch1t_Passive_State_After_Compare_Sel() \
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 10u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch2t_Passive_State_After_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 12u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch0c_Passive_State_After_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 9u)) ;\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch1c_Passive_State_After_Compare_Sel() \
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 11u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch2c_Passive_State_After_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 13u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch3c_Passive_State_After_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 14u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch0t_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 8u)) ;\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch1t_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 10u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch2t_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 12u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch0c_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 9u)) ;\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch1c_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 11u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch2c_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 13u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_Ch3c_Passive_State_Before_Compare_Sel()\
-                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 14u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_T13_Inv_Mod_En()   {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 15u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
-//#define CCU6_T13_Inv_Mod_Dis()  {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 15u));\
-	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch0t_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 8u)) ;
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch1t_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 10u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch2t_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 12u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch0c_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 9u)) ;
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch1c_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 11u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch2c_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 13u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch3c_Passive_State_After_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 14u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch0t_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 8u)) ;
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch1t_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 10u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch2t_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 12u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch0c_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 9u)) ;
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch1c_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 11u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch2c_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 13u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_Ch3c_Passive_State_Before_Compare_Sel()
+//                                {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 14u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_T13_Inv_Mod_En()   {(CCU6->CMPSTAT.reg |= (uint16)  (1u << 15u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
+//#define CCU6_T13_Inv_Mod_Dis()  {(CCU6->CMPSTAT.reg &= (uint16) ~(1u << 15u));
+//	                             (CCU6->TCTR4.reg = (uint16) (1u << 6u));}
 
 /* CCU6 Compare State Modification Register */
 //#define CCU6_Ch0_CompState_Set()  (CCU6->CMPMODIF.reg = (uint16) (1u << 0u))
@@ -234,14 +234,14 @@
 /* CCU6 Timer Control Register 2 */
 //#define CCU6_T12_Single_Shot_En()   (CCU6->TCTR2.reg |= (uint16)  (1u << 0u))
 //#define CCU6_T12_Single_Shot_Dis()  (CCU6->TCTR2.reg &= (uint16) ~(1u << 0u))
-//#define CCU6_T13_Trig_Event_Sel(t13tec) \
-                                    (CCU6->TCTR2.bit.T13TEC = (t13tec & 7u))
-//#define CCU6_T13_Trig_Event_Dir_Sel(t13ted) \
-                                    (CCU6->TCTR2.bit.T13TED = (t13ted & 3u))
-//#define CCU6_T12_Ext_Run_Sel(t12rsel) \
-                                    (CCU6->TCTR2.bit.T12RSEL = (t12rsel & 3u))
-//#define CCU6_T13_Ext_Run_Sel(t13rsel) \
-                                    (CCU6->TCTR2.bit.T13RSEL = (t13rsel & 3u))
+//#define CCU6_T13_Trig_Event_Sel(t13tec)
+//                                    (CCU6->TCTR2.bit.T13TEC = (t13tec & 7u))
+//#define CCU6_T13_Trig_Event_Dir_Sel(t13ted)
+//                                    (CCU6->TCTR2.bit.T13TED = (t13ted & 3u))
+//#define CCU6_T12_Ext_Run_Sel(t12rsel)
+//                                    (CCU6->TCTR2.bit.T12RSEL = (t12rsel & 3u))
+//#define CCU6_T13_Ext_Run_Sel(t13rsel)
+//                                    (CCU6->TCTR2.bit.T13RSEL = (t13rsel & 3u))
 							 
 /* CCU6 Modulation Control */
 //#define CCU6_MASK_CC60   (uint16)(1u << 0u)
@@ -258,11 +258,11 @@
 //#define CCU6_MASK_Ch2t   CCU6_MASK_CC62   
 //#define CCU6_MASK_Ch2c   CCU6_MASK_COUT62 
 
-//#define CCU6_T12_Modulation_En(ccu6_mask) \
-                           (CCU6->MODCTR.bit.T12MODEN = (ccu6_mask & 0x1Fu))
+//#define CCU6_T12_Modulation_En(ccu6_mask)
+//                           (CCU6->MODCTR.bit.T12MODEN = (ccu6_mask & 0x1Fu))
 
-//#define CCU6_T13_Modulation_En(ccu6_mask) \
-                           (CCU6->MODCTR.bit.T13MODEN = (ccu6_mask & 0x1Fu))
+//#define CCU6_T13_Modulation_En(ccu6_mask)
+//                           (CCU6->MODCTR.bit.T13MODEN = (ccu6_mask & 0x1Fu))
 						   			   
 //#define CCU6_Multi_Ch_Mode_En()     (CCU6->MODCTR.reg |= (uint16)  (1u << 7u))
 //#define CCU6_Multi_Ch_Mode_Dis()    (CCU6->MODCTR.reg &= (uint16) ~(1u << 7u))
@@ -271,8 +271,8 @@
                                    
 /* CCU6 Trap Control Register */   
 //#define CCU6_Trap_T12_ZM_Exit_En()  (CCU6->TRPCTR.reg &= (uint16) ~(3u << 0u))
-//#define CCU6_Trap_T13_ZM_Exit_En() {(CCU6->TRPCTR.reg &= (uint16) ~(3u << 0u));\
-                                    (CCU6->TRPCTR.reg |= (uint16)  (1u << 0u));}
+//#define CCU6_Trap_T13_ZM_Exit_En() {(CCU6->TRPCTR.reg &= (uint16) ~(3u << 0u));
+//                                    (CCU6->TRPCTR.reg |= (uint16)  (1u << 0u));}
 //#define CCU6_Trap_Asynch_Exit_En()  (CCU6->TRPCTR.reg |= (uint16)  (3u << 0u))
 //#define CCU6_Trap_HW_Clr_En()       (CCU6->TRPCTR.reg &= (uint16) ~(1u << 2u))
 //#define CCU6_Trap_SW_Clr_En()       (CCU6->TRPCTR.reg |= (uint16)  (1u << 2u))
@@ -280,18 +280,18 @@
 //#define CCU6_Trap_T13_Dis()         (CCU6->TRPCTR.reg &= (uint16) ~(1u << 14u))
 //#define CCU6_Trap_Pin_En()          (CCU6->TRPCTR.reg |= (uint16)  (1u << 15u))
 //#define CCU6_Trap_Pin_Dis()         (CCU6->TRPCTR.reg &= (uint16) ~(1u << 15u))
-//#define CCU6_Trap_Channel_En(ccu6_mask) \
-                           (CCU6->TRPCTR.bit.TRPEN = (ccu6_mask & 0x1Fu))
+//#define CCU6_Trap_Channel_En(ccu6_mask)
+//                           (CCU6->TRPCTR.bit.TRPEN = (ccu6_mask & 0x1Fu))
 
 /* CCU6 Passive State Level Register */
-//#define CCU6_Passive_Level_High_Sel(ccu6_mask) \
-                           (CCU6->PSLR.bit.PSL = (ccu6_mask & 0x1Fu))
-//#define CCU6_Passiv_Level_Ch3_Sel(lvl) \
-                           (CCU6->PSLR.bit.PSL63 = (lvl & 0x1u))
+//#define CCU6_Passive_Level_High_Sel(ccu6_mask)
+//                           (CCU6->PSLR.bit.PSL = (ccu6_mask & 0x1Fu))
+//#define CCU6_Passiv_Level_Ch3_Sel(lvl)
+//                           (CCU6->PSLR.bit.PSL63 = (lvl & 0x1u))
 
 /* Multi-Channel Mode Output Shadow Register */
-//#define CCU6_Multi_Ch_PWM_Shadow_Reg_Load(ccu6_mask) \
-                           (CCU6->MCMOUTS.bit.MCMPS = (ccu6_mask & 0x1Fu))
+//#define CCU6_Multi_Ch_PWM_Shadow_Reg_Load(ccu6_mask)
+//                           (CCU6->MCMOUTS.bit.MCMPS = (ccu6_mask & 0x1Fu))
 //#define CCU6_MCM_PWM_Str_SW_En()    (CCU6->MCMOUTS.reg |= (uint16)  (1u << 7u))
 //#define CCU6_MCM_PWM_Str_HW_En()    (CCU6->MCMOUTS.reg &= (uint16) ~(1u << 7u))
 
@@ -299,10 +299,10 @@
 //#define MCM_MASK_CCPOS1 (2u)
 //#define MCM_MASK_CCPOS2 (4u)
 
-//#define CCU6_MCM_Expected_Hall_Shadow_Reg_Load(mcm_mask_ccpos) \
-                             (CCU6->MCMOUTS.bit.EXPHS = (mcm_mask_ccpos & 7u))
-//#define CCU6_MCM_Current_Hall_Shadow_Reg_Load(mcm_mask_ccpos) \
-                             (CCU6->MCMOUTS.bit.EXPHS = (mcm_mask_ccpos & 7u))
+//#define CCU6_MCM_Expected_Hall_Shadow_Reg_Load(mcm_mask_ccpos)
+//                             (CCU6->MCMOUTS.bit.EXPHS = (mcm_mask_ccpos & 7u))
+//#define CCU6_MCM_Current_Hall_Shadow_Reg_Load(mcm_mask_ccpos)
+//                             (CCU6->MCMOUTS.bit.EXPHS = (mcm_mask_ccpos & 7u))
 //#define CCU6_MCM_Hall_Str_SW_En()   (CCU6->MCMOUTS.reg |= (uint16)  (1u << 15u))
 //#define CCU6_MCM_Hall_Str_HW_En()   (CCU6->MCMOUTS.reg &= (uint16) ~(1u << 15u))
 
@@ -372,8 +372,8 @@
 //#define CCU6_Error_Int_Node_Sel(srx)      (CCU6->INP.bit.INPERR  = (srx & 3u))
 //#define CCU6_T12_Int_Node_Sel(srx)        (CCU6->INP.bit.INPT12  = (srx & 3u))
 //#define CCU6_T13_Int_Node_Sel(srx)        (CCU6->INP.bit.INPT13  = (srx & 3u))
-//#define CCU6_Hall_Correct_Int_Node_Sel(srx) \
-                                          (CCU6->INP.bit.INPCHE = (srx & 3u))
+//#define CCU6_Hall_Correct_Int_Node_Sel(srx)
+//                                          (CCU6->INP.bit.INPCHE = (srx & 3u))
 /* CCU6 Interrupt Clear Macros */
 //#define CCU6_CH0_CM_R_Int_Clr()      (CCU6->ISR.reg = (uint16)1u << 0u)
 //#define CCU6_CH0_CM_F_Int_Clr()      (CCU6->ISR.reg = (uint16)1u << 1u)
