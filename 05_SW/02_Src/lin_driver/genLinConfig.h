@@ -93,7 +93,7 @@
 #define        AUTOBAUD_ENABLED
 #define        MAX_BDREG        ((l_u16)(144u & 0x3FFu))
 #define        MIN_BDREG        ((l_u16)(116u & 0x3FFu))
-#define        LIN_INTERRUPT_PRIORITY  ((l_u8)15)
+#define        LIN_INTERRUPT_PRIORITY  ((l_u8)12)
  
 /* Generate the Signal Attributes */
 
