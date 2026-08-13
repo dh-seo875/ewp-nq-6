@@ -208,13 +208,12 @@ sint16 Mat_ExeLp_without_min_max(TMat_Lp_Simple *pLp, sint16 Input)
 
   /* New output = saturate(old output + coefficient A * input - coefficient B * old output/2^15 */
   Out = pLp->Out;
-  Out = __ssat((Out + ((sint32)pLp->CoefA * (sint32)Input)) -
-               ((sint32)pLp->CoefB * Mat_ArithmeticShiftRight15(Out)), 31u);
+  Out = __ssat((Out + ((sint32)pLp->CoefA * (sint32)Input)) - ((sint32)pLp->CoefB * (Out >> 15u)), 31u);
   /* Store new output */
   pLp->Out = Out;
 
   /* return upper part */
-  return (sint16)Mat_ArithmeticShiftRight15(Out);
+  return (sint16)(Out >> 15u);
   
 } /* End of Mat_ExeLp */
 

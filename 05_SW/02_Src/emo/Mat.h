@@ -218,46 +218,18 @@ __STATIC_INLINE sint16 Mat_ExePi(TMat_Pi *pPi, sint16 Error)
  * \return Low-pass filter output in fixed-point format without min and max
  * \ingroup math_api
  */
-__STATIC_INLINE sint32 Mat_ArithmeticShiftRight15(sint32 Value)
-{
-  sint32 SignedMagnitude;
-  uint32 Magnitude;
-  sint32 Result;
-
-  if (Value < 0)
-  {
-    SignedMagnitude = Value + 1;
-    SignedMagnitude = -SignedMagnitude;
-    Magnitude = (uint32)SignedMagnitude;
-    Magnitude = Magnitude + 1u;
-    Magnitude = Magnitude + 32767u;
-    Magnitude = Magnitude >> 15u;
-    Result = (sint32)Magnitude;
-    Result = -Result;
-  }
-  else
-  {
-    Magnitude = (uint32)Value;
-    Magnitude = Magnitude >> 15u;
-    Result = (sint32)Magnitude;
-  }
-
-  return Result;
-}
-
 __STATIC_INLINE sint16 Mat_ExeLp_without_min_max(TMat_Lp_Simple *pLp, sint16 Input)
 {
   sint32 Out;
 
   /* New output = saturate(old output + coefficient A * input - coefficient B * old output/2^15 */
   Out = pLp->Out;
-  Out = __ssat((Out + ((sint32)pLp->CoefA * (sint32)Input)) -
-               ((sint32)pLp->CoefB * Mat_ArithmeticShiftRight15(Out)), 31u);
+  Out = __ssat((Out + ((sint32)pLp->CoefA * (sint32)Input)) - ((sint32)pLp->CoefB * (Out >> 15u)), 31u);
   /* Store new output */
   pLp->Out = Out;
 
   /* return upper part */
-  return (sint16)Mat_ArithmeticShiftRight15(Out);
+  return (sint16)(Out >> 15u);
   
 } /* End of Mat_ExeLp */
 
