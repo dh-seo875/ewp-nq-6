@@ -512,8 +512,16 @@ void lin_hal_ISR(void)
    lin_hal_rx_data_guc = LIN_UART_BUFFER;
 
 #ifdef AUTOBAUD_ENABLED
-   /* Detect Break characters, configure and start T2 to start on next falling edge (startbit of Synch-field) */
-   if (((temp_linst & 0x38u) == 0u) && (lin_hal_rx_data_guc == 0u) && ((LIN_UART_9BITREC == 0u)))
+   /* While publishing, RX contains the bus readback. A transmitted 0x00 byte
+    * with a disturbed dominant stop bit has the same UART signature as a
+    * Break character. Leave that case to the framing-error handling below so
+    * the response is aborted without entering autobaud. */
+   if (((temp_linst & 0x38u) == 0u) &&
+       (lin_hal_rx_data_guc == 0u) &&
+       (LIN_UART_9BITREC == 0u) &&
+       (((lin_slave_state_g != tx_data) &&
+         (lin_slave_state_g != tx_checksum)) ||
+        (lin_tx_data_g.old_data_uc != 0u)))
    {
       lin_ab_t2_state = 1u;
       lin_ab_timeout_timer = 0u;
