@@ -78,7 +78,7 @@ static uint8_t   WarningStateMerged;
 static uint8_t   ProtectionFlag;
 static uint8_t   FaultFlag;
 static DiagState_t HwOpenPhaseState;
-//static sint16_t    FluxAbsValueMeasured;
+static sint16_t    FluxAbsValueMeasured;
 static uint8_t   CoolantFlag;
 //static uint8_t	 ErrorCodeIndex;
 //static uint8_t Power_Limit;
@@ -714,20 +714,20 @@ Std_ReturnType WriteHwOpenPhaseState (DiagState_t data)
 
 
 /** === FluxAbsValue =================================================================== */
-//Std_ReturnType ReadFluxAbsValueMeasured (sint16_t* data)
-//{
-//    Std_ReturnType retVal = RTE_E_OK;
-//    *data = FluxAbsValueMeasured;
-//    return retVal;
-//}
+Std_ReturnType ReadFluxAbsValueMeasured (sint16_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = FluxAbsValueMeasured;
+    return retVal;
+}
 
 
-//Std_ReturnType WriteFluxAbsValueMeasured (sint16_t data)
-//{
-//    Std_ReturnType retVal = RTE_E_OK;
-//    FluxAbsValueMeasured = data;
-//    return retVal;
-//}
+Std_ReturnType WriteFluxAbsValueMeasured (sint16_t data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    FluxAbsValueMeasured = data;
+    return retVal;
+}
 
 /*Std_ReturnType ReadFluxAbsValueFiltered (sint16_t* data)
 {

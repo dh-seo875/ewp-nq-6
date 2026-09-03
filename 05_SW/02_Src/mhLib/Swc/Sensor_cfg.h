@@ -39,6 +39,7 @@
 #define VDC_CONVERSION_FACTOR    (sint16_t)( 10) /* 0.01V to mV */
 #define VDC_COMPENSATION_FACTOR  (sint16_t)( 60) /*      0.6 wV  */
 #define IDC_CONVERSION_FACTOR    (sint16_t)( 10) /* 0.01A to mA */
+#define FLUX_DIAG_IIR_DIVISOR    (20u) /* IIR alpha = 1/20 at 10 ms sampling */
 #define IGN_CONVERSION_FACTOR    (sint16_t)( 10) /* 0.01V to mV */
 #define IGN_ON_TH                (sint16_t)(700) /*       7  V  */
 #define IGN_OFF_TH               (sint16_t)(300) /*     3.0  V  */

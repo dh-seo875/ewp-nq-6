@@ -86,7 +86,7 @@ static void CheckIgn (void);
 static void CheckOpenPhase (void);
 static void ConvertDutyToRpm (void);
 static void ConvertRpmToDuty (void);
-
+static void MeasFluxAbsValue(void);
 static void SensorSWComponent1(void);
 static void SensorSWComponent2(void);
 static void SensorSWComponent3(void);
@@ -125,6 +125,7 @@ static void SensorSWComponent4(void)
 	CheckShortCircuit();
 	CheckGateDrvError();
 	MeasTemperature();
+	MeasFluxAbsValue();
 }
 
 
@@ -551,15 +552,66 @@ static void CheckOpenPhase(void)
     (void)WriteHwOpenPhaseState(sensor_hwOpenPhaseState);
 }
 
-//static void MeasFluxAbsValue (void)
-//{    
-//	sint16_t    sensor_fluxAbsValueMeasured = 0;
+static void MeasFluxAbsValue (void)
+{
+	static sint16_t sensor_fluxAbsValueMeasured = 0;
+    static uint16_t sensor_fluxAbsFiltered = 0u;
+    static uint16_t medianBuffer[3] = {0u, 0u, 0u};
+    static uint32_t filterAccumulator = 0u;
+    static uint8_t medianIndex = 0u;
+    static uint8_t initialized = 0u;
+    uint16_t rawFlux;
+    uint16_t medianFlux;
+    uint16_t a;
+    uint16_t b;
+    uint16_t c;
 
-//    (void)GetFluxAbsValue(&sensor_fluxAbsValueMeasured);
+    (void)GetFluxAbsValue(&sensor_fluxAbsValueMeasured);
 
-//    (void)WriteFluxAbsValueMeasured(sensor_fluxAbsValueMeasured);
-//}
+    /* Flux magnitude is clamped at zero if an invalid signed value is received. */
+    rawFlux = (sensor_fluxAbsValueMeasured > 0) ? (uint16_t)sensor_fluxAbsValueMeasured : 0u;
 
+    if (initialized == 0u)
+    {
+        medianBuffer[0] = rawFlux;
+        medianBuffer[1] = rawFlux;
+        medianBuffer[2] = rawFlux;
+        filterAccumulator = (uint32_t)rawFlux * FLUX_DIAG_IIR_DIVISOR;
+        initialized = 1u;
+    }
+    else
+    {
+        medianBuffer[medianIndex] = rawFlux;
+        medianIndex++;
+        if (medianIndex >= 3u)
+        {
+            medianIndex = 0u;
+        }
+    }
+
+    a = medianBuffer[0];
+    b = medianBuffer[1];
+    c = medianBuffer[2];
+    if (((a >= b) && (a <= c)) || ((a >= c) && (a <= b)))
+    {
+        medianFlux = a;
+    }
+    else if (((b >= a) && (b <= c)) || ((b >= c) && (b <= a)))
+    {
+        medianFlux = b;
+    }
+    else
+    {
+        medianFlux = c;
+    }
+    /* First-order IIR: y[n] = y[n-1] + (x[n] - y[n-1]) / 20.
+       The scaled accumulator avoids a 20-sample buffer and integer deadband. */
+    filterAccumulator = filterAccumulator -
+                        (filterAccumulator / FLUX_DIAG_IIR_DIVISOR) +
+                        (uint32_t)medianFlux;
+    sensor_fluxAbsFiltered = (uint16_t)(filterAccumulator / FLUX_DIAG_IIR_DIVISOR);
+    (void)WriteFluxAbsValueMeasured(sensor_fluxAbsFiltered);
+}
 //static void CheckErrorCodeIndex (void)
 //{    
 //	uint8_t	   sensor_errorCodeIndex	  = 0;

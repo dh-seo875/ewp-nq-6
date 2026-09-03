@@ -91,7 +91,6 @@ static uint8_t IRV_LIV_Warningflag = 0U;
 */
 
 /* via Rte */
-static DiagState_t diag_hwOpenPhaseState      = NORMAL;
 static sint16_t diag_vdcFiltered              = 0;
 static sint16_t diag_speedRef                 = 0;
 static sint16_t diag_iqFiltered               = 0;
@@ -598,7 +597,7 @@ static void DiagWarningCurrent(void)
 
     (void)ReadIqFiltered(&diag_iqFiltered);
     (void)ReadSpeedRef(&diag_speedRef);
-    (void)ReadHwOpenPhaseState(&diag_hwOpenPhaseState);   
+
 
     switch (IRV_WC_diagState)
     {
@@ -618,7 +617,7 @@ static void DiagWarningCurrentNormal(void)
 	sint16_t CAL_WC_IqWarningUprTh		= WC_IQ_WARNING_UPR_TH;
 	uint8_t CAL_WC_WarningCntMax		= WC_WARNING_CNT_MAX;
 	if (((diag_iqFiltered > CAL_WC_IqWarningUprTh)) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
-		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
 		WC_WarningCnt++;
 	}
@@ -643,12 +642,12 @@ static void DiagWarningCurrentWarning(void)
 	sint16_t CAL_WC_IqWarningLwrTh		= WC_IQ_WARNING_LWR_TH;
 
 	if ((diag_iqFiltered <= CAL_WC_IqWarningLwrTh) 
-		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
 		WC_normalCnt++;
 	}
 	else if((diag_iqFiltered > CAL_WC_IqWarningLwrTh) 
-		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
 		WC_normalCnt = (WC_normalCnt <= 0U) ? 0U : (WC_normalCnt - 1U);							
 	}
@@ -670,7 +669,7 @@ static void DiagOverCurrent(void)
 
     (void)ReadIqFiltered(&diag_iqFiltered);
     (void)ReadSpeedRef(&diag_speedRef);
-    (void)ReadHwOpenPhaseState(&diag_hwOpenPhaseState);
+
    
 
     switch (IRV_OC_diagState)
@@ -697,7 +696,7 @@ static void DiagOverCurrentNormal(void)
     static const sint16_t CAL_OC_IqFaultUprTh		= OC_IQ_FAULT_UPR_TH;	
     static const sint16_t CAL_OC_AttemptCLRCntMax	= OC_AttemptCLR_CNT_MAX;
     if((diag_iqFiltered >= CAL_OC_IqFaultUprTh) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
-		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
 	    OC_faultCnt++;
 	}
@@ -706,7 +705,7 @@ static void DiagOverCurrentNormal(void)
     	OC_faultCnt = (OC_faultCnt <= 0U) ? (0U) : (OC_faultCnt - 1U);
 	}
 	if((diag_iqFiltered < CAL_OC_IqFaultUprTh)
-		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL))
 	{
         OC_AttemptCLRCnt = (OC_retryAttempt > 0U) ? (OC_AttemptCLRCnt + 1) : (0);
 	}
@@ -1398,7 +1397,6 @@ static void DiagOverTemperatureFault(void)
 static void DiagStallError(void)
 {
     (void)ReadSpeedRef(&diag_speedRef);
-    (void)ReadHwOpenPhaseState(&diag_hwOpenPhaseState);
 
     switch (IRV_ST_diagState)
     {
@@ -1426,10 +1424,10 @@ static void DiagStallErrorNormal(void)
 	static const uint8_t CAL_ST_FaultCntMax		     = ST_FAULT_CNT_MAX;
 	static const uint8_t CAL_ST_AttemptCLRCntMax	= ST_AttemptCLR_CNT_MAX;
 	sint16_t diag_fluxAbsValueMeasured	  = 0;
-	(void)GetFluxAbsValue(&diag_fluxAbsValueMeasured);
+	(void)ReadFluxAbsValueMeasured(&diag_fluxAbsValueMeasured);
 
 	if ((diag_fluxAbsValueMeasured <= CAL_ST_FluxAbsFaultUprTh) && ((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u)
-		&& (diag_speedRef >= CAL_SpeedMin) && (diag_hwOpenPhaseState == NORMAL))
+		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL))
 	{
 		ST_FaultCnt++;
 		ST_NormalCnt = (ST_NormalCnt <= 0U) ? 0U : (ST_NormalCnt - 1U);	
@@ -1614,7 +1612,7 @@ static void DiagPhaseOpen(void)
 	sint16_t CAL_PO_FaultCntMax 	  = PO_FAULT_CNT_MAX;
 	uint8_t CAL_PO_RetryCntMax 	  = PO_RETRY_CNT_MAX;
 	uint8_t CAL_PO_RetryAttemptMax   = PO_RETRY_ATTEMPT_MAX;
-
+    DiagState_t diag_hwOpenPhaseState      = NORMAL;
     (void)ReadHwOpenPhaseState(&diag_hwOpenPhaseState);
     
     switch (IRV_PO_diagState)
