@@ -524,7 +524,7 @@ static void DiagLowCurrent(void)
     switch (IRV_LC_diagState)
     {
         case NORMAL:
-            if (((diag_iqFiltered < CAL_LC_FaultLwrTh)) && (LC_entryCondition == ENABLE) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600))
+            if (((diag_iqFiltered <= CAL_LC_FaultLwrTh)) && (LC_entryCondition == ENABLE) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600))
             {
                 LC_faultCnt++;
             }
