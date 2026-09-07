@@ -179,8 +179,8 @@ Std_ReturnType WriteHwOpenPhaseState (DiagState_t data);
 
 
 /** === FluxAbsValue =================================================================== */
-Std_ReturnType ReadFluxAbsValueMeasured (sint16_t* data);
-Std_ReturnType WriteFluxAbsValueMeasured (sint16_t data);
+Std_ReturnType ReadFluxAbsValueMeasured (uint16_t* data);
+Std_ReturnType WriteFluxAbsValueMeasured (uint16_t data);
 //Std_ReturnType ReadFluxAbsValueFiltered (sint16_t* data);
 //Std_ReturnType WriteFluxAbsValueFiltered (sint16_t data);
 //Std_ReturnType ReadErrorCodeIndex (uint8_t* data);

@@ -183,7 +183,6 @@ static void DiagCoolant(void)
 static void ManageSystemOnOff(void)
 {
 	static sint8_t manageSystemOnOffState = WAKE_UP;
-	static DiagState_t manage_linErrorState   = NORMAL;
 	static sint8_t manage_ignState  = IGN_ON;
 	static uint8_t manage_InitialFlag = 0;
 
@@ -194,13 +193,12 @@ static void ManageSystemOnOff(void)
 	static sint16_t LimphomeCnt = 0;
 	static uint16_t initialSleepCnt = 0;
 	static uint8_t error_done = 0;
-	uint8_t manage_LIVCheck = 0U;
+	uint8_t manage_LINCheck = 0U;
     (void)ReadIgnFlag(&manage_ignState);
-    (void)ReadLinTimeOutErrorState(&manage_linErrorState);
     (void)ReadSpeedCmd(&manage_speedCmd);
     (void)ReadSpeedFiltered(&manage_SpeedFiltered);
 	(void)ReadInitialFlag(&manage_InitialFlag);
-    (void)ReadWarningStateMerged(&manage_LIVCheck); //LIV Check	
+    (void)ReadWarningStateMerged(&manage_LINCheck); //LIN Check	
     switch (manageSystemOnOffState)
     {
         case WAKE_UP:
@@ -221,12 +219,12 @@ static void ManageSystemOnOff(void)
 
         case DRIVE:            
 			manageSystemOnOffState = (manage_ignState == IGN_OFF) ? POWER_LATCH : manageSystemOnOffState;
-			if(((manage_LIVCheck >> 6U) & 0x01U) == 1U)
+			if(((manage_LINCheck >> 6U) & 0x01U) == 1U) // Lin invalid value
 			{
     			manage_IRV_SpeedRef = SPEED_MAX_RUN;
 				LimphomeCnt = 0;
 			}
-			else if((manage_ignState == IGN_ON) && (manage_linErrorState == FAULT)) // limp home
+			else if((manage_ignState == IGN_ON) && ((manage_LINCheck >> 5U) & 0x01U) == 1U) // limp home
 			{
 			    LimphomeCnt = (LimphomeCnt >= 12000) ? 12000 : (LimphomeCnt+1);			
     			manage_IRV_SpeedRef = (LimphomeCnt >= 12000) ? 0 : CAL_LimpHomeRpm;

@@ -1869,17 +1869,18 @@ static void SetDiagFlagState (void)
 	static uint8_t diag_protectionFlagSet		  = 0U;
 	
 	
-    diag_protectionFlagSet = IRV_SE_Faultflag | IRV_OT_Faultflag | IRV_OC_Faultflag | IRV_LC_Faultflag 
+    diag_protectionFlagSet = IRV_SE_Faultflag | IRV_OT_Faultflag | IRV_OC_Faultflag | IRV_LC_Faultflag  //only 1data
 		| IRV_OV_Faultflag | IRV_UV_Faultflag | IRV_ST_Faultflag | IRV_OT_Warningflag 
 		| IRV_SE_Warningflag | IRV_WC_Warningflag | IRV_LIV_Warningflag;
 	
-    diag_faultFlagSet = SC_failureCheck | GE_failureCheck | SE_failureCheck | UV_failureCheck 
+    diag_faultFlagSet = SC_failureCheck | GE_failureCheck | SE_failureCheck | UV_failureCheck  // bit data
 		| OV_failureCheck | OC_failureCheck | LC_failureCheck | ST_failureCheck 
 		| PO_failureCheck;
 	
     if(diag_faultFlagSet >= 1u)
     {
         diag_protectionFlagSet = 0u;
+		diag_faultFlagSet = 1u;
 	}
 
 
