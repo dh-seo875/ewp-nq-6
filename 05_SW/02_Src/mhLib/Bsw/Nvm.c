@@ -181,7 +181,7 @@ uint8_t* Nvm_Init (void)
 
 
     //uint8_t nvmWriteResult = 0;
-	static const uint8* ptrErrorCodeAddressPageA = (uint8*)(uintptr_t)errorCodeAddressPageA;
+	static const uint8* const ptrErrorCodeAddressPageA = (uint8*)(uintptr_t)errorCodeAddressPageA;
 
 	NVM_Watchdog_Fault();
     readNvm(ptrErrorCodeAddressPageA, ErrorCodePageA);
@@ -396,8 +396,8 @@ static void checkDrivingCycle (void)
 
 static void NvmVariables(void)
 {
-	static uint8_t NVM_fault_merged_Byte1 = 0;
-	static uint8_t NVM_fault_merged_Byte2 = 0;
+	uint8_t NVM_fault_merged_Byte1 = 0;
+	uint8_t NVM_fault_merged_Byte2 = 0;
 
     (void)ReadFaultStateMerged_Byte1(&NVM_fault_merged_Byte1);
 	(void)ReadFaultStateMerged_Byte2(&NVM_fault_merged_Byte2);
@@ -420,13 +420,14 @@ static void NvmVariables(void)
 static void ManageNVMBuildArray(void)
 {
     static uint16_t NVM_FaultCodeSum = 0;  
-    static uint16_t NVM_preFaultCodeSum = 0;    
+    /* Previous sums are snapshots for this call, not persistent state. */
+    uint16_t NVM_preFaultCodeSum = 0;
 
     static uint16_t NVM_FailureCodeSum = 0;  
-    static uint16_t NVM_preFailureCodeSum = 0;
+    uint16_t NVM_preFailureCodeSum = 0;
 	
     static uint16_t NVM_WarningCodeSum = 0;       
-    static uint16_t NVM_preWarningCodeSum = 0;
+    uint16_t NVM_preWarningCodeSum = 0;
 
 
 
@@ -518,9 +519,9 @@ static uint8_t convertErrorCode(uint16_t diagErrorCode)
 
 static void ManageNVMConvertErrorCode(void)
 {
-    static uint16_t Nvm_warning_errorCode = 0;
-    static uint16_t Nvm_fault_errorCode = 0;
-    static uint16_t Nvm_failure_fault_errorCode = 0;
+    uint16_t Nvm_warning_errorCode = 0;
+    uint16_t Nvm_fault_errorCode = 0;
+    uint16_t Nvm_failure_fault_errorCode = 0;
     
     CheckPrevValueNVMPEEWP();
     
@@ -549,9 +550,9 @@ static void CheckPrevValueNVMPEEWP(void)
     static uint16_t NVM_convertFaultCodeResult_Prev = 0x100u;
     static uint16_t NVM_convertWarningCodeResult_Prev = 0x300u;
     static uint16_t NVM_convertFailureCodeResult_Prev = 0x200u;
-    static uint16_t NVM_convertFault = 0x100u;
-    static uint16_t NVM_convertWarning = 0x300u;
-    static uint16_t NVM_convertFailure = 0x200u;
+    uint16_t NVM_convertFault = 0x100u;
+    uint16_t NVM_convertWarning = 0x300u;
+    uint16_t NVM_convertFailure = 0x200u;
     
     if(NVM_result_FaultCode != 0u)
     {
