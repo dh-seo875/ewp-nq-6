@@ -1071,7 +1071,7 @@ static void DiagSpeedErrorNormal(void)
 	 sint16_t CAL_SE_WarningCntMax		 = SE_WARNING_CNT_MAX;
      sint16_t CAL_SE_AttemptCLRCntMax = SE_AttemptCLR_CNT_MAX;
 
-     /* 980 < Error < 1340*/
+     /* 1625 < Error < 2000*/
 	  if (((diag_speedError > CAL_SE_WarningLwrTh)&&(diag_speedError < CAL_SE_FaultUprTh)) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
 	  	&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_OC_diagState == NORMAL))
 	  {
@@ -1079,7 +1079,7 @@ static void DiagSpeedErrorNormal(void)
 		  SE_faultCnt = 0;
 		  SE_normalCnt = 0;
 	  }
-     /* 1340 <= Error */
+     /* Error >= 2000 */
 	  else if ((diag_speedError >= CAL_SE_FaultUprTh) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
 	  	&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_OC_diagState == NORMAL))
 	  {
@@ -1087,7 +1087,7 @@ static void DiagSpeedErrorNormal(void)
 		  SE_WarningCnt = 0;
 		  SE_normalCnt = 0;
 	  }
-	 /* Error <= 140 */
+	 /* Error <= 1625 */
 	  else if((diag_speedError <= CAL_SE_WarningLwrTh) 
 	  	&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_OC_diagState == NORMAL))
 	  {
@@ -1139,15 +1139,15 @@ static void DiagSpeedErrorNormal(void)
 static void DiagSpeedErrorWarning(void)
 {
 	sint16_t CAL_SE_NormalCntMax 	= SE_NORMAL_CNT_MAX;
-     /* 1340 <= Error */    
+     /* Error >= 2000 */    
 	if ((diag_speedError >= CAL_SE_FaultUprTh) && (diag_vdcFiltered >= 900) && (diag_vdcFiltered <= 1600)
 		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_OC_diagState == NORMAL))
 	{
 		SE_faultCnt++;
 		SE_normalCnt = 0;
 	}
-    /*  Error < 940 */    	
-	else if((diag_speedError < CAL_SE_WarningLwrTh)
+    /*  Error <= 1625 */    	
+	else if((diag_speedError <= CAL_SE_WarningLwrTh)
 		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_SC_diagState == NORMAL) && (IRV_GE_diagState == NORMAL) && (IRV_OC_diagState == NORMAL))
 	{
 		SE_normalCnt++;
@@ -1420,10 +1420,10 @@ static void DiagStallError(void)
 
 static void DiagStallErrorNormal(void)
 {
-	static const sint16_t CAL_ST_FluxAbsFaultUprTh = ST_FLUXABS_FAULT_UPR_TH;
+	static const uint16_t CAL_ST_FluxAbsFaultUprTh = ST_FLUXABS_FAULT_UPR_TH;
 	static const uint8_t CAL_ST_FaultCntMax		     = ST_FAULT_CNT_MAX;
 	static const uint8_t CAL_ST_AttemptCLRCntMax	= ST_AttemptCLR_CNT_MAX;
-	sint16_t diag_fluxAbsValueMeasured	  = 0;
+	uint16_t diag_fluxAbsValueMeasured	  = 0U;
 	(void)ReadFluxAbsValueMeasured(&diag_fluxAbsValueMeasured);
 
 	if ((diag_fluxAbsValueMeasured <= CAL_ST_FluxAbsFaultUprTh) && ((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u)

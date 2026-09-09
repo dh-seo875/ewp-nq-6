@@ -224,7 +224,7 @@ static void ManageSystemOnOff(void)
     			manage_IRV_SpeedRef = SPEED_MAX_RUN;
 				LimphomeCnt = 0;
 			}
-			else if((manage_ignState == IGN_ON) && ((manage_LINCheck >> 5U) & 0x01U) == 1U) // limp home
+			else if((manage_ignState == IGN_ON) && (((manage_LINCheck >> 5U) & 0x01U) == 1U)) // limp home
 			{
 			    LimphomeCnt = (LimphomeCnt >= 12000) ? 12000 : (LimphomeCnt+1);			
     			manage_IRV_SpeedRef = (LimphomeCnt >= 12000) ? 0 : CAL_LimpHomeRpm;
