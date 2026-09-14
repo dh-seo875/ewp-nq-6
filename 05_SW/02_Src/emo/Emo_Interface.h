@@ -132,12 +132,6 @@ __STATIC_INLINE sint16_t Emo_GetFluxAbsValue(void)
     return (FluxAbsValueTemp);
 }
 
-__STATIC_INLINE uint8_t Emo_GetPowereLimitStatePoint(void)
-{
-    return (Power_Limit_Flag);
-}
-
-
 __STATIC_INLINE uint8_t Emo_GetMotorState(void)
 {
     return (uint8_t)Emo_Status.MotorState;

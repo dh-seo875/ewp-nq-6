@@ -120,7 +120,7 @@ extern l_u8 aliveCheck;
 
 static l_u16 NadTimeOutCounter = 0;
 
-static volatile l_u8 timer_100ms;
+
 
 
 
@@ -268,7 +268,7 @@ void LIN_LLD_Service(void)
 
     /* Variable for IRQ mask */
     static l_irqmask lin_irqState;
-	static volatile unsigned char timer_1ms;
+	//static volatile unsigned char timer_1ms;
 
 
 
@@ -421,6 +421,7 @@ static void LIN_LLD_Service_TX_Cal(void)
 {
     uint8_t uint8_temp =0;
 	sint16_t sint16_temp =0;
+    static volatile l_u8 timer_100ms = 0u;
 	timer_100ms = timer_100ms + 1u;
     if (timer_100ms > 100u )
     {

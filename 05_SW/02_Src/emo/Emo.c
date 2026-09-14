@@ -41,7 +41,6 @@
 TEmo_Status Emo_Status;
 uint16 EMO_SVM_MINTIME = 100;
 sint16 Emo_speedRef = 0;
-uint8_t Power_Limit_Flag = 0;
 
 /** \brief Initializes E-Motor HW and SW.
  *

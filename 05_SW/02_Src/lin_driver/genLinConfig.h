@@ -402,11 +402,11 @@ void l_Update_Frame_Flags(l_u8 number);
 
 /* Macros for Response Error Flag / Frame handling */
 
-#define        l_Set_Response_Error_Flag()   do{ l_bool_wr_Ewp1_Comm_Error(1u); } while(0)
+//#define        l_Set_Response_Error_Flag()   do{ l_bool_wr_Ewp1_Comm_Error(1u); } while(0)
 
-#define        l_Reset_Response_Error_Flag() do{ l_bool_wr_Ewp1_Comm_Error(1u); } while(0)
+//#define        l_Reset_Response_Error_Flag() do{ l_bool_wr_Ewp1_Comm_Error(1u); } while(0)
 
-#define        LIN_Response_Error_Frame_PID  (g_lin_frame_ctrl[0].frame.pid)
+//#define        LIN_Response_Error_Frame_PID  (g_lin_frame_ctrl[0].frame.pid)
 //#define        LIN_RespError_Compare_PID(x)  ((g_lin_frame_ctrl[0].frame.pid) == (x))
 
 

@@ -56,7 +56,6 @@
  *  \brief TEmo_Status
  *  Types involved in the interrupt loop are placed here.
  */
- extern uint8_t Power_Limit_Flag;
 typedef struct
 {
     uint8 MotorState;               /**< \brief Motor state */

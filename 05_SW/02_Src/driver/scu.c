@@ -86,7 +86,7 @@
 /*******************************************************************************
 **                      Global Variable Definitions                           **
 *******************************************************************************/
-uint32 SystemFrequency = (uint32)SCU_FSYS;
+//uint32 SystemFrequency = (uint32)SCU_FSYS;
 
 /*******************************************************************************
 **                      Global Function Definitions                           **
@@ -292,7 +292,7 @@ void SCU_EnterSleepMode(void)
           break;
 	  }
   }
-  /* wait approx. 100µs in order to pass   *
+  /* wait approx. 100ï¿½s in order to pass   *
    * the filter time + margin inside the   *
    * LIN Trx. to avoid a false wake up     */
   Delay_us(100);
