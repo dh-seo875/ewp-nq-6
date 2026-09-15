@@ -1754,7 +1754,7 @@ static void DiagEwpInital(void)
 	    /**** Phase Open  Clear ****/			
 		PO_faultCnt = 0; PO_retryCnt = 0U; PO_retryAttempt = 0U; PO_normalCnt = 0; IRV_PO_diagState = NORMAL;
 	    /**** Stall Error Clear ****/			
-        ST_FaultCnt = 0U; ST_NormalCnt = 0U; ST_retryCnt  = 0U; ST_retryAttempt = 0U; IRV_ST_diagState = NORMAL;
+        ST_FaultCnt = 0U; ST_NormalCnt = 0U; ST_retryCnt  = 0U; ST_retryAttempt = 0U; IRV_ST_diagState = NORMAL; IRV_ST_Faultflag = 0U;
 	}
 
 }

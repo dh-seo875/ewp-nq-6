@@ -361,23 +361,17 @@ static void ManageProtection (void)
             //manage_errorCode = ((((uint16_t)manage_warningStateMerged & 0x02u) << 7u) | ((uint16_t)manage_failureStateMerged & 0xC0u) | ((uint16_t)manage_faultStateMerged & 0x3Fu));
             //manage_convertErrorCode = convertErrorCode(manage_errorCode);
             
-            if ((manage_faultStateMerged_Byte1 == 0u) && (manage_faultStateMerged_Byte2 == 0u) && (manage_failureStateMerged == 0u) && ((manage_warningStateMerged & 0x14u) == 0u))
-            {
-                manageProtectionState = RUN;
-            }
-            else
-            {
-            /* Intentionally Empty */
-            }
-
-            if (((manage_warningStateMerged & 0x14u) != 0u)) // WT WC
-            {
-                manageProtectionState = DEGRADE;
-            }
-            else
-            {
-            /* Intentionally Empty */
-            }
+            if ((manage_faultStateMerged_Byte1 == 0u) && (manage_faultStateMerged_Byte2 == 0u) && (manage_failureStateMerged == 0u))
+            {          
+                if (((manage_warningStateMerged & 0x14u) != 0u)) // WT WC
+                {
+                    manageProtectionState = DEGRADE;
+                }
+                else
+                {
+                    manageProtectionState = RUN;
+                }
+						}
 
 
 			manage_IRV_SpeedRef = 0;
