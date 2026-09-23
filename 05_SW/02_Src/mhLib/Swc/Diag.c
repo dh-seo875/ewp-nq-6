@@ -1421,12 +1421,13 @@ static void DiagStallError(void)
 static void DiagStallErrorNormal(void)
 {
 	static const uint16_t CAL_ST_FluxAbsFaultUprTh = ST_FLUXABS_FAULT_UPR_TH;
+	static const uint16_t CAL_ST_IqFaultUprTh = ST_IQ_FAULT_UPR_TH; 
 	static const uint8_t CAL_ST_FaultCntMax		     = ST_FAULT_CNT_MAX;
 	static const uint8_t CAL_ST_AttemptCLRCntMax	= ST_AttemptCLR_CNT_MAX;
 	uint16_t diag_fluxAbsValueMeasured	  = 0U;
 	(void)ReadFluxAbsValueMeasured(&diag_fluxAbsValueMeasured);
 
-	if ((diag_fluxAbsValueMeasured <= CAL_ST_FluxAbsFaultUprTh) && ((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u)
+	if ((diag_fluxAbsValueMeasured <= CAL_ST_FluxAbsFaultUprTh) && (diag_iqFiltered >= CAL_ST_IqFaultUprTh) && ((uint16_t)diag_vdcFiltered >= 900u) && ((uint16_t)diag_vdcFiltered <= 1600u)
 		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL))
 	{
 		ST_FaultCnt++;

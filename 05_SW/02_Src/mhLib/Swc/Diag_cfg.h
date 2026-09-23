@@ -68,7 +68,8 @@
 #define OC_FAULT_CNT_MAX        (uint8_t)( 250U) /*  2.5 sec */
 #define OC_RETRY_CNT_MAX        (uint8_t)( 200U) /* 10 sec */
 
-#define ST_FLUXABS_FAULT_UPR_TH (uint16_t)( 500U) /* FluxAbs 500 */
+#define ST_IQ_FAULT_UPR_TH      (sint16_t)( 20)   /* iq 0.2A */
+#define ST_FLUXABS_FAULT_UPR_TH (uint16_t)( 800U) /* FluxAbs 500 */
 #define ST_FAULT_CNT_MAX        (uint8_t)( 100U) /* 1 sec */
 #define ST_AttemptCLR_CNT_MAX   (uint8_t)( 100U) /* 1s */
 #define ST_RETRY_ATTEMPT_MAX    (uint8_t)(  10U) /* Retry 10 */
