@@ -1431,13 +1431,21 @@ static void DiagStallErrorNormal(void)
 		&& (diag_speedRef >= CAL_SpeedMin) && (IRV_PO_diagState == NORMAL))
 	{
 		ST_FaultCnt++;
-		ST_NormalCnt = (ST_NormalCnt <= 0U) ? 0U : (ST_NormalCnt - 1U);	
 	}
 	else                                                                         
 	{
         ST_FaultCnt = (ST_FaultCnt <= 0U) ? 0U : (ST_FaultCnt - 1U);	
+	}
+
+	if((diag_fluxAbsValueMeasured > CAL_ST_FluxAbsFaultUprTh) && (diag_speedRef >= CAL_SpeedMin))
+	{
 		ST_NormalCnt = (ST_retryAttempt > 0U) ? (ST_NormalCnt + 1U) : (0U);
 	}
+	else
+	{
+		ST_NormalCnt = (ST_NormalCnt <= 0U) ? 0U : (ST_NormalCnt - 1U);		
+	}
+
 	
 	if (ST_FaultCnt >= CAL_ST_FaultCntMax)                                    
 	{

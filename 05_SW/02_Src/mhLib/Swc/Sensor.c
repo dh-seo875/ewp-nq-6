@@ -156,8 +156,9 @@ void SensorSWComponentPack(void)
 }
 static void ConvertDutyToRpm(void)
 {
-	uint16_t rpm = 0U;
-	uint8_t sensor_LinRequireDuty = 0U;
+	static uint16_t rpm = 0U;
+
+	uint8_t sensor_LinRequireDuty = 0U;    
 	uint32_t tmp;
 
 	(void)ReadLinRequireDuty(&sensor_LinRequireDuty);
@@ -180,7 +181,7 @@ static void ConvertDutyToRpm(void)
 	}
 	else // 101-255
 	{
-        /* no action */
+         /* Hold last valid RPM */
 	}
 
 	(void)WriteConvertRPM((sint16_t)rpm);

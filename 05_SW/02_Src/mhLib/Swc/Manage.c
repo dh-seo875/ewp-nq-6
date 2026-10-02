@@ -224,15 +224,10 @@ static void ManageSystemOnOff(void)
     			manage_IRV_SpeedRef = SPEED_MAX_RUN;
 				LimphomeCnt = 0;
 			}
-			else if((manage_ignState == IGN_ON) && (((manage_LINCheck >> 5U) & 0x01U) == 1U)) // limp home
+			else if((((manage_LINCheck >> 5U) & 0x01U) == 1U)) // limp home
 			{
 			    LimphomeCnt = (LimphomeCnt >= 12000) ? 12000 : (LimphomeCnt+1);			
     			manage_IRV_SpeedRef = (LimphomeCnt >= 12000) ? 0 : CAL_LimpHomeRpm;
-
-			}
-			else if((manage_ignState == IGN_OFF)) //power latch
-			{
-    			manageSystemOnOffState = POWER_LATCH;
 			}
 			else                          // normal run (no limp hone)
 			{
@@ -269,10 +264,25 @@ static void ManageSystemOnOff(void)
 				    /* Intentionally Empty */
 				}
 			}
-			else         // (power latch run (no limphome)
+			else
 		    {
-    			manage_IRV_SpeedRef = manage_speedCmd;
+    			if(((manage_LINCheck >> 6U) & 0x01U) == 1U) // Lin invalid value
+                {
+                    manage_IRV_SpeedRef = SPEED_MAX_RUN;
+                    LimphomeCnt = 0;
+                }
+                else if((((manage_LINCheck >> 5U) & 0x01U) == 1U)) // Lin time out
+                {
+                    LimphomeCnt = (LimphomeCnt >= 12000) ? 12000 : (LimphomeCnt+1);			
+                    manage_IRV_SpeedRef = (LimphomeCnt >= 12000) ? 0 : CAL_LimpHomeRpm;
+                }
+                else // normal run (no limp hone)
+                {
+                    manage_IRV_SpeedRef = manage_speedCmd;
+                    LimphomeCnt = 0;
+                }
 			}
+
 			if(manage_InitialFlag == 1u)
 			{
                 manage_IRV_SpeedRef = 0;
