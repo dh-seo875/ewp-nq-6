@@ -309,13 +309,13 @@ static void Emo_lInitFocPar(void)
     Emo_Ctrl.SpeedPi.Kp = 400; // Emo_Focpar_Cfg.SpeedPi_Kp;
     Emo_Ctrl.SpeedPi.Ki = 600; // Emo_Focpar_Cfg.SpeedPi_Ki;
     Emo_Ctrl.SpeedPi.PiMin = -1967; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
-    Emo_Ctrl.SpeedPi.PiMax = 1966; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
+    Emo_Ctrl.SpeedPi.PiMax = 0; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
 
     
-    Emo_Ctrl.MaxRefCurrent = 3932; // 32767.0 * Emo_Focpar_Cfg.MaxRefCurr / KI;
+    Emo_Ctrl.MaxRefCurrent = 0; // 32767.0 * Emo_Focpar_Cfg.MaxRefCurr / KI;
     Emo_Ctrl.MinRefCurrent = -3933; // 32767.0 * Emo_Focpar_Cfg.MinRefCurr / KI;	
     
-    Emo_Ctrl.MaxRefStartCurrent = 1966; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
+    Emo_Ctrl.MaxRefStartCurrent = 0; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
     Emo_Ctrl.MinRefStartCurrent = -1967; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
 	
     //Emo_Ctrl.Speedlevelmaxstart = 1000; // Emo_Focpar_Cfg.SpeedLevelPos;
