@@ -1,0 +1,9 @@
+verify_repository:
+  stage: verify
+  tags:
+    - windows-ccs
+  script:
+    - pwsh -NoProfile -Command "$required = @('README.md', '01_Doc', '02_Src', 'ci/build.ps1'); $missing = $required | Where-Object { -not (Test-Path $_) }; if ($missing) { Write-Error ('Missing required paths: ' + ($missing -join ', ')); exit 1 }; Write-Host 'Repository structure verification passed.'"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH

@@ -1,0 +1,7 @@
+stages:
+  - verify
+  - build
+
+include:
+  - local: .gitlab/ci/verify.yml
+  - local: .gitlab/ci/build.yml

@@ -1,0 +1,14 @@
+build_firmware:
+  stage: build
+  tags:
+    - windows-ccs
+  script:
+    - pwsh -NoProfile -File ./ci/build.ps1
+  artifacts:
+    when: always
+    paths:
+      - build/
+    expire_in: 90 days
+  rules:
+    - when: manual
+  allow_failure: true
