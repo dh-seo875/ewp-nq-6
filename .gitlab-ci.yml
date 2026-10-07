@@ -2,6 +2,53 @@ stages:
   - verify
   - build
 
-include:
-  - local: .gitlab/ci/verify.yml
-  - local: .gitlab/ci/build.yml
+default:
+  tags:
+    - windows-keil-v525
+
+verify_repository:
+  stage: verify
+  script:
+    - |
+      Write-Host "Runner computer: $env:COMPUTERNAME"
+      Write-Host "Runner user: $env:USERNAME"
+      Write-Host "Project: $env:CI_PROJECT_PATH"
+      Write-Host "Branch: $env:CI_COMMIT_REF_NAME"
+      Write-Host "Commit: $env:CI_COMMIT_SHORT_SHA"
+
+      $required = @(
+        'README.md',
+        'Doc',
+        'Src',
+        'Src/iEWP.uvprojx',
+        'ci/build.bat',
+        'ci/build.ps1'
+      )
+      $missing = $required | Where-Object { -not (Test-Path $_) }
+      if ($missing) {
+        Write-Error "Missing required paths: $($missing -join ', ')"
+        exit 1
+      }
+
+      if (-not (Test-Path 'C:\Keil_v5\UV4\UV4.exe' -PathType Leaf)) {
+        Write-Error 'Keil executable not found: C:\Keil_v5\UV4\UV4.exe'
+        exit 1
+      }
+
+      Write-Host 'Repository and Keil environment verification passed.'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+build_firmware:
+  stage: build
+  script:
+    - .\ci\build.bat
+  artifacts:
+    when: always
+    name: "iewp-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build/
+    expire_in: 90 days
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^feature(\/|-).+$/'
