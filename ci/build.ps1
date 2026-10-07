@@ -81,13 +81,23 @@ try {
 
     Write-Host ''
     Write-Host '[1/2 Keil full rebuild]'
-    & $Uv4Executable `
-        -r $projectFile `
-        -t $TargetName `
-        -j0 `
-        -o $buildLogPath
+    $keilArguments = @(
+        '-r'
+        ('"{0}"' -f $projectFile)
+        '-t'
+        ('"{0}"' -f $TargetName)
+        '-j0'
+        '-o'
+        ('"{0}"' -f $buildLogPath)
+    )
 
-    $buildExitCode = $LASTEXITCODE
+    $keilProcess = Start-Process `
+        -FilePath $Uv4Executable `
+        -ArgumentList $keilArguments `
+        -Wait `
+        -PassThru
+
+    $buildExitCode = $keilProcess.ExitCode
 
     if (Test-Path -LiteralPath $buildLogPath) {
         Write-Host ''
