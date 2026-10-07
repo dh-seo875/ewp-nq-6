@@ -5,11 +5,19 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
 try {
-    Write-Host "Runner computer: $env:COMPUTERNAME"
-    Write-Host "Runner user: $env:USERNAME"
-    Write-Host "Project: $env:CI_PROJECT_PATH"
-    Write-Host "Branch: $env:CI_COMMIT_REF_NAME"
-    Write-Host "Commit: $env:CI_COMMIT_SHORT_SHA"
+    Write-Output 'GitLab Windows Runner connection successful'
+    Write-Output "Computer = $env:COMPUTERNAME"
+    Write-Output "User = $env:USERNAME"
+    Write-Output "Project = $env:CI_PROJECT_PATH"
+    Write-Output "Branch = $env:CI_COMMIT_REF_NAME"
+    Write-Output "Commit = $env:CI_COMMIT_SHORT_SHA"
+    Write-Output "Working directory = $(Get-Location)"
+    Write-Output "PowerShell version = $($PSVersionTable.PSVersion)"
+
+    git --version
+    if ($LASTEXITCODE -ne 0) {
+        throw "Git command failed with exit code $LASTEXITCODE"
+    }
 
     $required = @(
         'README.md',
@@ -37,7 +45,12 @@ try {
         throw "Keil executable not found: $keilExecutable"
     }
 
-    Write-Host 'Repository and Keil environment verification passed.'
+    Write-Output "File OK: $keilExecutable"
+    foreach ($path in $required) {
+        Write-Output "Path OK: $path"
+    }
+
+    Write-Output 'Runner verification passed.'
     exit 0
 }
 catch {

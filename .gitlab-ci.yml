@@ -1,18 +1,21 @@
 stages:
   - verify
   - build
+  - test
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^feature(\/|-).+$/'
+    - when: never
 
 default:
   tags:
     - windows-keil-v525
 
-verify_repository:
+runner_verify:
   stage: verify
   script:
-    - powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\ci\verify.ps1
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH'
+    - .\ci\verify.ps1
 
 build_firmware:
   stage: build
@@ -22,7 +25,16 @@ build_firmware:
     when: always
     name: "iewp-$CI_COMMIT_SHORT_SHA"
     paths:
-      - build/
+      - build/iEWP.axf
+      - build/iEWP.hex
+      - build/iEWP.map
+      - build/keil-build.log
     expire_in: 90 days
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^feature(\/|-).+$/'
+
+artifact_test:
+  stage: test
+  needs:
+    - job: build_firmware
+      artifacts: true
+  script:
+    - .\ci\test-artifacts.ps1
