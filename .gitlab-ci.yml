@@ -1,0 +1,40 @@
+stages:
+  - verify
+  - build
+  - test
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH =~ /^feature(\/|-).+$/'
+    - when: never
+
+default:
+  tags:
+    - windows-keil-v525
+
+runner_verify:
+  stage: verify
+  script:
+    - .\ci\verify.ps1
+
+build_firmware:
+  stage: build
+  script:
+    - .\ci\build.bat
+  artifacts:
+    when: always
+    name: "iewp-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - build/iEWP.axf
+      - build/iEWP.hex
+      - build/iEWP.map
+      - build/keil-build.log
+    expire_in: 90 days
+
+artifact_test:
+  stage: test
+  needs:
+    - job: build_firmware
+      artifacts: true
+  script:
+    - .\ci\test-artifacts.ps1

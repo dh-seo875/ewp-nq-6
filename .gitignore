@@ -6,5 +6,8 @@
 *.map
 *.txt
 *.d
-*.uvprojx
 *.lst
+
+# Track the project-specific Keil configuration files.
+!Src/iEWP.uvoptx
+!Src/iEWP.uvguix.USER
