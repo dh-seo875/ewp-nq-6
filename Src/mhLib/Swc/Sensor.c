@@ -314,7 +314,7 @@ static void MeasIq (void)
     (void)GetIqMeasured(&sensor_iqMeasured);
 //    (void)GetIdMeasured(&sensor_idMeasured);
 
-    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 197); /*1A 83.33A from 32767*/
+    sensor_iqMeasured = (sint16_t)((sint32_t)sensor_iqMeasured * 100 / 131); /*1A 83.33A from 32767*/
 //    sensor_idMeasured = (sint16_t)((sint32_t)sensor_idMeasured * 100 / 393);
     sensor_iqFiltered = iirIq(sensor_iqMeasured);
 
