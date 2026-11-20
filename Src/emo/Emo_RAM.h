@@ -91,7 +91,7 @@
 ** the ADC measurement inside the 3phase PWM pattern               **
 ** 80 * CCU6_CLK = 80 * 25ns = 2us                                 */
 //#define EMO_SVM_MINTIME           (80)
-#define EMO_SVM_DEADTIME          (60u)
+#define EMO_SVM_DEADTIME          (30u)
 #define EMO_DECOUPLING            (0u)
 
 /* FluxEstimator filter time */
@@ -102,9 +102,9 @@
 
 
 //#define Emo_Foc_PolePair     3
-#define Emo_Foc_PhaseRes 12379 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
+#define Emo_Foc_PhaseRes 9102 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseRes / KU;
 
-#define Emo_Foc_PhaseInd 3822	 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
+#define Emo_Foc_PhaseInd 5500	 // 32768.0 * KI * Emo_Focpar_Cfg.PhaseInd / KPSIE;
 
 /*******************************************************************************
 **                      Global Type Definitions                              **
@@ -220,6 +220,8 @@ typedef struct
     sint16 Speedest;                /* 88 */
     sint16 Speedpll;                /* 89 */
     uint16 FluxAnglePll;            /* 90 */
+    sint16 RefCurrD;                /**< \brief D-axis current reference */
+    sint16 RefCurrQ;                /**< \brief Q-axis current reference */
 
 } TEmo_Ctrl;
 

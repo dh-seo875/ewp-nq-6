@@ -53,12 +53,12 @@
 #define SE_AttemptCLR_CNT_MAX   (sint16_t)( 2000) /* 20 sec */
 
 
-#define WC_IQ_WARNING_UPR_TH    (sint16_t)( 1450) /* iq 14.5 A */
-#define WC_IQ_WARNING_LWR_TH    (sint16_t)( 1350) /* iq 13.5 A */
+#define WC_IQ_WARNING_UPR_TH    (sint16_t)( 1800) /* iq 14.5 A */
+#define WC_IQ_WARNING_LWR_TH    (sint16_t)( 1650) /* iq 13.5 A */
 #define WC_WARNING_CNT_MAX      (uint8_t)( 100U) /*  1 sec */
 #define WC_NORMAL_CNT_MAX       (uint8_t)( 100U) /* 1 sec */
 
-#define OC_IQ_FAULT_UPR_TH      (sint16_t)( 1600) /* iq 16 A */
+#define OC_IQ_FAULT_UPR_TH      (sint16_t)( 2000) /* iq 16 A */
 #define OC_AttemptCLR_CNT_MAX   (sint16_t)( 1000) /* 10s */
 //#define OC_IQ_FAULT_LWR_TH      (sint16_t)( 1600)  iq 16 A 
 
@@ -76,14 +76,14 @@
 #define ST_RETRY_CNT_MAX        (uint8_t)( 200U) /* 10 sec */
 
 
-#define LC_NORMAL_UPR_TH        (sint16_t)(  234) /*  iq 2.34 A */
-#define LC_FAULT_LWR_TH         (sint16_t)(  156) /* iq 1.56 A */
+#define LC_NORMAL_UPR_TH        (sint16_t)(  306) /*  iq 2.34 A */
+#define LC_FAULT_LWR_TH         (sint16_t)(  204) /* iq 1.56 A */
 #define LC_FAULT_CNT_MAX        (sint16_t)(  500) /* 5 sec */
 #define LC_RETRY_CNT_MAX        (sint16_t)(  500) /* 5 sec */
 #define LC_RETRY_ATTEMPT_MAX    (uint8_t)(  10U) /* Retry 20 */
 
 #define LC_AttemptCLR_CNT_MAX   (sint16_t)(  500) /*  5 sec */
-#define LC_SPEED_MIN            (sint16_t)( 3500) /* 3500 RPM */
+#define LC_SPEED_MIN            (sint16_t)( 3250) /* 3250 RPM */
 
 #define SC_NORMAL_CNT_MAX       (uint8_t)( 100U) /*  1 sec */
 #define SC_FAULT_CNT_MAX        (uint8_t)( 100U) /*  1 sec */

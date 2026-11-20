@@ -42,6 +42,26 @@ TEmo_Status Emo_Status;
 uint16 EMO_SVM_MINTIME = 80;
 sint16 Emo_speedRef = 0;
 
+/* Open-loop current-vector angle: 1024 counts = 360 electrical degrees. */
+#define EMO_START_ANGLE_ERROR_MAX       (3000u)
+#define EMO_CURRENT_ANGLE_BASE          (256)
+#define EMO_CURRENT_ANGLE_STEP          (2)
+#define EMO_CURRENT_ANGLE_MIN           (192)
+#define EMO_CURRENT_ANGLE_MAX           (512)
+#define EMO_ANGLE_COMP_DIRECTION        (1)
+#define EMO_START_ANGLE_SETTLING_COUNT  (20u)
+#define EMO_START_ANGLE_TIMEOUT_COUNT   (10u)
+#define EMO_START_MAX_WAIT_COUNT        (50u) /* Approx. 100 ms after 900 rpm. */
+
+static sint16 Emo_CurrentVectorAngle = EMO_CURRENT_ANGLE_BASE;
+static sint16 Emo_StartAngleError = 0;
+static uint16 Emo_StartAngleErrorAbs = 0u;
+static uint16 Emo_StartAngleSettlingCount = 0u;
+static uint16 Emo_StartAngleTimeoutCount = 0u;
+static uint16 Emo_StartAngleTimeout = 0u;
+static uint16 Emo_ClosedAngleReturnActive = 0u;
+static uint16 Emo_StartMaxWaitCount = 0u;
+
 /** \brief Initializes E-Motor HW and SW.
  *
  * \param None
@@ -55,6 +75,9 @@ static void Emo_HandleT2Overflow_Run(void);
 static void Emo_lInitFocVar(void);
 static void Emo_lInitFocPar(void);
 static uint32 Emo_StartMotor(void);
+static sint16 Emo_GetStartAngleError(void);
+static void Emo_AdjustOpenLoopCurrentVectorAngle(sint16 angleError);
+static void Emo_UpdateCurrentVectorReference(void);
 
 
 void Task_Emo_MotorControl(void)
@@ -291,7 +314,7 @@ static void Emo_lInitFocPar(void)
     //Emo_Foc.Kdcfactoriqc = 9614; // 32768.0 * KUZ / (1.7320508 * KU * 32.0);
     //Emo_Foc.PolePair = 3; // Emo_Focpar_Cfg.PolePair = 3
 
-    Emo_Foc.StartCurrent = 196; // Emo_Focpar_Cfg.StartCurrent / KI * 32768.0;	
+    Emo_Foc.StartCurrent = 130; // Emo_Focpar_Cfg.StartCurrent / KI * 32768.0;	
 
     //Emo_Foc.TimeSpeedzero = 27;	// Emo_Focpar_Cfg.TimeSpeedzero * SCU_FSYS / ((GPT12E_T2) * 4.0);
     //Emo_Foc.StartEndSpeed = 300; // Emo_Focpar_Cfg.StartSpeedEnd;	
@@ -306,17 +329,17 @@ static void Emo_lInitFocPar(void)
 //    Emo_Foc.LpCoefb2 = 218;   32768.0 / (0.01 * CCU6_T12_FREQ); Time const = 0.010s
     Emo_Foc.RealFluxLp.CoefB = 109; // Emo_Foc.LpCoefb1;
     Emo_Foc.ImagFluxLp.CoefB = 109; // Emo_Foc.LpCoefb1;
-    Emo_Ctrl.SpeedPi.Kp = 700; // Emo_Focpar_Cfg.SpeedPi_Kp;
-    Emo_Ctrl.SpeedPi.Ki = 500; // Emo_Focpar_Cfg.SpeedPi_Ki;
-    Emo_Ctrl.SpeedPi.PiMin = -1967; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
+    Emo_Ctrl.SpeedPi.Kp = 500; // Emo_Focpar_Cfg.SpeedPi_Kp;
+    Emo_Ctrl.SpeedPi.Ki = 300; // Emo_Focpar_Cfg.SpeedPi_Ki;
+    Emo_Ctrl.SpeedPi.PiMin = -1311; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
     Emo_Ctrl.SpeedPi.PiMax = 0; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
 
     
     Emo_Ctrl.MaxRefCurrent = 0; // 32767.0 * Emo_Focpar_Cfg.MaxRefCurr / KI;
-    Emo_Ctrl.MinRefCurrent = -3933; // 32767.0 * Emo_Focpar_Cfg.MinRefCurr / KI;	
+    Emo_Ctrl.MinRefCurrent = -3015; // 32767.0 * Emo_Focpar_Cfg.MinRefCurr / KI;	
     
     Emo_Ctrl.MaxRefStartCurrent = 0; // 32767.0 * Emo_Focpar_Cfg.MaxRefStartCurr / KI;
-    Emo_Ctrl.MinRefStartCurrent = -1967; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
+    Emo_Ctrl.MinRefStartCurrent = -1311; // 32767.0 * Emo_Focpar_Cfg.MinRefStartCurr / KI;
 	
     //Emo_Ctrl.Speedlevelmaxstart = 1000; // Emo_Focpar_Cfg.SpeedLevelPos;
     //Emo_Ctrl.Speedlevelminstart = -1000; // Emo_Focpar_Cfg.SpeedLevelNeg;
@@ -325,8 +348,8 @@ static void Emo_lInitFocPar(void)
 
     // x = 0.2f;  Emo_Focpar_Cfg.AdjustmCurrentControl;
     
-    Emo_Ctrl.RealCurrPi.Kp = 300; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
-    Emo_Ctrl.RealCurrPi.Ki = 500; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
+    Emo_Ctrl.RealCurrPi.Kp = 600; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseInd / (256.0 * (1.0 / CCU6_T12_FREQ) * KU) * 32767.0;        
+    Emo_Ctrl.RealCurrPi.Ki = 300; // Emo_Focpar_Cfg.AdjustmCurrentControl * KI * Emo_Focpar_Cfg.PhaseRes / (4.0 * KU) * 32767.0;
 	
     /* id = PI regulator limits */
     Emo_Ctrl.RealCurrPi.IMin = -28272;
@@ -437,8 +460,19 @@ static void Emo_lInitFocVar(void)
     Emo_Foc.ImagFluxLp.Out = 0;
     Emo_Ctrl.ActSpeed = 0;
     Emo_Ctrl.RefCurr = 0;
+    Emo_Ctrl.RefCurrD = 0;
+    Emo_Ctrl.RefCurrQ = 0;
+    Emo_CurrentVectorAngle = EMO_CURRENT_ANGLE_BASE;
+    Emo_StartAngleError = 0;
+    Emo_StartAngleErrorAbs = 0u;
+    Emo_StartAngleSettlingCount = 0u;
+    Emo_StartAngleTimeoutCount = 0u;
+    Emo_StartAngleTimeout = 0u;
+    Emo_ClosedAngleReturnActive = 0u;
+    Emo_StartMaxWaitCount = 0u;
     Emo_Ctrl.RealCurrPi.IOut = 0;
     Emo_Ctrl.ImagCurrPi.IOut = 0;
+    Emo_Foc.StartSpeedSlope = 0;
     Emo_Foc.StartSpeedSlopeMem = 0;
     Emo_Foc.CountStart = 109;//Emo_Foc.TimeSpeedzero;
     /* define 30?as start angle */
@@ -453,9 +487,62 @@ static void Emo_lInitFocVar(void)
     Emo_Ctrl.SpeedLp.Out = 0;
 //    Emo_Svm.CounterOffsetAdw=0;
 //    Emo_Svm.CsaOffsetAdwSumme=0;
-		Emo_Foc.StartCurrent = 150;
+		Emo_Foc.StartCurrent = 130;
 		EMO_SVM_MINTIME = 80;
 } /* End of Emo_lInitFocVar */
+
+static sint16 Emo_GetStartAngleError(void)
+{
+	return (sint16)(Emo_Foc.StartAngle - Emo_Ctrl.FluxAnglePll);
+}
+
+static void Emo_AdjustOpenLoopCurrentVectorAngle(sint16 angleError)
+{
+	sint32 angleCandidate = (sint32)Emo_CurrentVectorAngle;
+
+	if (angleError > (sint16)EMO_START_ANGLE_ERROR_MAX)
+	{
+		angleCandidate += ((sint32)EMO_CURRENT_ANGLE_STEP * (sint32)EMO_ANGLE_COMP_DIRECTION);
+	}
+	else if (angleError < -(sint16)EMO_START_ANGLE_ERROR_MAX)
+	{
+		angleCandidate -= ((sint32)EMO_CURRENT_ANGLE_STEP * (sint32)EMO_ANGLE_COMP_DIRECTION);
+	}
+	else
+	{
+		/* Angle is inside the transition window. */
+	}
+
+	if (angleCandidate > (sint32)EMO_CURRENT_ANGLE_MAX)
+	{
+		angleCandidate = (sint32)EMO_CURRENT_ANGLE_MAX;
+	}
+	else if (angleCandidate < (sint32)EMO_CURRENT_ANGLE_MIN)
+	{
+		angleCandidate = (sint32)EMO_CURRENT_ANGLE_MIN;
+	}
+	else
+	{
+		/* Angle is inside the permitted current-vector range. */
+	}
+
+	Emo_CurrentVectorAngle = (sint16)angleCandidate;
+}
+
+static void Emo_UpdateCurrentVectorReference(void)
+{
+	sint32 angleIndex = (sint32)Emo_CurrentVectorAngle % 1024;
+	uint16 tableIndex;
+
+	if (angleIndex < 0)
+	{
+		angleIndex += 1024;
+	}
+	tableIndex = (uint16)angleIndex;
+
+	Emo_Ctrl.RefCurrD = (sint16)__ssat(Mat_FixMul_singed((sint32)Emo_Ctrl.RefCurr, (sint32)Table_Sin[tableIndex + 256u]), MAT_FIX_SAT);
+	Emo_Ctrl.RefCurrQ = (sint16)__ssat(Mat_FixMul_singed((sint32)Emo_Ctrl.RefCurr, (sint32)Table_Sin[tableIndex]), MAT_FIX_SAT);
+}
 
 
 /** \brief Handles T2 overflow.
@@ -472,6 +559,58 @@ static void Emo_HandleT2Overflow_Start(void)
 		 static const sint32_t Emo_Foc_StartSpeedSlewRate = 120002; //1000rpm/s
 		 static const sint16_t Emo_Foc_SpeedtoFrequency = 7158; // (32768.0 * (1.0 / CCU6_T12_FREQ) * 32768.0 / 30.0) * FOC_POLE_PAIRS;
 
+		 Emo_StartAngleError = Emo_GetStartAngleError();
+		 if (Emo_StartAngleError < 0)
+		 {
+			 Emo_StartAngleErrorAbs = (uint16)(-(sint32)Emo_StartAngleError);
+		 }
+		 else
+		 {
+			 Emo_StartAngleErrorAbs = (uint16)Emo_StartAngleError;
+		 }
+
+		 if (((Emo_Foc.StartSpeedSlope == Emo_Foc_StartEndSpeed) || (Emo_Foc.StartSpeedSlope == -Emo_Foc_StartEndSpeed)) &&
+			 ((Emo_CurrentVectorAngle >= EMO_CURRENT_ANGLE_MAX) || (Emo_CurrentVectorAngle <= EMO_CURRENT_ANGLE_MIN)) &&
+			 (Emo_StartAngleErrorAbs > EMO_START_ANGLE_ERROR_MAX))
+		 {
+			 if (Emo_StartAngleSettlingCount < EMO_START_ANGLE_SETTLING_COUNT)
+			 {
+				 Emo_StartAngleSettlingCount++;
+				 Emo_StartAngleTimeoutCount = 0u;
+				 Emo_StartAngleTimeout = 0u;
+			 }
+			 else
+			 {
+				 if (Emo_StartAngleTimeoutCount < EMO_START_ANGLE_TIMEOUT_COUNT)
+				 {
+					 Emo_StartAngleTimeoutCount++;
+				 }
+				 if (Emo_StartAngleTimeoutCount >= EMO_START_ANGLE_TIMEOUT_COUNT)
+				 {
+					 Emo_StartAngleTimeout = 1u;
+				 }
+			 }
+		 }
+		 else
+		 {
+			 Emo_StartAngleSettlingCount = 0u;
+			 Emo_StartAngleTimeoutCount = 0u;
+			 Emo_StartAngleTimeout = 0u;
+		 }
+
+		 /* Independent wait limit: angle changes do not reset this counter. */
+		 if ((Emo_Foc.StartSpeedSlope == Emo_Foc_StartEndSpeed) || (Emo_Foc.StartSpeedSlope == -Emo_Foc_StartEndSpeed))
+		 {
+		     if (Emo_StartMaxWaitCount < EMO_START_MAX_WAIT_COUNT)
+		     {
+		         Emo_StartMaxWaitCount++;
+		     }
+		     if (Emo_StartMaxWaitCount >= EMO_START_MAX_WAIT_COUNT)
+		     {
+		         Emo_StartAngleTimeout = 1u;
+		     }
+		 }
+
 		 /* Open loop: */
 		 /* Perform ramp to start end speed */
 		 if (Emo_Foc.CountStart == 0u)
@@ -485,46 +624,69 @@ static void Emo_HandleT2Overflow_Start(void)
 				 /* calculate frequency out of ramp */
 				 Emo_Foc.StartFrequencySlope = (sint16)__ssat(Mat_FixMul_singed((sint32)Emo_Foc.StartSpeedSlope, (sint32)Emo_Foc_SpeedtoFrequency), MAT_FIX_SAT);
 				 
-				 if (Emo_Foc.StartSpeedSlope == Emo_Foc_StartEndSpeed)
+				 if ((Emo_Foc.StartSpeedSlope == Emo_Foc_StartEndSpeed) && ((Emo_StartAngleErrorAbs <= EMO_START_ANGLE_ERROR_MAX) || (Emo_StartAngleTimeout != 0u)))
 				 {
 					 /* end speed reached */
 #if (EMO_RUN==1)
 					 Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;						/*Start Foc */
 #endif
 					 /* preload speed regulator */
-					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)8192);
+					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)32768);
 				 }
 			 }
 			 else
 			 {
+
 				 /* negative rotation */
 				 /* apply start up ramp */
 				 Emo_Foc.StartSpeedSlope = Mat_Ramp(-Emo_Foc_StartEndSpeed, Emo_Foc_StartSpeedSlewRate, &Emo_Foc.StartSpeedSlopeMem);
 				 /* calculate frequency out of ramp */
 				 Emo_Foc.StartFrequencySlope = (sint16)__ssat(Mat_FixMul_singed((sint32)Emo_Foc.StartSpeedSlope, (sint32)Emo_Foc_SpeedtoFrequency), MAT_FIX_SAT);
 				 
-				 if (Emo_Foc.StartSpeedSlope == -Emo_Foc_StartEndSpeed)
+				 if ((Emo_Foc.StartSpeedSlope == -Emo_Foc_StartEndSpeed) && ((Emo_StartAngleErrorAbs <= EMO_START_ANGLE_ERROR_MAX) || (Emo_StartAngleTimeout != 0u)))
 				 {
+				     Emo_Ctrl.RealCurrPi.Kp = 1200;
+				     Emo_Ctrl.ImagCurrPi.Kp = Emo_Ctrl.RealCurrPi.Kp;
 #if (EMO_RUN==1)
-					 Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;						/*Start Foc */
-                     EMO_SVM_MINTIME = 100;
+					   Emo_Status.MotorState = EMO_MOTOR_STATE_RUN;						/*Start Foc */
+             EMO_SVM_MINTIME = 100;
 #endif
-					 Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)8192);
+					   Emo_Ctrl.SpeedPi.IOut = (sint32)(Emo_Ctrl.RefCurr * (sint32)32768);
 				 }
 			 }
 		 }
 		 else
 		 {
+			 Emo_Ctrl.RealCurrPi.Kp = 500;
+			 Emo_Ctrl.ImagCurrPi.Kp = Emo_Ctrl.RealCurrPi.Kp;
 			 Emo_Foc.CountStart--;
 			 Emo_Foc.StartFrequencySlope = 0;
-			 Emo_Foc.StartCurrent += 20;
-			 if(Emo_Foc.StartCurrent < 167)
+			 Emo_Foc.StartCurrent += 15;
+			 if(Emo_Foc.StartCurrent < 130)
 			 {
-				 Emo_Foc.StartCurrent = 167;
+				 Emo_Foc.StartCurrent = 130;
 			 }
-			 if(Emo_Foc.StartCurrent > 1572)
-			 {Emo_Foc.StartCurrent = 1572;}
+			 if(Emo_Foc.StartCurrent > 1311)
+			 {Emo_Foc.StartCurrent = 1311;}
 		 }
+		 if (Emo_Status.MotorState == EMO_MOTOR_STATE_RUN)
+		 {
+			 Emo_ClosedAngleReturnActive = (Emo_StartAngleTimeout != 0u) ? 1u : 0u;
+			 if (Emo_ClosedAngleReturnActive == 0u)
+			 {
+				 Emo_CurrentVectorAngle = EMO_CURRENT_ANGLE_BASE;
+			 }
+			 Emo_StartAngleSettlingCount = 0u;
+			 Emo_StartAngleTimeoutCount = 0u;
+			 Emo_StartAngleTimeout = 0u;
+		 }
+		 else if ((Emo_Foc.StartSpeedSlope == Emo_Foc_StartEndSpeed) || (Emo_Foc.StartSpeedSlope == -Emo_Foc_StartEndSpeed))
+		 {
+			 Emo_AdjustOpenLoopCurrentVectorAngle(Emo_StartAngleError);
+		 }
+
+		 Emo_Ctrl.RefCurr = (Emo_Ctrl.RefSpeed > 0) ? Emo_Foc.StartCurrent : -Emo_Foc.StartCurrent;
+		 Emo_UpdateCurrentVectorReference();
 				 
 		 Emo_Ctrl.ActSpeeddisplay = Mat_ExeLp_without_min_max(&Emo_Ctrl.SpeedLpdisplay, Emo_Ctrl.ActSpeed);
 		 //Emo_Ctrl.EnableStartVoltage = 1;
@@ -568,6 +730,40 @@ static void Emo_HandleT2Overflow_Run(void)
 	if(Emo_Ctrl.RefCurr > 0)
 	{
 		Emo_Ctrl.RefCurr = 0;
+	}
+	if (Emo_ClosedAngleReturnActive != 0u)
+	{
+		if (Emo_CurrentVectorAngle > EMO_CURRENT_ANGLE_BASE)
+		{
+			Emo_CurrentVectorAngle -= EMO_CURRENT_ANGLE_STEP;
+			if (Emo_CurrentVectorAngle < EMO_CURRENT_ANGLE_BASE)
+			{
+				Emo_CurrentVectorAngle = EMO_CURRENT_ANGLE_BASE;
+			}
+		}
+		else if (Emo_CurrentVectorAngle < EMO_CURRENT_ANGLE_BASE)
+		{
+			Emo_CurrentVectorAngle += EMO_CURRENT_ANGLE_STEP;
+			if (Emo_CurrentVectorAngle > EMO_CURRENT_ANGLE_BASE)
+			{
+				Emo_CurrentVectorAngle = EMO_CURRENT_ANGLE_BASE;
+			}
+		}
+		else
+		{
+			Emo_ClosedAngleReturnActive = 0u;
+		}
+
+		Emo_UpdateCurrentVectorReference();
+		if (Emo_CurrentVectorAngle == EMO_CURRENT_ANGLE_BASE)
+		{
+			Emo_ClosedAngleReturnActive = 0u;
+		}
+	}
+	else
+	{
+		Emo_Ctrl.RefCurrD = 0;
+		Emo_Ctrl.RefCurrQ = Emo_Ctrl.RefCurr;
 	}
 //    if((Emo_Ctrl.RefCurr < (Emo_Ctrl.SpeedPi.PiMin + 80)) &&(Emo_Ctrl.ActSpeed > (Emo_Ctrl.RefSpeed + 140)))
 //    {

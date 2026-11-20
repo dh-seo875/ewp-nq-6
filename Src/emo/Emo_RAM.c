@@ -243,10 +243,10 @@ static void Emo_Current_Regulator(void)
 {
     /* Current Regulator: Execute PI algorithm for rotating voltage */
     /* id */ 
-    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, -(Emo_Foc.RotCurr.Real));
+    Emo_Foc.RotVolt.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, Emo_Ctrl.RefCurrD - Emo_Foc.RotCurr.Real);
 
     /* iq */
-    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
+    Emo_Foc.RotVolt.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurrQ - Emo_Foc.RotCurr.Imag);
 }
 
 void Emo_HandleFoc(void)
@@ -306,8 +306,8 @@ void Emo_HandleFoc(void)
 #if (EMO_DECOUPLING==0)
 
 #else
-        Emo_Foc.RotVoltCurrentcontrol.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi,  -(Emo_Foc.RotCurr.Real));
-        Emo_Foc.RotVoltCurrentcontrol.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurr - Emo_Foc.RotCurr.Imag);
+        Emo_Foc.RotVoltCurrentcontrol.Real = Mat_ExePi(&Emo_Ctrl.RealCurrPi, Emo_Ctrl.RefCurrD - Emo_Foc.RotCurr.Real);
+        Emo_Foc.RotVoltCurrentcontrol.Imag = Mat_ExePi(&Emo_Ctrl.ImagCurrPi, Emo_Ctrl.RefCurrQ - Emo_Foc.RotCurr.Imag);
         /* Calculate Decoupling */
         Emo_Foc.RotVolt = Emo_CurrentDecoupling();
 #endif
