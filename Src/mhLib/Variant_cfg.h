@@ -36,7 +36,7 @@
 #define PEWP_TYPE3_0X38                (6)
 #define IEWP_TYPE3_0X37                (7)
 #define BEWP_TYPE3_0X37                (8)
-#define BEWP_TYPE3_0X38                (0x0Eu)
+#define BEWP_TYPE3_0X38                (0x0Au)
 
 /* #define EWP_TYPE (PEWP_TYPE2_0X37) */
 /* #define EWP_TYPE (PEWP_TYPE2_0X38) */
