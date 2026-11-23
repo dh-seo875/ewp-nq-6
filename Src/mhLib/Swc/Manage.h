@@ -63,7 +63,7 @@
 
 /* Step control */
 
-//#define    SPEED_STEP_10 10
+#define    SPEED_STEP_12 12
 #define    SPEED_STEP_15 15
 #define    SPEED_STEP_60 60
 #define    SPEED_STEP_120 120

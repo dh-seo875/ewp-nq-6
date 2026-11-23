@@ -45,7 +45,7 @@ void l_Update_Frame_Flags(l_u8 number)
 
 
 t_l_Lin_Data l_LinData = {{
-  (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u,\
+  (l_u8)252u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)252u, (l_u8)128u,\
   (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)255u, (l_u8)255u, (l_u8)255u, (l_u8)255u, (l_u8)255u
 }};
 

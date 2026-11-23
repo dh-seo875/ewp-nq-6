@@ -374,12 +374,12 @@ Std_ReturnType SetErrorCode (uint8_t data)
     Nvm_SetErrorCode(data);
     return retVal;
 }
-//Std_ReturnType GetErrorCodeIndex (uint8_t* data)
-//{
-//    Std_ReturnType retVal = RTE_E_OK;
-//    *data = Nvm_GetErrorCodeIndex();
-//    return retVal;
-//}
+Std_ReturnType GetErrorCodeIndex (uint8_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = Nvm_GetErrorCodeIndex();
+    return retVal;
+}
 
 Std_ReturnType SetErrorCodeIndex (uint8_t data)
 {

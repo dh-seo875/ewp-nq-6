@@ -80,11 +80,11 @@
 #define IQ_DIAG_COOLANT       (sint16_t)(  400) /*  iq 4.0 A */
 
 #elif((EWP_TYPE == BEWP_TYPE3_0X37) || (EWP_TYPE == BEWP_TYPE3_0X38))
-#define LIMP_HOME_RPM         (sint16_t)( 6000) /*  4200 RPM */
-#define SPEED_MAX_RUN         (sint16_t)( 6000) /*  4200 RPM */
-#define SPEED_MIN_RUN         (sint16_t)( 1000) /*  1200 RPM */
+#define LIMP_HOME_RPM         (sint16_t)( 4600) /*  4600 RPM */
+#define SPEED_MAX_RUN         (sint16_t)( 4600) /*  4600 RPM */
+#define SPEED_MIN_RUN         (sint16_t)( 1000) /*  1000 RPM */
 //#define SLEEP_CNT_MAX         (sint16_t)( 6000) 
-#define IQ_DIAG_COOLANT       (sint16_t)(  400) /*  iq 3.0 A */
+#define IQ_DIAG_COOLANT       (sint16_t)(  400) /*  iq 4.0 A */
 
 
 #else

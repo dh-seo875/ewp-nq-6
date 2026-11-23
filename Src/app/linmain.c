@@ -73,11 +73,13 @@ static void l_callback_TxIndication (const l_u8* transmitFlag);
 *******************************************************************************/
 
 static void LIN_TransportLayerMain(void);
+#if 0 /* Reserved for future use: Coolant/Initial command signals */
 static void LIN_CoolantDiagFlag (void);
+static void LIN_LLD_Service_InitialFlag(void);
+#endif
 static void LIN_LLD_Service_TX_Cal(void);
 static void LIN_LLD_Service_Timeout(void);
 static void LIN_LLD_Service_RefSpdCal(void);
-static void LIN_LLD_Service_InitialFlag(void);
 static void LIN_LLD_Service_Successful_chk(void);
 static void ld_task_Cal(void);
 static void LIN_COM_Handler_ifc_t2(void);
@@ -98,14 +100,16 @@ static l_bool faultFlag;
 static l_u8 faultStateMerged_Byte1=0;
 static l_u8 faultStateMerged_Byte2=0;
 static l_u8 warningStateMerged=0;
-static l_u8 actDuty=0;
+static l_u8 actRequire=0;
+#if 0 /* Reserved for future use: extended status signals */
 static l_u8 CoolantFlag=0;
+static signed short vdcFiltered=0;
+static sint16_t TemperatureFiltered;
+#endif
 static l_u8 MCUFault=0;	
 static signed short idcFiltered=0;
-static signed short vdcFiltered=0;
 static signed short iqFiltered=0;
-static sint16_t TemperatureFiltered;
- 	
+static l_u8	errorCodeIndex=0;
 
 
 
@@ -161,9 +165,13 @@ static l_u8  lin_diag_Transmit_flag = 0;
 static void LIN_LLD_Service_Tx_Rx(void)
 {
     LIN_LLD_Service_Timeout();
+#if 0 /* Reserved for future use: COMMAND Byte 1 */
     LIN_CoolantDiagFlag();
+#endif
 	LIN_LLD_Service_RefSpdCal();
+#if 0 /* Reserved for future use: COMMAND Byte 1 */
     LIN_LLD_Service_InitialFlag();
+#endif
 	LIN_LLD_Service_TX_Cal();
 }
 
@@ -378,19 +386,19 @@ static void LIN_LLD_Service_Timeout(void)
 static void LIN_LLD_Service_RefSpdCal(void)
 {
 	
-	uint8_t lin_rx_duty = 0u;
+	uint8_t lin_rx_Required = 0u;
 
-	if (l_flg_tst_Ewp1_Target_Spd_RPM())
+	if (l_flg_tst_Ewp2_Target_Spd_RPM())
 	{
-		l_flg_clr_Ewp1_Target_Spd_RPM();
-		lin_rx_duty = l_u8_rd_Ewp1_Target_Spd_RPM();
-		(void)WriteLinRequireDuty(lin_rx_duty);
+		l_flg_clr_Ewp2_Target_Spd_RPM();
+		lin_rx_Required = l_u8_rd_Ewp2_Target_Spd_RPM();
+		(void)WriteLinRequire(lin_rx_Required);
 	}
 }
 
+#if 0 /* Reserved for future use: Coolant/Initial command signals */
 static void LIN_LLD_Service_InitialFlag(void)
 {
-	
 	uint8_t lin_rx_initFlag = 0u;
 	uint8_t lin_initialflag = 0u;
 
@@ -405,22 +413,24 @@ static void LIN_LLD_Service_InitialFlag(void)
 
 static void LIN_CoolantDiagFlag (void)
 {
-	static volatile l_u8  LinCoolantDiagFlag = 0u;
+	static volatile l_u8 LinCoolantDiagFlag = 0u;
 
 	if (l_flg_tst_Ewp_Coolant_DiagEn())
-    {
-        /* Signal Read Access for Signal Ewp_Coolant_DiagEn */
-        LinCoolantDiagFlag = l_bool_rd_Ewp_Coolant_DiagEn();
-        l_flg_clr_Ewp_Coolant_DiagEn(); 	   
-    }
+	{
+		LinCoolantDiagFlag = l_bool_rd_Ewp_Coolant_DiagEn();
+		l_flg_clr_Ewp_Coolant_DiagEn();
+	}
 
-    (void)WriteCoolantFlag(LinCoolantDiagFlag);
+	(void)WriteCoolantFlag(LinCoolantDiagFlag);
 }
+#endif
 
 static void LIN_LLD_Service_TX_Cal(void)
 {
-    uint8_t uint8_temp =0;
-	sint16_t sint16_temp =0;
+#if 0 /* Reserved for future use: temperature status conversion */
+    uint8_t uint8_temp = 0u;
+	sint16_t sint16_temp = 0;
+#endif
     static volatile l_u8 timer_100ms = 0u;
 	timer_100ms = timer_100ms + 1u;
     if (timer_100ms > 100u )
@@ -431,63 +441,60 @@ static void LIN_LLD_Service_TX_Cal(void)
 
 		
         /********************************* Byte 0 ************************************/
-        l_u8_wr_Ewp1_ActRotSpd_rpm((uint8_t)(actDuty));		  /* Signal Write Access for Signal Ewp1_ActRotSpd_rpm */
-		/********************************* Byte 1 ************************************/
-        l_bool_wr_Ewp1_Under_Voltage (((uint8_t)faultStateMerged_Byte1) & 0x01u);       /* Signal Write Access for Signal Ewp1_Under_Voltage */
-        l_bool_wr_Ewp1_Over_Voltage  (((uint8_t)faultStateMerged_Byte1 >> 1u) & 0x01u);		/* Signal Write Access for Signal Ewp1_Over_Voltage */
-        l_bool_wr_Ewp1_Short_Circuit (((uint8_t)faultStateMerged_Byte1 >> 2u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Short_Circuit */
-        l_bool_wr_Ewp1_Open_Circuit	 (((uint8_t)faultStateMerged_Byte1 >> 3u) & 0x01u);	 /* Signal Write Access for Signal Ewp1_Warn_Temp */
-        l_bool_wr_Ewp1_Stall_Error   (((uint8_t)faultStateMerged_Byte1 >> 4u) & 0x01u);
         l_bool_wr_Ewp1_FaultStatus(faultFlag | MCUFault);                           /* Signal Write Access for Signal Ewp1_FaultStatus */
         l_bool_wr_Ewp1_ProtectMode(protectionFlag);                      /* Signal Write Access for Signal Ewp1_ProtectMode */            
-        l_bool_wr_Ewp1_Speed_Error   (((uint8_t)faultStateMerged_Byte1 >> 7u)  | ((uint8_t)warningStateMerged >> 7u));      /* Signal Write Access for Signal Ewp1_Speed_Error */
+        /********************************* Byte 1 ************************************/
+        l_u8_wr_Ewp1_ActRotSpd_rpm((uint8_t)(actRequire));		  /* Signal Write Access for Signal Ewp1_ActRotSpd_rpm */
         /********************************* Byte 2 ************************************/
-		l_bool_wr_Ewp1_Diag_ForcedStatus(CoolantFlag);
+        l_u8_wr_Ewp1_Version((EWP_TYPE<<4u)|VERSION);                     /* Signal Write Access for Signal Ewp1_Version */
+        /********************************* Byte 3 ***************************/
+        l_u8_wr_Ewp1_EEPROM_POPUP(errorCodeIndex);                       /* Signal Write Access for Signal Ewp1_EEPROM_POPUP */
+        /********************************* Byte 4 ************************************/
+        l_u8_wr_Ewp1_Current_DC(((uint16_t)idcFiltered/10u));             /* Signal Write Access for Signal Ewp1_Current_DC */
+        /********************************* Byte 5 ************************************/
+        l_u8_wr_Ewp1_Current_iq(((uint16_t)iqFiltered/10u));              /* Signal Write Access for Signal Ewp1_Current_iq */
+        /********************************* Byte 6 ************************************/
+        l_bool_wr_Ewp1_Short_Circuit (((uint8_t)faultStateMerged_Byte1 >> 2u) & 0x01u); /* Signal Write Access for Signal Ewp1_Short_Circuit */
+        l_bool_wr_Ewp1_GateDrv_UV_OV (((uint8_t)faultStateMerged_Byte2 >> 7u) & 0x01u); /* Signal Write Access for Signal Ewp1_GateDrv_UV_OV */
+        /********************************* Byte 7 ************************************/
+        l_bool_wr_Ewp1_Speed_Error   (((uint8_t)faultStateMerged_Byte1 >> 7u)  | ((uint8_t)warningStateMerged >> 7u));      /* Signal Write Access for Signal Ewp1_Speed_Error */
         l_bool_wr_Ewp1_Over_Temp     (((uint8_t)faultStateMerged_Byte2 >> 1u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Over_Temp */
         l_bool_wr_Ewp1_Warn_Temp     (((uint8_t)warningStateMerged     >> 2u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Warn_Temp */	
         l_bool_wr_Ewp1_Low_Current   (((uint8_t)faultStateMerged_Byte2 >> 3u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Low_Current */
-        l_bool_wr_Ewp1_Warn_Current  (((uint8_t)warningStateMerged     >> 4u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Warn_Current */
         l_bool_wr_Ewp1_Over_Current  (((uint8_t)faultStateMerged_Byte2 >> 5u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Over_Current */
-        l_bool_wr_Ewp1_Comm_Error    (((uint8_t)warningStateMerged     >> 6u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Comm_Error */
-        l_bool_wr_Ewp1_GateDrv_UV_OV (((uint8_t)faultStateMerged_Byte2 >> 7u));       /* Signal Write Access for Signal Ewp1_GateDrv_UV_OV */
-        /********************************* Byte 3 ************************************/
-        l_u8_wr_Ewp1_Version((EWP_TYPE<<4u)|VERSION);                     /* Signal Write Access for Signal Ewp1_Version */
-        /********************************* Byte 4 ************************************/
-        l_u8_wr_Ewp1_Voltage_Dc(((uint16_t)vdcFiltered/10u)); 							 /* Signal Write Access for Signal Ewp1_Torque */
-        /********************************* Byte    5 ************************************/
-        l_u8_wr_Ewp1_Current_DC(((uint16_t)idcFiltered/10u));                     /* Signal Write Access for Signal Ewp1_PWM_Duty_Ratio */
-        /********************************* Byte 6 ************************************/
-        l_u8_wr_Ewp1_Current_iq(((uint16_t)iqFiltered/10u));                     /* Signal Write Access for Signal Ewp1_PWM_Duty_Ratio */
-        /********************************* Byte 7 ************************************/
-        if(TemperatureFiltered >= 0)
-        {
-            uint8_temp = ((uint8_t)TemperatureFiltered + 40u);
+        l_bool_wr_Ewp1_Under_Voltage (((uint8_t)faultStateMerged_Byte1) & 0x01u);             /* Signal Write Access for Signal Ewp1_Under_Voltage */
+        l_bool_wr_Ewp1_Over_Voltage  (((uint8_t)faultStateMerged_Byte1 >> 1u) & 0x01u);       /* Signal Write Access for Signal Ewp1_Over_Voltage */
+
+#if 0 /* Reserved for future use: signals not present in the current LIN map */
+		if(TemperatureFiltered >= 0)
+		{
+			uint8_temp = ((uint8_t)TemperatureFiltered + 40u);
 		}
 		else
 		{
-		    sint16_temp = TemperatureFiltered + 40;
-			if(sint16_temp < 0)
-			{
-			    uint8_temp = 0u;
-			}
-			else
-			{
-    			uint8_temp = (uint8_t)sint16_temp;
-			}
-
+			sint16_temp = TemperatureFiltered + 40;
+			uint8_temp = (sint16_temp < 0) ? 0u : (uint8_t)sint16_temp;
 		}
-        l_u8_wr_Ewp1_Temp(uint8_temp);
 
-
+		l_bool_wr_Ewp1_Open_Circuit (((uint8_t)faultStateMerged_Byte1 >> 3u) & 0x01u);
+		l_bool_wr_Ewp1_Stall_Error (((uint8_t)faultStateMerged_Byte1 >> 4u) & 0x01u);
+		l_bool_wr_Ewp1_Diag_ForcedStatus(CoolantFlag);
+		l_bool_wr_Ewp1_Warn_Current (((uint8_t)warningStateMerged >> 4u) & 0x01u);
+		l_bool_wr_Ewp1_Comm_Error (((uint8_t)warningStateMerged >> 6u) & 0x01u);
+		l_u8_wr_Ewp1_Voltage_Dc(((uint16_t)vdcFiltered / 10u));
+		l_u8_wr_Ewp1_Temp(uint8_temp);
+#endif
          }
 }
 
 
 static void LIN_LLD_Service_TX_Cal_ReadFunction1(void)
 {
-	(void)ReadConvertActDuty(&actDuty);
+	(void)ReadConvertActRequire(&actRequire);
 	(void)ReadWarningStateMerged(&warningStateMerged);
+#if 0 /* Reserved for future use: forced diagnostic status */
 	(void)ReadCoolantFlag(&CoolantFlag);
+#endif
 	(void)ReadLINFaultStateFlag_Byte1(&faultStateMerged_Byte1);
 	(void)ReadLINFaultStateFlag_Byte2(&faultStateMerged_Byte2); 	
 	(void)ReadFaultFlag(&faultFlag);
@@ -498,15 +505,17 @@ static void LIN_LLD_Service_TX_Cal_ReadFunction1(void)
 static void LIN_LLD_Service_TX_Cal_ReadFunction2(void)
 {
 	(void)ReadIdcFiltered(&idcFiltered);
-	(void)ReadVdcFiltered(&vdcFiltered);
 	(void)ReadIqFiltered(&iqFiltered);
-	(void)ReadTemperatureFiltered(&TemperatureFiltered);		
 	(void)ReadMCUFault(&MCUFault);		
-    if(vdcFiltered < 0)
-    {
-        vdcFiltered = 0;
-    }
-
+	(void)ReadErrorCodeIndex(&errorCodeIndex);   
+#if 0 /* Reserved for future use: voltage and temperature status */
+	(void)ReadVdcFiltered(&vdcFiltered);
+	(void)ReadTemperatureFiltered(&TemperatureFiltered);
+	if(vdcFiltered < 0)
+	{
+		vdcFiltered = 0;
+	}
+#endif
     if(idcFiltered < 0)
     {
         idcFiltered = 0;

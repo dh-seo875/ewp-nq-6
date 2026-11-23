@@ -38,12 +38,11 @@
 ************************************************************************************************************************
 */
 
-#define LOWER_DUTY    (10U)
-#define UPPER_DUTY    (90U)
-#define MIN_RPM       (1000)
-#define MAX_RPM       (6000)
-#define RPM_RANGE     (MAX_RPM - MIN_RPM)
-#define DUTY_RANGE    (UPPER_DUTY - LOWER_DUTY)
+#define RPM_FACTOR       (20U)
+#define LOWER_REQUIRE    (50U)
+#define UPPER_REQUIRE    (230U)
+#define MIN_RPM          (1000)
+#define MAX_RPM          (4600)
 
 
 /*

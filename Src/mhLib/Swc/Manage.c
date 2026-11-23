@@ -227,7 +227,7 @@ static void ManageSystemOnOff(void)
 			else if((((manage_LINCheck >> 5U) & 0x01U) == 1U)) // limp home
 			{
 			    LimphomeCnt = (LimphomeCnt >= 12000) ? 12000 : (LimphomeCnt+1);			
-    			manage_IRV_SpeedRef = (LimphomeCnt >= 12000) ? 0 : CAL_LimpHomeRpm;
+    			manage_IRV_SpeedRef = (LimphomeCnt >= 12002) ? 0 : CAL_LimpHomeRpm;
 			}
 			else                          // normal run (no limp hone)
 			{
@@ -469,21 +469,21 @@ static void ManageStepControlOn(void)
 	  /* STEP size decide*/
 	  if(manage_Prev_SpeedRef == 0)
 	  {
-		    CAL_SPEED_STEP = SPEED_STEP_15;
+		    CAL_SPEED_STEP = SPEED_STEP_12;
 	  }
 	  else if(manage_IRV_SpeedRef > manage_IRV_Step_SpeedRef)
 	  {
-		    CAL_SPEED_STEP       = SPEED_STEP_300;
+		    CAL_SPEED_STEP       = SPEED_STEP_120;
 	  }
 	  else if(manage_IRV_SpeedRef < manage_IRV_Step_SpeedRef)
 	  {
 		    if (manage_IRV_SpeedRef < 1000)
             { 
-            CAL_SPEED_STEP = SPEED_STEP_15;
+            CAL_SPEED_STEP = SPEED_STEP_12;
             }
 		    else if (Manage_ActSpeed < 1500)
             {
-            CAL_SPEED_STEP = SPEED_STEP_15;
+            CAL_SPEED_STEP = SPEED_STEP_12;
             }
 		    else
 		    {

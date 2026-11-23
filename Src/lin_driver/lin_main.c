@@ -144,7 +144,7 @@ void lin_main_init(void)
     l_u8  loc_bytecounter = 0u;
     l_u8  loc_framecounter;
     const t_l_Lin_Data const_LinData = {{               // //genlinconfig.c
-	 (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u,\
+	 (l_u8)252u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)0u, (l_u8)252u, (l_u8)128u,\
 	 (l_u8)0u, (l_u8)252u, (l_u8)255u, (l_u8)255u, (l_u8)255u, (l_u8)255u, (l_u8)255u, (l_u8)255u
     }};
     const t_Lin_Frame_Ctrl const_LIN_FRAME_CTRL_INIT [LIN_NUMBER_OF_FRAMES] = LIN_FRAME_CTRL_INIT;	 //genlinconfig.c

@@ -84,14 +84,14 @@ static void MeasTemperature(void);
 static void CheckLinError (void);
 static void CheckIgn (void);
 static void CheckOpenPhase (void);
-static void ConvertDutyToRpm (void);
-static void ConvertRpmToDuty (void);
+static void ConvertRequireToRpm (void);
+static void ConvertRpmToRequire (void);
 static void MeasFluxAbsValue(void);
 static void SensorSWComponent1(void);
 static void SensorSWComponent2(void);
 static void SensorSWComponent3(void);
 static void SensorSWComponent4(void);
-
+static void CheckErrorCodeIndex(void);
 
 /*
 ************************************************************************************************************************
@@ -101,10 +101,10 @@ static void SensorSWComponent4(void);
 
 static void SensorSWComponent1(void)
 {
-	ConvertDutyToRpm();
+	ConvertRequireToRpm();
 	CheckOpenPhase();
 	MeasSpeed();
-	ConvertRpmToDuty();
+	ConvertRpmToRequire();
 }
 
 static void SensorSWComponent2(void)
@@ -126,6 +126,7 @@ static void SensorSWComponent4(void)
 	CheckGateDrvError();
 	MeasTemperature();
 	MeasFluxAbsValue();
+	CheckErrorCodeIndex();
 }
 
 
@@ -154,72 +155,52 @@ void SensorSWComponentPack(void)
 		SensorTask_Cnt = 0u;
 	}
 }
-static void ConvertDutyToRpm(void)
+
+static void ConvertRequireToRpm(void)
 {
 	static uint16_t rpm = 0U;
+  uint8_t sensor_LinRequire = 0U;    
+	
+	(void)ReadLinRequire(&sensor_LinRequire);
 
-	uint8_t sensor_LinRequireDuty = 0U;    
-	uint32_t tmp;
-
-	(void)ReadLinRequireDuty(&sensor_LinRequireDuty);
-
-	if (sensor_LinRequireDuty < LOWER_DUTY) // 0-9 duty
+	if (sensor_LinRequire < LOWER_REQUIRE) // Raw 0-49: Stop
 	{
 	    rpm = 0U;
 	}
-	else if ((sensor_LinRequireDuty <= UPPER_DUTY)) //10-90 duty
+	else if (sensor_LinRequire <= UPPER_REQUIRE) // Raw 50-230: RPM = Raw * RPM_FACTOR
 	{
-	    /* tmp = (duty - 10) * 5000 */
-	    tmp = (uint32_t)((uint32_t)sensor_LinRequireDuty - (uint32_t)LOWER_DUTY) * (uint32_t)RPM_RANGE;
-
-	    /* rpm = 1000 + tmp / 80 */
-	    rpm = (uint16_t)((uint32_t)MIN_RPM + (tmp / (uint32_t)DUTY_RANGE));
+	    rpm = ((uint16_t)sensor_LinRequire * RPM_FACTOR);
 	}
-	else if((sensor_LinRequireDuty <= 100U)) //91-100
+	else // Raw 231-255: Clamp to MAX_RPM
 	{
-    	rpm = MAX_RPM;
-	}
-	else // 101-255
-	{
-         /* Hold last valid RPM */
+	    rpm = MAX_RPM;
 	}
 
 	(void)WriteConvertRPM((sint16_t)rpm);
 }
-static void ConvertRpmToDuty(void)
+static void ConvertRpmToRequire(void)
 {
-	uint8_t duty;
+	uint8_t Require;
 	sint16_t sensor_ActRPM;
-	uint16_t sensor_diffRPM;
-	uint16_t duty_calc;
 	
 	(void)ReadSpeedFiltered(&sensor_ActRPM);
 	
 	if (sensor_ActRPM <= 0)
 	{
-		/* 0 RPM �� 0% duty */
-		duty = 0U;
+		/* 0 RPM is reported as raw value 0. */
+		Require = 0U;
 	}
-	else if (sensor_ActRPM < (sint16_t)MIN_RPM)  // 0 - 10 Duty area
+	else if (sensor_ActRPM >= (sint16_t)MAX_RPM)
 	{
-		/* Below mapping range �� lower bound */
-		duty = (uint8_t)((uint16_t)sensor_ActRPM/100u);
+		/* Clamp speeds above the mapping range to the upper raw value. */
+		Require = UPPER_REQUIRE;
 	}
-	else if (sensor_ActRPM >= (sint16_t)MAX_RPM) // 90 - 100 Duty area
-	{
-		/* Above mapping range �� upper bound */
-		duty = UPPER_DUTY;
-	}
-	else // 10 - 89 Duty area
-	{
-		/* Linear mapping (pure integer math) */
-		sensor_diffRPM = (uint16_t)sensor_ActRPM - (uint16_t)MIN_RPM;	
-		duty_calc = (DUTY_RANGE * sensor_diffRPM) / (uint16_t)RPM_RANGE;
-	
-		duty = (uint8_t)((uint16_t)LOWER_DUTY + duty_calc);
+	else
+	{	
+		Require = (uint8_t)((uint16_t)sensor_ActRPM / RPM_FACTOR);
 	}
 	
-	(void)WriteConvertActDuty(duty);
+	(void)WriteConvertActRequire(Require);
 
 }
 static void CheckShortCircuit(void)
@@ -613,14 +594,14 @@ static void MeasFluxAbsValue (void)
     sensor_fluxAbsFiltered = (uint16_t)(filterAccumulator / FLUX_DIAG_IIR_DIVISOR);
     (void)WriteFluxAbsValueMeasured(sensor_fluxAbsFiltered);
 }
-//static void CheckErrorCodeIndex (void)
-//{    
-//	uint8_t	   sensor_errorCodeIndex	  = 0;
+static void CheckErrorCodeIndex (void)
+{    
+	uint8_t	   sensor_errorCodeIndex	  = 0;
 
-//    (void)GetErrorCodeIndex(&sensor_errorCodeIndex);
+    (void)GetErrorCodeIndex(&sensor_errorCodeIndex);
 
-//    (void)WriteErrorCodeIndex(sensor_errorCodeIndex);
-//}
+    (void)WriteErrorCodeIndex(sensor_errorCodeIndex);
+}
 
 
 //static void CheckPowerLimit (void)

@@ -27,6 +27,7 @@
 */
 #include "Diag.h"
 #include "RteStd.h"
+#include "Sensor.h"
 
 
 /*
@@ -283,22 +284,22 @@ static void DiagSWComponent1(void)
 {
 	DiagOverVoltage();
 	DiagUnderVoltage();
-	DiagWarningCurrent();
+	//DiagWarningCurrent();
 	DiagOverCurrent();	
 }
 
 static void DiagSWComponent2(void)
 {
-	DiagStallError();	
+	//DiagStallError();	
 	DiagShortCircuit();
 	DiagGateDrvOVUV();
-	DiagPhaseOpen(); 	
+	//DiagPhaseOpen(); 	
 }
 
 static void DiagSWComponent3(void)
 {
 	DiagLINError();
-	DiagLINInvalidValue();
+	//DiagLINInvalidValue();
 	DiagSpeedError();
 	DiagOverTemperature();
 }
@@ -306,7 +307,7 @@ static void DiagSWComponent3(void)
 static void DiagSWComponent4(void)
 {
 	DiagLowCurrent();	
-	DiagEwpInital();
+	//DiagEwpInital();
 	MergeDiagState();
 	SetDiagFlagState();	
 }
@@ -1561,9 +1562,9 @@ static void DiagStallErrorFault(void)
 static void DiagLINInvalidValue(void)
 {
 	static DiagEntryConditionState_t LIV_entryCondition;
-	uint8_t diag_linRequireDuty = 0U;
+	uint8_t diag_linRequireValue = 0U;
 
-	(void)ReadLinRequireDuty(&diag_linRequireDuty);
+	(void)ReadLinRequire(&diag_linRequireValue);
     (void)ReadIgnFlag(&diag_ignState);
 
 
@@ -1579,7 +1580,7 @@ static void DiagLINInvalidValue(void)
     switch (IRV_LIV_diagState)
     {
         case NORMAL:
-            if ((diag_linRequireDuty >= 101U) && (LIV_entryCondition == ENABLE))
+            if ((diag_linRequireValue > UPPER_REQUIRE) && (LIV_entryCondition == ENABLE))
             {
                 LIV_faultCnt = (LIV_faultCnt < 400U) ? (LIV_faultCnt + 1u) : 400u;
             }
@@ -1598,7 +1599,7 @@ static void DiagLINInvalidValue(void)
             break;
 
         case WARNING:      
-            if ((diag_linRequireDuty <= 100U))
+            if (diag_linRequireValue <= UPPER_REQUIRE)
             {
                 IRV_LIV_diagState = NORMAL;
 							  IRV_LIV_Warningflag = 0u;

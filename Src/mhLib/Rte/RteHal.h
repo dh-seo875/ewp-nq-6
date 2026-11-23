@@ -101,7 +101,7 @@ Std_ReturnType GetFluxAbsValue (sint16_t* data);
 
 //Std_ReturnType GetErrorCode (uint8_t* data);
 Std_ReturnType SetErrorCode (uint8_t data);
-//Std_ReturnType GetErrorCodeIndex (uint8_t* data);
+Std_ReturnType GetErrorCodeIndex (uint8_t* data);
 Std_ReturnType SetErrorCodeIndex (uint8_t data);
 
 //Std_ReturnType GetPowerLimitState (uint8_t* data);

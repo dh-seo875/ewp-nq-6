@@ -221,136 +221,122 @@ extern t_l_Lin_Data    l_LinData;
 /* Signal Access Macros */
 
 /* Signal Write Access for Signal Ewp1_ActRotSpd_rpm */
-#define        l_u8_wr_Ewp1_ActRotSpd_rpm(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[0] &= (0u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[0] |= ((l_u8)(x)); \
+#define        l_u8_wr_Ewp1_ActRotSpd_rpm(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (0u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)(x)); \
                                                 g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
                                                 }while(0)
 
 /* Signal Write Access for Signal Ewp1_Under_Voltage */
-#define        l_bool_wr_Ewp1_Under_Voltage(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (254u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x))); \
+#define        l_bool_wr_Ewp1_Under_Voltage(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (223u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)((x) << 5u)); \
                                                 g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
                                                 }while(0)
 
 /* Signal Write Access for Signal Ewp1_Over_Voltage */
-#define        l_bool_wr_Ewp1_Over_Voltage(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (253u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 1u)); \
+#define        l_bool_wr_Ewp1_Over_Voltage(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (191u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)((x) << 6u)); \
                                                 g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
                                                 }while(0)
 
 /* Signal Write Access for Signal Ewp1_Short_Circuit */
-#define        l_bool_wr_Ewp1_Short_Circuit(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (251u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 2u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Warn_Temp */
-#define        l_bool_wr_Ewp1_Open_Circuit(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (247u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 3u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Warn_Temp */
-#define        l_bool_wr_Ewp1_Stall_Error(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (239u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 4u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_FaultStatus */
-#define        l_bool_wr_Ewp1_FaultStatus(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (223u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 5u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_ProtectMode */
-#define        l_bool_wr_Ewp1_ProtectMode(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (191u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 6u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Speed_Error */
-#define        l_bool_wr_Ewp1_Speed_Error(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= (127u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)((x) << 7u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Speed_Error */
-#define        l_bool_wr_Ewp1_Diag_ForcedStatus(x)   do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (254u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x))); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Over_Temp */
-#define        l_bool_wr_Ewp1_Over_Temp(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (253u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 1u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Over_Temp */
-#define        l_bool_wr_Ewp1_Warn_Temp(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (251u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 2u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-                                                 
-/* Signal Write Access for Signal Ewp1_Low_Current */
-#define        l_bool_wr_Ewp1_Low_Current(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (247u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 3u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Over_Current */
-#define        l_bool_wr_Ewp1_Warn_Current(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (239u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 4u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Over_Current */
-#define        l_bool_wr_Ewp1_Over_Current(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (223u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 5u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Comm_Error */
-#define        l_bool_wr_Ewp1_Comm_Error(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (191u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 6u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_GateDrv_UV_OV */
-#define        l_bool_wr_Ewp1_GateDrv_UV_OV(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (127u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)((x) << 7u)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Version */
-#define        l_u8_wr_Ewp1_Version(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[3] &= (0u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[3] |= ((l_u8)(x)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Voltage_DC */
-#define        l_u8_wr_Ewp1_Voltage_Dc(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[4] &= (0u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[4] |= ((l_u8)(x)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Current_DC */
-#define        l_u8_wr_Ewp1_Current_DC(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[5] &= (0u); \
-                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[5] |= ((l_u8)(x)); \
-                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
-                                                }while(0)
-
-/* Signal Write Access for Signal Ewp1_Current_iq */
-#define        l_u8_wr_Ewp1_Current_iq(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[6] &= (0u); \
+#define        l_bool_wr_Ewp1_Short_Circuit(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[6] &= (254u); \
                                                 l_LinData.frames.l_frm_STATUS_EWP1.frame_data[6] |= ((l_u8)(x)); \
                                                 g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
                                                 }while(0)
 
-/* Signal Write Access for Signal Ewp1_Temp */
-#define        l_u8_wr_Ewp1_Temp(x)          do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (0u); \
+/* Signal Write Access for Signal Ewp1_FaultStatus */
+#define        l_bool_wr_Ewp1_FaultStatus(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[0] &= (254u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[0] |= ((l_u8)(x)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_ProtectMode */
+#define        l_bool_wr_Ewp1_ProtectMode(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[0] &= (253u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[0] |= ((l_u8)((x) << 1u)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_Speed_Error */
+#define        l_bool_wr_Ewp1_Speed_Error(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (254u); \
                                                 l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)(x)); \
                                                 g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
                                                 }while(0)
+
+/* Signal Write Access for Signal Ewp1_Over_Temp */
+#define        l_bool_wr_Ewp1_Over_Temp(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (253u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)((x) << 1u)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_Over_Temp */
+#define        l_bool_wr_Ewp1_Warn_Temp(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (251u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)((x) << 2u)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+                                                 
+/* Signal Write Access for Signal Ewp1_Low_Current */
+#define        l_bool_wr_Ewp1_Low_Current(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (247u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)((x) << 3u)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_Over_Current */
+#define        l_bool_wr_Ewp1_Over_Current(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] &= (239u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] |= ((l_u8)((x) << 4u)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_GateDrv_UV_OV */
+#define        l_bool_wr_Ewp1_GateDrv_UV_OV(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[6] &= (253u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[6] |= ((l_u8)((x) << 1u)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_Version */
+#define        l_u8_wr_Ewp1_Version(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= (0u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)(x)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_EEPROM_POPUP */
+#define        l_u8_wr_Ewp1_EEPROM_POPUP(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[3] &= (0u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[3] |= ((l_u8)(x)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_Current_DC */
+#define        l_u8_wr_Ewp1_Current_DC(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[4] &= (0u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[4] |= ((l_u8)(x)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+/* Signal Write Access for Signal Ewp1_Current_iq */
+#define        l_u8_wr_Ewp1_Current_iq(x)    do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[5] &= (0u); \
+                                                l_LinData.frames.l_frm_STATUS_EWP1.frame_data[5] |= ((l_u8)(x)); \
+                                                g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; \
+                                                }while(0)
+
+#if 0 /* Reserved for future use: signals not present in the current LIN map */
+#define l_bool_wr_Ewp1_Open_Circuit(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= 247u; \
+                                           l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)(x) << 3u); \
+                                           g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#define l_bool_wr_Ewp1_Stall_Error(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] &= 239u; \
+                                         l_LinData.frames.l_frm_STATUS_EWP1.frame_data[1] |= ((l_u8)(x) << 4u); \
+                                         g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#define l_bool_wr_Ewp1_Diag_ForcedStatus(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= 254u; \
+                                               l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= (l_u8)(x); \
+                                               g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#define l_bool_wr_Ewp1_Warn_Current(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= 239u; \
+                                          l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)(x) << 4u); \
+                                          g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#define l_bool_wr_Ewp1_Comm_Error(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] &= 191u; \
+                                        l_LinData.frames.l_frm_STATUS_EWP1.frame_data[2] |= ((l_u8)(x) << 6u); \
+                                        g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#define l_u8_wr_Ewp1_Voltage_Dc(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[4] = (l_u8)(x); \
+                                       g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#define l_u8_wr_Ewp1_Temp(x) do{ l_LinData.frames.l_frm_STATUS_EWP1.frame_data[7] = (l_u8)(x); \
+                                 g_lin_frame_ctrl[0].frame.frame_type.update_flag = 1u; }while(0)
+#endif
 
 
 
@@ -367,19 +353,18 @@ extern t_l_Lin_Data    l_LinData;
 #define        l_flg_clr_Ewp1_Target_Spd_RPM()    (l_flags_COMMAND_EWP.flags.Ewp1_Target_Spd_RPM_f = 0u)
 
 /* Signal Read Access for Signal Ewp2_Target_Spd_RPM */
-//#define        l_u8_rd_Ewp2_Target_Spd_RPM()      ((l_LinData.frames.l_frm_COMMAND_EWP.frame_data[1]))
-//#define        l_flg_tst_Ewp2_Target_Spd_RPM()    (l_flags_COMMAND_EWP.flags.Ewp2_Target_Spd_RPM_f == 1u)
-//#define        l_flg_clr_Ewp2_Target_Spd_RPM()    (l_flags_COMMAND_EWP.flags.Ewp2_Target_Spd_RPM_f = 0u)
+#define        l_u8_rd_Ewp2_Target_Spd_RPM()      ((l_LinData.frames.l_frm_COMMAND_EWP.frame_data[1]))
+#define        l_flg_tst_Ewp2_Target_Spd_RPM()    (l_flags_COMMAND_EWP.flags.Ewp2_Target_Spd_RPM_f == 1u)
+#define        l_flg_clr_Ewp2_Target_Spd_RPM()    (l_flags_COMMAND_EWP.flags.Ewp2_Target_Spd_RPM_f = 0u)
 
-/* Signal Read Access for Signal Ewp_Coolant_DiagEn */
-#define        l_bool_rd_Ewp_Coolant_DiagEn()    ((l_LinData.frames.l_frm_COMMAND_EWP.frame_data[1]) & 1u)
-#define        l_flg_tst_Ewp_Coolant_DiagEn()    (l_flags_COMMAND_EWP.flags.Ewp_Coolant_DiagEn_f == 1u)
-#define        l_flg_clr_Ewp_Coolant_DiagEn()    (l_flags_COMMAND_EWP.flags.Ewp_Coolant_DiagEn_f = 0u)
+/* Byte 1 signals are currently unused. */
+//#define        l_bool_rd_Ewp_Coolant_DiagEn()    ((l_LinData.frames.l_frm_COMMAND_EWP.frame_data[1]) & 1u)
+//#define        l_flg_tst_Ewp_Coolant_DiagEn()    (l_flags_COMMAND_EWP.flags.Ewp_Coolant_DiagEn_f == 1u)
+//#define        l_flg_clr_Ewp_Coolant_DiagEn()    (l_flags_COMMAND_EWP.flags.Ewp_Coolant_DiagEn_f = 0u)
 
-
-#define        l_bool_rd_Ewp_Initial_Flag()    ((l_LinData.frames.l_frm_COMMAND_EWP.frame_data[1]) & 2u)
-#define        l_flg_tst_Ewp_Initial_Flag()    (l_flags_COMMAND_EWP.flags.Ewp_Initial_DiagEn_f == 1u)
-#define        l_flg_clr_Ewp_Initial_Flag()    (l_flags_COMMAND_EWP.flags.Ewp_Initial_DiagEn_f = 0u)
+//#define        l_bool_rd_Ewp_Initial_Flag()    ((l_LinData.frames.l_frm_COMMAND_EWP.frame_data[1]) & 2u)
+//#define        l_flg_tst_Ewp_Initial_Flag()    (l_flags_COMMAND_EWP.flags.Ewp_Initial_DiagEn_f == 1u)
+//#define        l_flg_clr_Ewp_Initial_Flag()    (l_flags_COMMAND_EWP.flags.Ewp_Initial_DiagEn_f = 0u)
 
 
 /* LIN Driver Access to Update Signal Flags for Frame STATUS_EWP1 */

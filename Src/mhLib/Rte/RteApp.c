@@ -80,12 +80,12 @@ static uint8_t   FaultFlag;
 static DiagState_t HwOpenPhaseState;
 static uint16_t    FluxAbsValueMeasured;
 static uint8_t   CoolantFlag;
-//static uint8_t	 ErrorCodeIndex;
+static uint8_t	 ErrorCodeIndex;
 //static uint8_t Power_Limit;
 static uint8_t InitialFlag;
-static uint8_t LinRequireDuty;
+static uint8_t LinRequire;
 static sint16_t ConvertRPM;
-static uint8_t ConvertDuty;
+static uint8_t ConvertRequire;
 static uint8_t MCUFault;
 
 
@@ -294,18 +294,18 @@ Std_ReturnType WriteSpeedCmd (sint16_t data) // iq control or speed control
 }
 
 
-Std_ReturnType ReadLinRequireDuty (uint8_t* data)
+Std_ReturnType ReadLinRequire (uint8_t* data)
 {
     Std_ReturnType retVal = RTE_E_OK;
-    *data = LinRequireDuty;
+    *data = LinRequire;
     return retVal;
 }
 
 
-Std_ReturnType WriteLinRequireDuty (uint8_t data)
+Std_ReturnType WriteLinRequire (uint8_t data)
 {
     Std_ReturnType retVal = RTE_E_OK;
-    LinRequireDuty = data;
+    LinRequire = data;
     return retVal;
 }
 
@@ -324,18 +324,18 @@ Std_ReturnType WriteConvertRPM (sint16_t data)
     return retVal;
 }
 
-Std_ReturnType ReadConvertActDuty (uint8_t* data)
+Std_ReturnType ReadConvertActRequire (uint8_t* data)
 {
     Std_ReturnType retVal = RTE_E_OK;
-    *data = ConvertDuty;
+    *data = ConvertRequire;
     return retVal;
 }
 
 
-Std_ReturnType WriteConvertActDuty (uint8_t data)
+Std_ReturnType WriteConvertActRequire (uint8_t data)
 {
     Std_ReturnType retVal = RTE_E_OK;
-    ConvertDuty = data;
+    ConvertRequire = data;
     return retVal;
 }
 
@@ -745,20 +745,20 @@ Std_ReturnType WriteFluxAbsValueMeasured (uint16_t data)
 }*/
 
 
-//Std_ReturnType ReadErrorCodeIndex (uint8_t* data)
-//{
-//    Std_ReturnType retVal = RTE_E_OK;
-//    *data = ErrorCodeIndex;
-//    return retVal;
-//}
+Std_ReturnType ReadErrorCodeIndex (uint8_t* data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    *data = ErrorCodeIndex;
+    return retVal;
+}
 
 
-//Std_ReturnType WriteErrorCodeIndex (uint8_t data)
-//{
-//    Std_ReturnType retVal = RTE_E_OK;
-//    ErrorCodeIndex = data;
-//    return retVal;
-//}
+Std_ReturnType WriteErrorCodeIndex (uint8_t data)
+{
+    Std_ReturnType retVal = RTE_E_OK;
+    ErrorCodeIndex = data;
+    return retVal;
+}
 
 
 //Std_ReturnType ReadPowerLimit (uint8_t* data)
