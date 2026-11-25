@@ -218,17 +218,8 @@ void ManageNvm (void)
 
     if (Nvm_errorCode != 0u)
     {
-        if (linSuccessfulFlag == 1u) /* check the finish of LIN */
+        if(Emo_Status.MotorState == EMO_MOTOR_STATE_STOP)
         {
-
-            /* PORT_ChangePin(0x11, PORT_ACTION_TOGGLE); */						
-            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
-            Nvm_errorCode = 0;
-            /* PORT_ChangePin(0x11, PORT_ACTION_CLEAR); */
-        }
-        else if ((forceNvmWriteFlag == 1u) && (Emo_Status.MotorState == EMO_MOTOR_STATE_STOP))
-        {
-        
             (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
             Nvm_errorCode = 0;
         }
