@@ -218,17 +218,8 @@ void ManageNvm (void)
 
     if (Nvm_errorCode != 0u)
     {
-        if (linSuccessfulFlag == 1u) /* check the finish of LIN */
+        if(Emo_Status.MotorState == EMO_MOTOR_STATE_STOP)
         {
-
-            /* PORT_ChangePin(0x11, PORT_ACTION_TOGGLE); */						
-            (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
-            Nvm_errorCode = 0;
-            /* PORT_ChangePin(0x11, PORT_ACTION_CLEAR); */
-        }
-        else if ((forceNvmWriteFlag == 1u) && (Emo_Status.MotorState == EMO_MOTOR_STATE_STOP))
-        {
-        
             (void)writeNvm(IRV_ptrErrorCodePage, errorCodeAddressPageA);
             Nvm_errorCode = 0;
         }
@@ -505,9 +496,14 @@ static uint8_t convertErrorCode(uint16_t diagErrorCode)
             convertedErrorCode = 11; /* PO bit 1*/
             break;
 		
-		case 0x310:
+		    case 0x310:
             convertedErrorCode = 12; /* WC bit 4*/
             break;
+		
+				case 0x110:
+            convertedErrorCode = 14; /* ST bit 4*/
+            break;
+
 
         default: 
 			/* Intentionally Empty */
