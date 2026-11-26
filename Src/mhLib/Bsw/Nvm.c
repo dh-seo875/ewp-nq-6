@@ -496,9 +496,14 @@ static uint8_t convertErrorCode(uint16_t diagErrorCode)
             convertedErrorCode = 11; /* PO bit 1*/
             break;
 		
-		case 0x310:
+		    case 0x310:
             convertedErrorCode = 12; /* WC bit 4*/
             break;
+		
+				case 0x110:
+            convertedErrorCode = 14; /* ST bit 4*/
+            break;
+
 
         default: 
 			/* Intentionally Empty */
